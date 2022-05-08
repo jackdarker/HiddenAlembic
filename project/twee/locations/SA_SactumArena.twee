@@ -1,0 +1,223 @@
+:: DngSA_Entry
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+This is an area where apprentices are to perform sports and martial exercises.</br>
+<% if(window.gm.player.Skills.countItem('Tease')>0){%>
+Train your [[Tease-ability|DngSA_TeaseTraining]]</br>
+<%}%>
+Do some hands on combat in the [[arena|NOP]].</br>
+<p>[[Back|DngSY_Hall]]</p>
+</article><article id="LogPanel"></article></section>
+
+
+:: DngSA_Arena
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+A door is leading from the fortress into a circular arena that reminds you of a giant bowl.</br> 
+That place is also open to the sky that is curently light blue except where some fluffy louds are floating.</br>
+Because a high stonewall is surrounding the outer ring, you cant see what is below the horizon.</br>
+<a0 onclick='' hidden>hawk-"Training"</a></br>
+<a0 onclick='' hidden>hornett-"Training"</a></br>
+<a0 onclick='' hidden>lapine-"Training"</a></br>
+<a0 onclick='' hidden>lizan-"Training"</a></br>
+<a0 onclick='' hidden>wolf-"Training"</a></br>
+<p>[[Back|DngSY_Hall]]</p>
+</article><article id="LogPanel"></article></section>
+
+
+:: DngSA_TeaseLv1
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+Kumala is again at work in the lab.
+<p class="tPC">"Hello, good morning. I found your note."</p>
+<span class="tNPC1">"Yes the note, I should have told you yesterday when you were here. You were already in your room when I remeered and I didnt know if you were.. "</span>
+She makes a strange pause <span>"..busy or so."</span>
+<p class="tNPC1">"Please follow me."</p>
+<div id='select5'> You fall into step 
+<a0 onclick='window.gm.printTalkLink("div#select5","div#choice5a")'>behind her</a> as she leaves the room.</br>
+</div><div id='choice5a' hidden></br>
+    You two walk down the corridor to another door, this one a little bigger then the others. After you entered the room, she 
+    <div id='select6' style='display: inline;'>
+    <a0 onclick='window.gm.printTalkLink("div#select6","div#choice6a")'>closes</a> the door.</br>
+    </div><div id='choice6a' hidden></br>
+        <p class="tNPC1">"This is our training ground, a part of it at least. You will run into some people out there and it might be necessary to take care of them the one way or another."</p>
+        <p class="tNPC1">"To say it bluntly, you dont look like someone familiar with though situations."</p>
+        <div id='select7' >
+        <a0 onclick='window.gm.printTalkLink("div#select7","div#choice7a")'>Brag</a></br>
+        </div><div id='choice7a' hidden></br>
+            <p class="tPC">"Well, I had to talk my way out of some troubles in the past, or just be quick on the foot."</p>
+            <p class="tNPC1">"Sure, but sooner or later you will have to stand your ground. Thatswhy we will do some training."</p>
+            <p class="tPC">"Like stabing some one in their back or shooting with a bow?"</p>
+            <p class="tNPC1">"Physical combat is more Cyrils area of expertise. I'm more specialised in the non-combat related subjects."</p>
+            <p class="tNPC1"> Today I want to introduce you to some technique that might be useful when violence is not the best choice."</p>
+            <p class="tPC">"By blinding them or using some mirror trick?"</p>
+            <div id='select8' >
+            <a0 onclick='window.gm.printTalkLink("div#select8","div#choice8a")'>you ask puzzled</a></br>
+            </div><div id='choice8a' hidden></br>
+                <p class="tNPC1">"What? Oh, you think because of all the mirrors around? They are here so that you can watch yourself when performing."</p>
+                <p class="tNPC1">"See, sometimes a roll of your hips can be as effective as a kick with your boots. Therefoe you should learn how to use your assets."</p>
+                Kumala shows you how to move seductively. You arent sure for what reason or in what kind of situation this would be helpful.</br>
+                <div id='select9' >
+                <a0 onclick='window.gm.player.Skills.addItem(new window.storage.constructors.SkillTease()),window.gm.printTalkLink("div#select9","div#choice9a")'>Time passes</a></br>
+                </div><div id='choice9a' hidden></br>
+                    <p class="tNPC1">"You learned the basics on how to <statup>tease</statup> someone. But dont think you are an expert now. It might require some repeated training to be effective."</p>
+                    She doesnt seem to be fully satisfied with your performance. But you both are tired right now and a nap on [[your bed|DngSY_Your_Room]] seems a good idea.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</article><article id="LogPanel"></article></section
+
+:: DngSA_TeaseTraining
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+TODO: Train your Tease-skill by checking your performance in the mirrors. Upgrade dance/Poledance?
+Consumes some energy, progress is capped
+</br><p>[[Finish|DngSA_Entry]]</p>
+</article><article id="LogPanel"></article></section>
+
+
+:: DngSA_OralLv1
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+<p class="tNPC1">"I suggest you both work on your sexual skills. Sometimes this can greatly simplify problem solving. Besides, it's fun to learn new things, right?"</p>
+<p class="tNPC3">"Sexual skills? But we just arrived here. You dont even know what we are capable of!"</p>
+<p class="tNPC1">"Is that so? Well what do you think?"</p>
+<div id='select1' >
+<a0 onclick='window.gm.printTalkLink("div#select1","div#choice1a")'>We should learn something practical</a></br>
+<a0 onclick='window.gm.printTalkLink("div#select1","div#choice1b")'>I dont even know what you mean by sexual skills</a></br>
+</div><div id='choice1a' hidden></br>
+    <p class="tNPC3">"Thats the spirit!"</p> Leon chuckles on your statemment.
+    <div id='select2' class="tPC" ><a0 onclick='window.gm.printTalkLink("div#select2","div#choice2a")'>'At least this time he gives me support.'</a></div>
+</div>
+<div id='choice1b' hidden></br>
+    <p class="tNPC3">"Sounds like virgin to me."</p> Leon chuckles on your statemment.
+    <div id='select3' class="tPC" ><a0 onclick='window.gm.printTalkLink("div#select3","div#choice2a")'>'Asshole'</a></div>
+</div>
+</div><div id='choice2a' hidden></br>
+    Kumala just ignores what you both said.
+    <p class="tNPC1">"Endurance, capability, technique. Honestly I think you lack on all of them. If you want to impress someone, or at least met some minimum requirements, you need to improve these."</p>
+    <p class="tNPC3">"So, YOU are going to train with us?"</p> Leons smirks lecherously.
+    <p class="tNPC1">"This would be an arduous lesson for you." </p> she twinkles <span class="tNPC1">"No, you will train for yourself."</span>
+    <p class="tNPC1">"So the first thing we will start are your oral abilitys."</p>
+    <p class="tPC">"You mean to approach someone and win them over?"</p>
+    <p class="tNPC1">"No, I mean giving head."</p> she presents you a small peg two times the size of your thumb. You blush hottly as you notice that it ressembles a phallus.
+    <p class="tNPC1">"Take this into your mouth and lavish it with your tongue, squeeze it with your lips and suckle on it. Just be careful that you do not scratch it with your teeth or choke on it."</p>
+    Leon recovers from the shock first: <p class="tNPC3">"What ! I'm not going to suck this! I would never suck a man's cock! "</p>
+    <div id='select10' >
+    <a0 onclick='window.gm.printTalkLink("div#select10","div#choice10a")'>Leon exclaims.</a></br>
+    </div><div id='choice10a' hidden></br>
+        <p class="tNPC1">"Fine. Then how about this?"</p> 
+        she presents you a tube with a very distinct feature. The tube is as thick as your lower arm and half as long.
+        <p class="tNPC1">"Is that more alluring to you?"</p>
+        she presents you the very distinct feature of this gadget - the tubes opening resembles female genitals very detailed. Your blush deepens even more. 
+        The material the gadget is made of seems to be some squisshy, rubberlike material. 
+        <p class="tNPC3">"Well, I could live with that. The real thing would be even better though"</p> he grins broadly.
+        <p class="tNPC1">"Mastery comes through frequent practice, as they say. So, I want you to train on these whenever you are idle in your room and have no other task."</p>
+        <p class="tPC">'I bet he will try to stick his dick into that.'</p> crosses your mind when you notice Leon starring eagerly at those fleshy lips.
+        <p class="tNPC1">"and just to be clear this is oral only - not for any other use." </p> 
+        It takes him a lot of effort to replace the grin with a serious face. 
+        <div id='select11' >
+        <a0 onclick='window.story.state.DngSY.dildo=1,window.gm.printTalkLink("div#select11","div#choice11a")'>"Why is this necessary?"</a></br>
+        <a0 onclick='window.story.state.DngSY.dildo=1,window.gm.printTalkLink("div#select11","div#choice11b")'>"I too would prefer something else then.. this"</a> you point at the phallus.</br>
+        <a0 onclick='window.story.state.DngSY.pussy=1,window.gm.printTalkLink("div#select11","div#choice11c")'>Snatch the pussy before he does</a></br>
+        </div><div id='choice11a' hidden></br>
+            <p class="tPC">"Why is this necessary? I mean, that doesnt really sound like a common training for acolytes."</p>
+            As Kumala is distracted by your upspeek, he snatches the pussy and holds it tight.
+            <p class="tNPC1">"I didnt know you are an expert in tuition"</p> she seems to be offended somewhat by that question.  
+            <div id='select12'><a0 onclick='window.gm.printTalkLink("div#select12","div#choice12")'>Next</a></br></div>
+        </div>
+        <div id='choice11b' hidden></br>
+            <p class="tNPC1">"Oh, I'm sorry... "</p> just as Kumala starts explaining, Leon snatches the tube from her hand and hides it behind his back
+            <p class="tNPC1">".. but there is only that one. You will have to stik with that peg or maybe Leon is willing to share."</p>
+            As smug as he grins at you, thats unlikely.
+            <div id='select12'><a0 onclick='window.gm.printTalkLink("div#select12","div#choice12")'>Next</a></br></div>
+        </div>
+        <div id='choice11c' hidden></br>
+            You snatch the pussy before Leon does, keeping it save between your arms.
+            <p class="tNPC1">"I only have that one. Maybe you both can share it. Here Leon take the peg anyway, maybe you change your mind."</p>
+            Leon scowls at you. For sure he doesnt like to have to stick to the phallus. But you doubt he would ask you to share the tube.
+            <div id='select12'><a0 onclick='window.gm.printTalkLink("div#select12","div#choice12")'>Next</a></br></div>
+        </div>
+        <div id='choice12' hidden></br>
+            <p class="tNPC1">"Thats all for now. But dont forget your homework, I will check on that soon enough"</p>
+            With that you both leave.
+            Leon mutters <p class="tNPC3">"How will she check? With some hands on demonstration?"</p>
+            [[Leave|DngSY_Hall]]
+        </div>
+    </div>    
+</div>
+</article><article id="LogPanel"></article></section>
+
+
+:: DngSA_Train_Oral_Leon
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+Later on, you through the dorms hallway and some muffled squelches are coming from his room.
+[[sneak a peek]][[Nah]]
+Leon is lying on his bed and is busy lavishing that artifical vulva with his tongue.
+[[retreat]][[wait]]
+He suddenly shifts his cloth aside and you notice his hardon.
+"I will show ya where that cunt belongs" he mumbles to himself and impales the artifical vulva with his manmeat
+"Oh yes, nice and wet."
+You get aroused at the sight.
+[[retreat !]][[wait]]
+When you realize that you are still here and spying on a lad masturbating, you ask yourself 'Am I pervert?'
+Maybe you just want to know how he performs - just for comparission of course. 
+Your thoughts are interuppted as you hear a frantic "yes mmh yes, take it baby.." 
+With eager bucks of his hips he fires his load into the artifical pussy.
+[[better leave now before he notice]]
+Kumala will not be pleased if she ever got a hint on that. But you can't tell her without giving away that you were watching the lad rubbing one of.
+</article><article id="LogPanel"></article></section>
+
+:: DngSA_OralLv2
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+<p class="tNPC1">"Whats that!"</p> Leon blushs furiously as Kumala inspects the tool.
+<p class="tNPC3">"I couldnt resist, it was just to big of a tease."</p>
+<p class="tNPC1">"And you didnt even care to clean it properly."</p>
+<p class="tNPC3">"I tried but its a blind hole and some...some of it got stuck down there."</p>
+<p class="tNPC3">"Thats your excuse? You will clean that!"</p> annoyed she pushs the tool back into his hands.
+<p class="tNPC1">"Yes maa`m"</p> intimidated as he is by Kumala's appearance you could almost feel sorry for him - almost.
+<p class="tNPC1">"I said clean it - now!"</p>
+<p class="tNPC3">"What...how?"</p> he asks confused.
+<p class="tNPC1">"Use your mouth and your tongue. Suck it out if you cant reach that far."</p>
+<p class="tNPC1">"Thats what you should have trained anyway. Now you are going to learn the hard way."</p>
+<p class="tNPC3">"Can...can he at least leave?"</p> 
+<p class="tPC">"No, thats a lesson for both of you."</p>
+[[Look away]] [[watch]] [[smirk at his predicament]]
+<p class="tNPC1">"What are you grinning at? Do you think I'm funny?"</p>
+<p class="tPC">"No,.."</p> you shake your head.
+<p class="tNPC1">"Maybe you need a lesson too. You both are going to switch turns."</p>
+<p class="tPC">"What ? I cant...with my mouth...his spunk...."</p>
+<p class="tNPC1">"You can and you will!"</p>
+She snatches the pussy from Leons hands and presents you the opening.
+[[start working]]
+You take the toy and hesitantly give it a lick that makes you shudder.
+<p class="tNPC1">"Whenever one of you has to catch their breath, the other takes over."</p>
+<p class="tPC">'What is she doing to us? At least Cyril doesnt see this. I couldnt look him in the eyes again. Kumala isnt going to tell him, right?'</p>
+PussyLover++ CumSlurper++
+</article><article id="LogPanel"></article></section>
+
+:: DngSA_Train_OralLv1
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+<div id='select1' >
+<a0 onclick='window.gm.printTalkLink("div#select1","div#choice1a")'>Put it in your mouth</a></br>
+<a0 onclick='window.gm.printTalkLink("div#select1","div#choice1b")'>Dont do it</a></br>
+</div><div id='choice1a' hidden></br>
+</div>
+<div id='choice1b' hidden></br>
+Why would you put that thing in your mouth? It is so silly, maybe its just some kind of test.
+</div>
+</br><p> <a0 onclick='window.story.show("DngSY_Your_Room");'>Start</a></p>
+</article><article id="LogPanel"></article></section>
+
+
+:: DngSA_Train_Parcour
+Cyril has setup a course with obstacles for your training. This should help you train your agility and endurance.
+---
+You are still equipped with the plugs and the bondage restraints. "Sir please I cant do this. Its to difficult with...with all that." you let your chaines chime.
+"And thatswhy you need to train. You can't expect that you'll always be in the most favorable circumstances."
+The parcours is a pain in the ass -literary - The plug is already noticeable when walking but if you then still have to cope with the obstacles...5579

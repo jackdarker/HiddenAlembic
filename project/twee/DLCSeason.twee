@@ -1,0 +1,436 @@
+
+:: YouDiedOnce
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;
+window.gm.quests.forceQuestMilestone("qDiedAgain",100,2);%>
+Darkness... </br>
+After some moments your vision fades in. </br> 
+<p class='tPC'>"What happend? Why I'm sitting in a pool of ...goo?"</p>
+"Choosen one, this is a shrine of restoration! ..." a priestess in a white robe with purple borders approachs you.
+<!--todo-->
+<p class='tPC'>"So I died? And after death I return here?"</p>
+"Those choosen by the goods might be revived in a shrine of restoration after their death or collaps of mind."
+<p class='tPC'>"Collaps of mind? I just need to get stunned and will be sent back here?"</p>
+<p class='dev'>As a safeguard against mental trauma (*1) the players neural activity is supervised. If a certain amount of stress is detected (*2), the safeguard is triggered.
+</br>*1): This applys not just to painful trauma but also marvelous sensations to avoid addictive states (*3).
+</br>*2): Chances that the trigger is delayed or supressed might decrease if the user is inclined to the situation and has the proper mindset.
+</br>*3): According to user agreement §34-f2, the service-provider is not responsible for addiction caused by the use of the game.
+</p>
+<p class='tPC'>"Addictive states? I'm pretty sure I will not get addicted on getting killed."</p>
+You decide that you have been sitting in this sizzling pool of mysterious liquid long enough and rise to your feet to step out of it.
+You notice that you are naked and try to hide your privates with your hands. 
+<p class='tPC'>"Uhm...where is my gear?"</p>
+"The gods restored your body and mind but your gear is nowwhere to be found."
+<p class='tPC'>"Oh come on should I ran around in my birthday suite?"</p>
+"Please take this cloth and staff as they are blessed by the gods to help you to live up to your goal."
+<p class='dev'> For testing purpose the game is set to rougelike mode: on death you will loose your equipment and get the starter-gear. 
+But you keep your stats and skills (*1).  
+</br>*1): It might occur that the questline has to be started from the beginning. We are doing our best to solve the problem in the next updates. 
+</p> 
+<p class='tPC'>"Start the questline from the beginning? I really hope they get that fixed soon."</p>
+<div><a0 onclick='window.story.show("ServerDisconnected");'>Next</a></br></div>  <!--todo forward time to evenning-->
+</article><article id="LogPanel"></article></section>
+
+
+:: ServerDisconnected [_nosave_]
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.leaveVR();%>
+<p class='div_alarm'>Server connection error</p>
+</br><p class="tPC">"Great, I lost connection to the game server. Maybe it does reconnect..." </p>
+You wait for some time but nothing happens,
+<p class="tPC">"I'm tired anyway. I will check tomorrow if I can reconnect." </p>
+<div></br>[[Next|Your Bedroom]]</br></div>
+</article><article id="LogPanel"></article></section>
+
+
+:: YouDiedWithCursedGear
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+"Choosen one, this is a shrine of restoration!" ... the acolyte starts heir rant.</br>
+<p class="tPC">"Yeah, I know. I just got ass kicked again. At least I got rid of that freaking cursed... "</p></br>
+But that damned thing is still there!</br>
+<p class="tPC">"Hey, why is everthing gone except this?"</p>
+"At times the heros burden is increased by evil deeds and his epic story is extended further by finding closure for his curse." the priestess chants, holding out heir hands upward to heir gods.</br>
+<p class="tPC">"So I'm stuck with cursed gear but have to let go the good one?"</p>
+<p class='dev'>Some gear will stick to you. That doesnt need to be cursed one. In fact you can buy special gear that is bonded to you.</p>
+</br><a0 id='1' onclick='foo(this)'>This sucks</a> <a0 id='2' onclick='foo(this)'>Would have been to easy</a> <a0 id='3' onclick='foo(this)'>Its an incentive to not die</a></br>
+</article><article id="LogPanel"></article></section>
+<script> function foo(select) {
+    window.gm.quests.forceQuestMilestone("qDiedAgain",200,100);
+    window.story.show("ServerDisconnected");
+}
+</script>
+
+:: YouDiedBeforeOrgasm
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+Delicate sensations builds in your nethers. 
+'Uh..yeah.. thats nice. '
+Longing for the carnal pleasure that this is promissing, you lose your eyes. But as you open them, the stimulation is gone and your surrounding is still black.
+"Whut ?!  What happend?"
+"Choosen one, this is a shrine of restoration!" 
+"Noo, the fun was just starting. Why are I'm suddenly at the respawn again."
+"The gods saved you before your mind was breaking apart by onslaught of unsettling feelings."
+"Unsettling feelings? I didnt feel unsettleed by the prospect of getting fucked in the slightest!"
+'Didn't they say that they supervise my stress-level and trigger a safeguard?'
+"Hey dev !" you scream out "Can you hear me?"
+"Anyone there listening? I want some adjustments here please."
+As it seems dev-gods are right now not around or dont bother to answer to you.
+'Damit, I will just quit for now.' 
+[[Leave game]]  <!--todo-->
+... receive chat from dev
+"Its difficult to separate the good stress from the bad one. Every persons has a different tolerance and it can change over time. Currently its in general set to be more on the safe side."
+There isnt a slider controller or switch to simply adjust the setting to your liking. I can try to tweak it in a way.
+...
+I got kicked out again. 
+"That I expected. I wasnt able to change the setting directly. But I could activate the auto-tuning."
+"auto-tuning?."
+"Yes, the game will learn your individual excitation. Just calm yourself when you get in a situation you would like to hold on. It might be necessary to rerun a situation to improve the reaction."
+"OK, I will try it again."
+"Be careful, though. This can also lead to the fact that you have to endure unpleasant experiences longer."
+"I will keep that in mind." 
+<p class='author'>Scenes might gradually unlock depending how often you see them and how you react (also to other situations). </p>
+</article><article id="LogPanel"></article></section>
+
+
+:: Skills
+Disrobe: cast on Self or other; does not remove jewellery, enhanted or summoned armor
+a naked body is less protected but might increase tease damage; exhibitionist streak increases targets arousal 
+"Why the fuck should I want to disrobe mids in combat?"
+
+Reduce Suffering: cast on Self or other; reduces willpower damage by physical pain but also makes you less sensitiv to other physical stimulation
+lets you endure stressful situations better and reduces blackout chance;increases masochism tendency;
+"other physical stimulation means sex?"
+
+Animal Comprehension: cast on self or other; silently understand what animals say
+having a chorus of thrilled animals in your mind might cause headache 
+"Now I can discuss the hen-egg-problem with chicken"
+
+Regeneration: cast on self or other; healing over time ; might increase fertility/virility for a limited time
+overhealing friendly target might get them randy
+"Those side effects dont appear that terrible."
+
+Hedgehog Eyes: you can see in the dark - a little bit better then most humans but far as good as a common cat
+"I would prefer cat-eyes. Spider-senses would be even better. But you have to take what you get."
+
+:: SpecialItems
+Orb of Tremor: a floating orb of variyng size and mass that slings itself against an enemy to deal blunt damage;
+training allows to give better control about the motion and to navigate tight spaces
+upgraded version can be used as spydrone
+"What could it be good for to squeeze a solid ball into a tight?."
+
+SnakeRope: a leathery rope that is at least a dozen meters; it can move on its own and this movement can be controlled by whom held  
+useful as climbing aid or to bind something up
+"Somehow this remmebers me at Indys whip."
+
+Vial of slipery: a small vial with an unending supply of some slimy, greasy liquid of most likely organic origin.
+can be used as grease for machinery or other parts that need lubrication. 
+upgraded version can change color and taste
+"Unending huh? Will the world drown in goo if i put it upside down?"
+
+
+:: HowWillKnow
+Its not like you do hand out blowjobs in real. This is virtual, right? No one will know beause this dude is just a mob.
+
+
+:: PostDefeatCombat
+<devnote>"We are happy to announce that we have extended combat with exceptional new possibilities to allow more variety in tactics and better chances for certain character builds.
+We would like to thank our player for the constructive criticism and are intent on your feedback.
+Here is a short description what we changed:
+Until now you had 2 options to defeat someone: kill them or fill up their arousal-meter.
+If you get your health drowned but the foe is horny enough, there is a chance that combat switches over to sexual innuendo mode.
+If you are able to wear out the foe before you do (*1), you score a win. 
+So get out their and do some loving!
+*1) balancing is still in progress"</devnote>
+"OOhKKeyyy. So this is now a rape-game?"
+
+:: PostDefeatCombat2
+"That brute is just to though. My staff doesnt deal enough damage."
+You dodge another attack barely.
+"And he has that salacious grin on his face."
+... You tease him until is meter is nearly full. But this just gets him enraged further.
+You try to block him with your staff, but the smash just pushed the breath out of you.
+He uses just that short moment and is on you, ripping your clothes away.
+"Ieekh" you black out
+"Ieekh" you are pretty sure that you already had this situation before and expect the safeguard to get you out of this. But it doesnt trigger.
+...
+
+
+:: GetPrincessBackSafe
+Your task is to escort Princess Eve safely back to her step-mother, the queen regent.
+She made clear that save means healthy with all body parts attached and - that she mentioned three times - as a virgin.
+So you not only have to defend her against foes, but also the advances of suitors. The princess trys hard to be not a burden and to stay chaste.
+But the primal urges of a youg girl in her age grow stronger...
+
+:: RockFlowers
+You have to collect a bunch of flowers growing on Mt.Scree for the local alchemist.
+While this seems to be easy at first, it gets quickly difficult:
+- climbing is not your thing; you need to borrow that snakerope for a favor
+- harpies are trying to mate with you as does an oversized eagle
+- Rams ram you 
+- a snow-leopard-lady is prowling around for some nice, hard meat to stuff herself full with
+Maybe you can play those 4 partys against each other
+
+
+:: PantyPantsy
+<Trader>"No thanks, Im not wasting my good money for some useless scrap."</Trader>
+"But those arent useless! Everyone here needs an sword."
+<Trader>"Everyone here already HAS as sword. Except those that cant afford one."</Trader>
+"Oh come on. Sell them to a smith so that he can forge them into something useful then."
+<Trader>"Hmm, just because you are so persistant about this I offer you this: 1 coin for each."</Trade>
+"1 coin! You sell them for 20!"
+<Trader>"Yes, but I have to refurbish them you know."</Trader>
+<Trader>"... scrap the blood and gore off them, polish them, put a price-label on each...But just keep them if you are fond of them"</Trader>
+'I can't even use those on my own.'
+[[Fine. I sell them]][[Nope]]
+...
+<Trader>"A pleasure to make business with you. If you are really interested in making money, I have a job for you.</Trader>
+<Trader>I got some request for slips.</Trader>
+"Slips? You mean underwear?"
+<Trader>Yes. Some fine female underwear. They just have to be ... used.</Trader>
+"Used. Who on earth would want to buy dirty underwear?"
+<Trader>Not dirty! Not really dirty. Well, its kinda odd I agree. But that request was from a trader from the eastern sea. Nut sure what kind of customers he has. Those eastern guys are strange anyway.</Trader>
+"If - and I'm just saying IF - I would do that, what would you pay me?"
+<Trader>Lets see, I can pay you half of what I get. Thats around 500 coins but only if you gather at least 5. </Trader>
+"Only half? I do all the work and only get 50% of your profit?"
+<Trader>Hey I have work with this too. Filling out papers, ordering shipment, alculating taxes...</Trader>
+"And just some random underwear?"
+<Trader>Oh no. They have to be worn by dryads.</Trader>
+"Dryads? Where can I find dryads? ..And do they really wear cloths at all?"
+<Trader>Dryads should live in forests I assume. If they wear cloths I 'm not sure of'.</Trader>
+[[I will do it]]
+"So did you sell those slips?"
+<Trader>"Yes and no. I sold them, but only for 5."</Trader>
+"Only 5 each?"
+<Trader>"No 5 in total. He rumbled something about that they werent smelly enough. Its diffiult with those guys you know. They barely cut to the point."</Trader>
+"Oh man, all the work for nothing."
+<Trader>He still wants 5 soaked dryad panties.</Trader>
+"Soaked dryad panties. Could you please improve my understanding of the term soaked."
+<Trader>"A panty has a chance to aquire the soaked-state when its wearer - the dryad in this matter - is so horny that her own mumu produces enough stickiness."</Trade>
+"Doubt it or not but I guessed that."
+<Trader>Shouldnt be a big issue for a pretty boy like you. Heard they are horny all the time anyway.</Trade>
+...
+<Trader>"Unfortunatly the trader left. So you should travel after him to bring those messy slips to him. I already placed them here on this cart in a strongbox."</Trader>
+"A strongbox? Maybe I'm wrong but couldn't a strongbox rise suspicion that I'm delivering some valuables."
+<Trader>"They are valuables, at least to someone. And we put so much work in it, would be a shame to let it go to waste, right?
+Just make sure that you get as fast as possible to westport."</Trader>
+"Because of the bandits that will go after me because they think I have some gold in that strongboX?"
+<Trader>Bandits aybe. But also other things might interested if they pickup the scent of horny dryad cunt crossing their territory.</Trader>
+"Other things?"
+...
+<Trader2>"I appreciate your servitude and would like to give you one of those as a bonus."<Trader2>
+"I would prefer somme coin instead."
+<Trader2>"But really I would like you to have that one. And I will give you 10 as a tip or 100 if you wear them."<Trader2>
+"Just give me the 10."
+"Hey thats to much"
+<Trader2>So you have to wear them, a deal is a deal.</Trader2>
+
+
+:: PantyPantsy2
+"Are you still in pantie-business? I got some more request here. Someone asks for panties from a dragoness."
+"I doubt dragons wear panties. They are animals right? Animals dont wear cloths."
+"Ahh. prejudice.... "
+"And who in the world would want that anyway?"
+"Even more prejudice. Anyway. Find a dragon and get those panties. And if it doesnt have some, obtain some and get her to wear them. And then get them back. Easy peasy right?
+I mean, I dont ask to get me 3 pieces again, just one."
+"I dont even know where I could find a dragon. And if knew, I would stay away from there."
+'I could just get some oversized pantys and make him believe its from a dragon.'
+"I will do it."
+"Very good" you seal the contract by hand. "I'm really sure you get this done." 
+...
+"You got pantys? That cocksure grin tells me: for sure you do. "
+"Well I can tell..." before you can even start to narrate your devised story the trader bubbles on.
+"That was much faster then the other guys. Just show me what you got and I will get my detector to proof it."
+"detector?" you are dumbfounded and deeple worried at the same time.
+"Yeah thats some awesome gadget I spent a lot of money in. You wont believe how many people tried to rip me off telling this for that. A mage sold it to me, showed how it can be used to detect different sort of things.
+As I said some guys brought me that crude slip just a short while ago. Swush - I used the detector - didnt show dragon. They were really surprised as the guards led them to the gallows."
+"Gallows?!"
+"They take it really serious now with faking things. Order from top management: no business with fake-items, be it gold-coin or dragon-pantys. Just visit them, maybe you saw them when entering the market, dancing happily in the air."
+"Uhm...I..I just wanted to tell you that I will need some more time OK. Its...its...I'm on it yes?"
+"Oh sure sure"
+You quickly hurry off 'a detector that can detect dragons?! Who in the world would be in need for that. I mean, you see a dragon or not.'
+No cheating here, get that mission done.
+...
+'Thats a dragon, question is, is it male or female.'
+You try to peek undertail from your hiding spot.
+'Is that a slit?' you are not really an expert for dragon genitalia - and for sure doesnt want to become one.
+So you found a dragon, a female one you guess. 
+'That was the easy part. But how to get to wear that thing underwear, without beeing eaten. And where would I get something fitting anyway.'
+Get some of those gobbled up spiderweb from the cave. Those are stretchy and durable and might be useful as cloth-replacement. 'Its spidersilk fashion, I will tell them.'
+...
+The dragon is now resting lazily on its side and watches you.
+You circle around but keep your eyes peeled on that muzzle that is filled with dagger-sized teeth. As you pass by it slowly raises that hindleg not resting on the ground.
+Your gaze is attracted to that movement and you blush deeply as you find yourself staring at whats inbetween those legs. 
+'She did that on cause. Oh my, I really thought SHE. I should think - IT - not she! '
+...
+
+
+:: DemonVisitant
+...
+With on hand on the wall and a torch in another you walk forward down another corridor of that labyrinthian place.
+A uncareful step on a old, wodden plank that is to rotten to bear your wight and your foot crashs through the floor. Not far but enough to let you trip. With both hands you catch your fall.
+Unfortunatly you let go of the torch that falls down to the ground, sending out firey sparks as it rolls around.
+At first you fear that this will set the whole place at fire. But that fear is soon replaced with another one as you see it rolling to the edge of the ballustrade. 
+Quickly dashing forward you try to grab it before it vanishs, but its to late. 
+The torch falls over the edge and all the light is gone.
+'This is really bad.'
+...
+Just before you hear it you an feel wood splittering again. And how you fall through the air. 
+And you think: "If I'm lucky I die and I get out of here."
+And dying you do as your body hits the paved ground 2 dozen meters below.
+And you are back. As usual sitting in that restoration-pool.
+But something is wrong. Its still dark except the dim glow caused by the fluid in the pool. This is for sure not the usual shrine that you had now enough chances to wake up in.
+You climb out of it and look around as far as you can see with that little light.
+'Hello?...Priestess are you here?'
+There is just some echo. An echo that indicates that you are somewhere in a building - or underground.
+'Oh fuck where am I?' You rush another turn around the shrine, looking everywhere for some hints where you are. And for something to dress in.
+You are still naked. 
+
+<Demon>You arent going to make it from here. Just try and you will see.</Demon>
+While you cannot see any trace of whoever is speaking to you, your imagination shows you a face with a sardonic grin plasterd on it.
+
+You need to find a way out of here. But the further you strive a way from the shrine the darker it gets until you cant see your hand in front your eyes.
+"This sucks."
+
+<Demon>Come on, lets help each other. I wanna leave that hellhole just like you.</Demon>
+"Help you? You keep me prison here and dare to ask for help!"
+
+<Demon>It wasnt me that trapped you here. This place is either a well thougth snare or an accident.</Demon>
+"How could I trust you, I dont know how you are and cannot even see you."
+
+<Demon>Thats a point my. But is it to much to ask for a little bit o trust nowadays?</Demon>
+"Stay away. I will find a way, believe me."
+<Demon>Fine. Suit yourself.</Demon>
+
+"Hello?...Hello voice. Are you still there?"
+Silence
+"Can we talk again?...About helping each other"
+Silence
+"HEY...can you here me?"
+Silence
+[[Plead some more]]
+Still now answer. You crouch down on your knees, feeling helpless and left-behind. 
+<Demon>So you going to listen now?</Demon>
+"Huh..you are still here"
+<Demon>Nope</Demon>
+"You said we should help each other. So, how could I help you and you me."
+<Demon>I'm stuck here similiar to you. Except that I dont have the variety to die and be revived. 
+I could grant you a skill, that lets say, make you see in the dark.</Demon>
+"See in the dark!" you blurt out. 'That would really be o help.'
+<Demon>Just to be clear. Its not like walking in bright daylight.</Demon>
+"Sure. But what do you want for this."
+<Demon>As you can see - or better not see. I lack a suitable body at the moment. Which makes it difficult to get anywhere. </Demon>
+"How did that happen? I guess a bug made your avatar glitch."
+<Demon>I'm not sure what you mean with glitch, but it wasn't a bug that caused my loss. No, it was a bunch of zombies that ripped that body appart </Demon>
+"Zombies!?" 
+<Demon>Yes. Those stinky, shuffling, brain slurping meatpiles. They usually are not a big issue. But..well I got a little careless and they overrun us.</Demon>
+"Us? You mean there are others here to."
+<Demon>Only one. And I'm pretty sure he switched sides in the meantime. Just try to be silent for a moment. Maybe then you are able to hear them stirring up. </Demon>
+You hold your breath and try to listen as intense as possible. Are there some shuffling noises from the oposite of the room?
+Right now you feel even more in a hurry to get out of here.
+"So, what exactly do you want from me?"
+<Demon>If you check those dirtpile other there, you will notice several mushrooms. Somewhere there has to be an amulett with a small figurine. Just pick up and wear it.</Demon>
+"Do I really have to wear it? I had some bad experiences with cursed gear."
+<Demon>Oh. Well I think its good enough if you just hold it in your hands or put it in a pocket. Sorry, I forgot. Pockets are actual out of scope.</Demon>
+"And how do you grant me that skill?"
+<Demon>Please pickup the amulet first, then I will tell you</Demon>
+<Demon>Fine, please dont loose it. So, you see those fungus all around. Some of them are white as a bone. I recommend to not even touch those. But you should also see some more bluish color.</Demon>
+You check the fungus. 'White,white, shitbrown, white,white,coalblack...hm not sure if this would count as blue'
+"I only see a single stalk here that could be called bluish. Is it that kind?"
+<Demon>Yes, yes very good. You have to eat it, make sure to consume the entire stalk. </Demon>
+"And you sure that isnt poisenous to me?"
+<Demon>Guarantee. Everything will be fine. And you will be able to see in the dark, but just for an amount of limited time.</Demon>
+[[Eat the fungus]]
+...
+
+
+
+:: GroupActivities
+...
+While Brad is talking with that huntress, the other 2 members are whispering to each other and you try to catch some of ther talk.
+But you only catch '...could be useful...' and '...distraction...'. At least you think that you heard.
+
+
+:: VirtualPregnancy
+...
+As you drift of into afterglow, a sudden thought crosses your mind: "You cant get pregnant here do you?"
+"But no. At least not reallife pregnant. Virtual pregnant is a complete different issue."
+"Virtual pregnant?"
+"Yeah, I heard they are working on that. Not sure if I would like that. Hope they add an option to switch it off."
+"You mean, you can get children here?"
+"Those guys go where the money is. If people want to grow a family here, I'm sure they will do something about it."
+
+
+:: FreedomOfArt
+"we are curently working to upgrade our servers that should help improving performance and accessibility from more locations. More content will be added once we have finished with this operation."
+...
+"Breaking news:We are happy to announce that we found a solution for our increasing server-capacity-demand by teaming up with the national hosting service of the VR northkorea.
+The offizielle Verantwortliche unterstützt das Abkomen mit folgenden Worten (*automatische Übersetzung): ...der Missbrauch und Ausbeutung ihrer eigenen Bevölkerung kümmert uns wenig. Dies wird sogar den Prozess beschleunigen ihnen die Augen zu öffnen wie sie von kapitalistischen Ausbeutern unterdrückt werden. 
+So lange werden wir ihr Geld nehmen und für unsere eigenen Zwecke einsetzen um die degenerierten Elemente zu bekämpfen.
+Der CEO von brachte seine Wertschätzung gegenüber der so positiv eingestellten Regierung des Landes zu Ausdruck: Allen jenen die behaupten es handle sich bei VR NK um ein rückständiges, unterentwickeltes Land, dessen korrupte Offizielle die eigene Bevölkerung  in Lagern einsperrt und dort elendlich verhungern lässt entgegne ich:
+das mag schon sein aber mit dem nun abgeschlossenen Vertrag haben wir weitaus besser Konditionen und rechtliche Freiheiten als dies in unseren eigenen Heimatländern ja möglich wäre. Dieses Geschäft verspricht enorme Renditen bei gleichzeitig minimierter Verantwortung durch die Geschäftsführung von VR. "
+
+
+:: MeettheDev#2
+"Sure, since the command-input of the game is done via your body motion instead of a simple button press, its much more difficult to solve some skills."
+"Maybe you it can help if you improve your skills by training them in realworld."
+"So I should run around and hit people on the head with a bat?"
+"Nah, that could cause some trouble of course. But for example dancing or other non threatening skills."
+
+:: MeettheDev#3
+"I have to say I'm not so happy about all your complaints. In fact it cast a slur on our department."
+"But its my job as a betatester to point out issues in the game."
+"You need to understand that we have to check everyone of your findings and this causes even more work in our crunch-phase and delays our schedule. And if we dont met our schedule the bosses will reprimand us."
+"Isn't the main goal to have the best game quality for the customers?"
+"Thats the priority of the quality guys, our priority is to meet the schedule. If anyone is to find some bugs after the game is released, its the problem of the quality department, not ours. Thats the reason they force those betatesting un us."
+"But the tests are running autonomous anymway, I cannot influence them."
+"Enough of your complains. I see I have to find a way to make you less an annoyence."
+
+:: MetttheDev#4
+"I got an idea how to get us some extra money. Do you know something called bitcoin"
+...
+"So, maybe someone found a way to reroute some processing power from the servers to do the calculation. They would still face the risk that this is detected by the supervising dispatch processors. So as an countermeasure it would be necessary to keep those supervisors distracted with other things... "
+"And here you come into view."
+
+:: PureMedical
+"VRGames will cooperate with Impert, a developer of equipment for sport and medical application. Impert brings in a deep scientific knowledge about how to greatly improve the physical and mental condition that we will try to use to add an additional benefit to the games mechanic."
+"for consumer safety testing purpose, you will be required to wear those gadgets for a duration we see fit. To encourage your engagement in the game we will raise additional penaltys when not meeting the required conditions."
+Unlock VR headset with muzzle+gag, crotch cover, fuckmachine, drugapplicators, estim-devices
+
+
+:: ClairesPotionDisaster
+Clair isnt allowed to visit the forest anymore because the apothecary is angry with her.
+"I need your help. I made a mistake and accidently dropped something in the waterhole in the deep forest. Now those wolves seem to act more aggressively.
+Please help me to straighten out this error."
+"What did you drop into the waterhole?" "Its some kind of charm."
+"So you want this charm back? And that solves the problem and she wont be angry with you anymore?"
+"I'm not sure if it resolves the situation immediatly but at least its a start. Please dont speak to her about this."
+[[Promise]] [[Not sure]]
+The apothecary is here. Maybe you should ask for more information even if you promissed to not talk about the issue.
+"She is really a bad girl." "But it was an accident."
+"An accident? For sure not. She made that charm by herself and placed it at the waterhole on intent."
+"What intent?" "Well, by what I was able to squeeze out of her, she tried to create a love incentive."
+"Huh. Why would she do that."
+"I think she has taken some interest at those damn wolves and tried to befriend them."
+"Watch your back and keep your pants up."
+The idea of being hunted down by randy wolves [[worrys you]][[gives you a thrill]]. 
+
+:: HippieSlaver
+Du triffst auf eine friedfertige Gruppe
+Unterwegs triffst du einen verwundeten Krieger den du zur Gruppe bringst damit sie ihn aufpäppeln.
+Er freundet sich mit ihnen an.
+Später bringt er noch einen Freund mit und sie bandeln mit einigen Frauen an.
+Als noch mehr auftauchen wird es problematisch.
+Entscheide was zu tun ist: a) stelle dich gegen die Eindringlinge oder b) bringe die Gruppe dazu sich aufzuteilen
+a) die Fremden ziehen ab aber du verlierst wegen deiner Gewalt das Vertrauen der Gruppe; die Krieger nehmen sich dich ins Korn happy Gangrape
+b) einige Frauen gehen mit den Kriergern mit; sie werden versklavt; später wird dann auch der Rest der geschwächten Gruppe hopsgenommen
+
+
+:: ManOfGoats
+Eine Bauernfamilie hat mehrere Ziegen und stellen Ziegenkäse her von dessen erkauf sie leben.
+Allerdings ist der Geisbock weggelaufen und wenn die Geissen keine Junge haben geben sie keine Milch. 
+Ohne genug Geld kann kein neuer Bock gekauft werden.
+1a) finde den alten Bock
+1b) seine libido muss etwas aufgefrischt werden
+1c) now he is eager for anyone
+2a) oder überzeuge einen Satyr auszuhelfen 
+2b) damit die Geissen ihn ranlassen brauchen sie einen Liebestrank
+

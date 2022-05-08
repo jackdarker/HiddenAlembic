@@ -1,0 +1,493 @@
+:: DngPC_MAP [_back_]
+<hr><div id='canvas'></div><div id='svgpopup'></div></br>
+<script> window.gm.printMap2(window.story.state.DngSY.dngMap,window.gm.player.location.replace(window.story.state.DngSY.dng+'_',''),
+    window.story.state.DngPC.mapReveal,window.story.state.DngPC.visitedTiles);
+</script>
+
+
+:: DngPC_Respawn [_nosave_ _nodeffered_]
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+It's impossible to say how long you have passed out and how you ended up here. </br>
+But at least you are alive and - mostly - unharmed.</br>
+<a0 onclick= 'window.story.show("DngPC_G4")'>Next</a>
+</article><article id="LogPanel"></article></section>
+<%=window.story.render("DngPC_Encounters")%>
+
+
+:: DngPC_Entry
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+As punishment for your transgressions, you were put in prison.</br> But you arent going to sit around until your sentence is over. This is a kind of re-education camp to bring you back to the right path and reveal your hidden potential.</br>
+You must earn your release by taking on tasks and completing them on your own. </br>
+</br><p> [[Next|DngPC_G4]] </br></p>
+</article><article id="LogPanel"></article></section>
+<script>
+    var s = window.story.state,map,data;
+    ({map,data}=window.gm.build_DngPC());
+    s.DngPC=data;
+    s.DngSY.dngMap=map;s.DngSY.dng='DngPC';
+    s.vars.spawnAt="DngPC_Respawn";
+</script>
+
+:: DngPC_Door_Closed [_nosave_]
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+There is a gate in front of you but it is locked.</br>
+<div id='output'></div>
+<a0 onclick='window.story.show(window.story.state.DngSY.prevLocation)'>Go back</a>. 
+</article><article id="LogPanel"></article></section>
+<script>function requiredKey(){
+    var msg='',dng=window.story.state.DngSY.dng;
+    var x=window.story.state.DngSY.prevLocation.replace(dng+'_',''),y=window.story.state.DngSY.nextLocation.replace(dng+'_','');
+    var door = window.story.state.DngPC.tmp.doors[x];
+    window.gm.dbgHelper();
+    if(door && door[y]) {
+        msg='Someone with at least tier might be able to unlock this door.';
+    } else {
+        msg='I dont know how to unlock that door.';
+    }
+    window.gm.printOutput(msg+"</br>");
+}
+requiredKey()
+</script>
+
+
+:: DngPC_Mushroom
+</br><%if(window.story.state.DngPC.tmp.evtSpawn[window.passage.name]["mushroom"].state===0){%>There is a <%=window.story.state.DngPC.tmp.evtSpawn[window.passage.name]["mushroom"].loot%>. Do you collect it?
+<div id='select992' >
+<a0 onclick='var _evt=window.story.state.DngPC.tmp.evtSpawn[window.passage.name]["mushroom"];_evt.state=1;_evt.tick=window.gm.getTime();window.gm.player.changeInventory(window.gm.ItemsLib[_evt.loot](),1);window.gm.printTalkLink("div#select992","div#choice992a")'>Yes</a></br>
+</div><div id='choice992a' hidden></br> You collected some mushroom.
+</div>
+<%}else{%>
+No mushrooms growing here right now.
+<%}%>
+
+
+:: DngPC_Trap_Gas [_nosave_]
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+While walking down the corridor you notice that on of the slabs you set a foot onto gives away. Suddenly gas is fuming out of holes in the walls.</br> You just triggered a trap! </br>
+<div id='output'></div>
+<a0 onclick='_done=false,window.story.show(window.story.state.DngSY.prevLocation)'>retreat</a>.
+</article><article id="LogPanel"></article></section>
+<%=window.story.render("DngPC_Encounters")%>
+<script>
+{var _triggered,_done,_x=window.gm.player.Stats.get("savagenessMax").value-window.gm.player.Stats.get("savageness").value;
+if(!_done) {
+    _done=true;
+    if(_x>=5){
+        window.gm.player.Stats.increment("savageness",_x/3);
+        _triggered=true;
+    } else {
+        _triggered=false;
+    }
+}
+if(_triggered){
+    window.gm.printOutput("That gas somehow clouds your mind, you need to get out of here ! </br> Your savageness increased.")
+} else {
+    window.gm.printOutput("Whatever the fumes should do, you dont notice any effect. But better get out of here quick.")
+}}
+</script>
+
+
+:: DngPC_Trap_Tentacle [_nosave_]
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+You notice some odd gooey puddles on the floor and even on the walls. But you have to press forward and step carefully around them. <div id='output'></div>
+<a0 onclick='_done=false,window.story.show(window.story.state.DngSY.prevLocation)'>retreat</a>.
+</article><article id="LogPanel"></article></section>
+<%=window.story.render("DngPC_Encounters")%>
+<script>
+{var _triggered,_done,_x=window.gm.player.Stats.get("savagenessMax").value-window.gm.player.Stats.get("savageness").value;
+if(!_done) {
+    _done=true;
+        _triggered=false;
+}
+if(_triggered){
+    window.gm.printOutput("todo tentacles ravage your holes, bonus if bound")
+} else {
+    window.gm.printOutput("</br>At some point you have to cross a blotch with a big step. As you do so the puddles around you suddenly bow outwards, elongating into slimy tentacles, swiveling around aimlessly.</br> You quickly dive through them to get away.</br>")
+}}
+</script>
+
+
+:: DngPC_Chest
+</br><%if(window.story.state.DngPC.tmp.evtSpawn[window.passage.name]["chest"].state===0){%>There is a chest. Do you dare open it?
+<a0 onclick='window.story.state.DngPC.tmp.evtSpawn[window.passage.name]["chest"].state=1;window.story.state.tmp.args[1]=70;window.story.state.tmp.args[2]=window.passage.name;window.story.show("DngPC_LootChest")'>Yes</a></br>
+<%}else{%>
+An empty chest sits over there.
+<%}%>
+
+
+:: DngPC_LootChest [_nosave_]
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+You open the chest and find...<div id='output'></div></br>
+<a0 onclick='foo()'>Next</a>
+</article><article id="LogPanel"></article></section>
+<script>
+var foo,msg='',Items=[],rnd=window.story.state.tmp.args[1],next=window.story.state.tmp.args[2]; //see window.gm.cursedChest
+function addLoot() {
+  for(let el of Items) { msg+=el.name+", ";};
+  foo=function(){ window.story.state.tmp.args=[];
+    for(let el of Items) {window.gm.player.changeInventory(el,1);}
+    window.story.show(next); //adding to inventory only if player is leaving the passage, otherwise he could glitch if switching to status-pane and back
+  }
+}
+if(rnd<10) {
+  Items.push(window.gm.ItemsLib.HorsePotion());
+  addLoot();
+} else if(rnd>40) {
+  Items.push(window.gm.ItemsLib.HealthPotionSmall());
+  if(rnd>60) {
+    Items.push(window.gm.ItemsLib.HorsePotion());
+  }
+  addLoot();
+} else {
+  msg+='nothing !';foo=function(){window.story.show(next);};
+  /*foo=(function(){ window.story.state.tmp.args=[]; 
+    window.gm.fightArena("mole",{amount:2},[{id:"Money",count:30}],next);});*/
+}
+window.gm.printOutput(msg);
+</script>
+
+:: DngPC_Encounters
+<script>function tick() {
+    let here = window.gm.player.location,_d=window.story.state.DngPC.tmp;
+    if(here===_d.tickPass) return;
+    _d.tickPass=here;
+    let _t=_d.tier,_allChances=0,_choice=[];
+    switch(here) {//foes; traps are handled in window.gm.navEvent
+        case "DngPC_H4":
+        case "DngPC_F4":
+        case "DngPC_F5":
+            _choice.push({id:'slime',levelUp:(-2+_t), amount:1, chance:100});
+            if(_t>1)_choice.push({id:'anthrocat', amount:1, chance:100});
+            if(_t>3)_choice.push({id:'wolf', amount:1, chance:100});
+            break;
+        case "DngPC_I4": 
+        case "DngPC_H6":
+            _choice.push({id:'hornett',levelUp:(-2+_t), amount:2, chance:100});
+            _choice.push({id:'leech', amount:1,levelUp:(-2+_t), chance:100});
+            if(_t>1)_choice.push({id:'anthrocat', amount:1, chance:100});
+            if(_t>3)_choice.push({id:'wolf', amount:2, chance:100});
+            break;
+        case "DngPC_F6":_choice.push({id:'slug', amount:1,chance:100});//boss
+            break;
+        case "DngPC_J4":_choice.push({id:'Ruff', amount:1,chance:100});//boss
+            break;
+        case "DngPC_K4":
+        case "DngPC_G6": 
+            _choice.push({id:'hornetthive',type:"",levelUp:(-2+_t), amount:1, chance:100});//
+            _choice.push({id:'succubus',type:"nurse",levelUp:(-2+_t), amount:1, chance:100});//
+            break;
+        default:
+    }  
+    _choice.forEach(x=>(_allChances+=x.chance));
+    if(_allChances>0) {//choose rnd enemy
+        var _rnd=_.random(0,_allChances-0.01);
+        for(var i = _choice.length-1;i>=0;i--) { 
+            if(_rnd<_allChances && _rnd>=(_allChances-_choice[i].chance)) {
+                window.gm.encounters[_choice[i].id]({type:_choice[i].type, amount:_choice[i].amount,levelUp:_choice[i].levelUp,noFlee:true});
+                window.gm.Encounter.initCombat();                
+                break;
+            }
+            _allChances-=_choice[i].chance;
+        }
+        return;
+    }
+}
+tick();
+</script>
+
+:: DngPC_Sleep
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs") %>
+<% window.story.state.DngPC.task.help=0;%>
+Wrapping yourself in that shaggy, old quilt, you try to get some rest.</br>
+</br><div id='output'></div>
+</br><a0 onclick='window.story.show("DngPC_G4")'>Next</a></br>
+</article><article id="LogPanel"></article></section>
+
+:: DngPC_Shrine [_nosave_]
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%></br>
+The gatekeeper is waiting here to assign a task to anyone send here for punishment. There is a stone altar with a large chest for donations.</br></br>
+Your current donation-tier is: <%=window.story.state.DngPC.tmp.tier%><a0 id='tier' onclick='(function($event){document.querySelector("#"+id+"~p").toggleAttribute("hidden");})(this);'>Hint</a>
+<p hidden> Gates need to be unlocked to gain access to the deeper areas of the dungeon. A gate of your choosing might be unlocked by donating a GoldVoucher. Those items are earned every 3 tiers. Tiers are gained by finishing tasks assigned by the shrine.
+</p><a0 id='vouchers' onclick='(function($event){document.querySelector("#"+id+"~p").toggleAttribute("hidden");})(this);'>Hint</a>
+<p hidden> Where do I find...</br>
+Money: randomly found in loot, loot from foes</br>
+Iron-Vouchers: randomly found in loot; can be bought for money from vendor</br>
+Bronze-Vouchers: loot from foes</br>
+Silver-Vouchers: loot from bosses</br>
+Gold-Vouchers: gained after finishing a set of tasks</br>
+</p></br></br>
+By taking over tasks you show a sense of responsibility and reduce your punishment. 
+<hr><div id='choice'></div></br><hr></br>
+If you are a whimp, you might [[ask for help|DngPC_Shrine_Help]].</br>
+Check out what doors you can [[unlock|DngPC_Shrine_Doors]].</br>
+<p>[[Back|DngPC_G4]]</p>
+</article><article id="LogPanel"></article></section>
+<script>window.gm.getAvailableTasks()</script>
+
+
+:: DngPC_Shrine_Doors [_nosave_]
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%=window.story.render(window.story.state.DngSY.dng+"_MAP")%></br>
+A certain tier and gold tokens are required to unlock a door.</p><a0 id='map' onclick='(function($event){document.querySelector("#"+id+"~p").toggleAttribute("hidden");})(this);'>Hint</a>
+<p hidden> Hover over the map to display the coordinate of the rooms.</p>
+<div id='output'></div><p>[[Back|DngPC_G4]]</p>
+</article><article id="LogPanel"></article></section>
+<script>function list(){
+    window.gm.dbgHelper();
+    var msg='',door,doors2,tier=window.story.state.DngPC.tmp.tier,token=window.gm.player.Inv.countItem("VoucherGold"),doors=Object.keys(window.story.state.DngPC.tmp.doors);
+    for(var i=doors.length-1;i>=0;i--){
+        doors2=Object.keys(window.story.state.DngPC.tmp.doors[doors[i]]);
+        for(var k=doors2.length-1;k>=0;k--){
+            door=window.story.state.DngPC.tmp.doors[doors[i]][doors2[k]];
+            if(door.state<1){
+                if(door.token<=token && door.tier<=tier) msg+=window.gm.printLink("Unlock","window.gm.player.Inv.removeItem(\"VoucherSilver\","+door.token+"),window.story.state.DngPC.tmp.doors[\""+doors[i]+"\"][\""+doors2[k]+"\"].state=1;window.story.show(window.passage.name);");
+                else msg+="Unlock";
+                msg+=" door between "+doors[i]+"-"+doors2[k]+" for "+door.token+" tokens at tier "+door.tier+"</br>";
+            }
+        }
+    }
+    window.gm.printOutput(msg);
+}
+list();
+</script>
+
+
+:: DngPC_Shrine_Help [_nosave_]
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<p>[[Back|DngPC_Shrine]]</p>
+<a0 onclick='window.story.show("NOP")'>Ask for some tips about your current task</a></br>
+<a0 onclick='randomHint()'>Ask for some more general tips</a><div id='output'></div></br>
+<%if(window.story.state.DngPC.task.help===0 && window.story.state.DngPC.tmp.tier<2 && window.story.state.DngPC.task.id==='bringMoney'){%>
+<div id='select400' >
+<a0 onclick='window.story.state.DngPC.task.help=1,window.gm.player.Inv.addItem(window.gm.ItemsLib.BrownPill(),2),window.gm.printTalkLink("div#select400","div#choice400a")'>Beg for some more direct help for your task</a></br>
+</div><div id='choice400a' hidden></br> "Dont tell anyone, but I can give you <b>those pills</b>. The poisonous critters should then be less harmfull."</br>
+He places some pills on the desk and you quickly pocket them, even if you are unsure if it would be wise to use them.</br>
+</div>
+<%}else if(window.story.state.DngPC.task.help===0 && window.story.state.DngPC.tmp.tier>=1 && window.story.state.DngPC.task.id==='bringIron'){%>
+<div id='select400' >
+<a0 onclick='window.story.state.DngPC.task.help=1;var item=window.gm.ItemsLib["PendantLuck"]();window.gm.player.Wardrobe.addItem(item),window.gm.printTalkLink("div#select400","div#choice400a")'>Beg for some more direct help for your task</a></br>
+</div><div id='choice400a' hidden></br> "This <b>pendant</b>" he shows you some lucky paw attached to a leather thread "is rumored to increase someones luck. Might be helpful to find rare stuff."</br>
+It cant do any harm wearing it, right?</br>
+</div>
+<%}else{%>
+"Right now I cant help you with your task. Maybe tomorrow."</br>
+<%}%>
+<p>For a fee you can also get some helpful services:</br><!--
+    permanent gear: receive better gear on respawn
+    empower: temporary increase a stat
+    ward piercings and tattoos: 
+    learn skill: learn or train a skill, you might need to perform a task to do so
+    cure addiction/sickness: you might need to perform a task to do so
+  trade curse: get rid of a curse by trading it against a different one 
+  remove cursed gear: get rid of some unhealthy gear locked on you. There is a risk that the curse still remains on you. Only once every 3 days
+  remove curse: get rid of a curse, you might need to perform a task to do so
+  -->
+</p>
+<p>[[Back|DngPC_Shrine]]</p>
+</article><article id="LogPanel"></article></section>
+<script> 
+var generalHints=["\"Hornetts have a strong poison. But I have some pills that could block that....\""
+,"\"The hives of the hornetts are sensitive to fire.\""
+,"\"Saving some money for better gear from the trader would be an idea.\""];
+function randomHint(){
+    var msg="</br>"+generalHints[_.random(0,generalHints.length-1)];
+    window.gm.printOutput(msg);
+}
+</script>
+
+
+:: DngPC_Vendor [_nosave_]
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+A vendor sells some gear and might also buy some of your loot.<br> Would you like to buy something?</br>[[Back|DngPC_G4]]</br>
+<div id="choice"></div></br></br>   <!--display buy message-->
+<div id="panel"></div></br></br>    <!--display wares list-->
+<p><!--
+    basic weapon
+    spell tome
+    potions
+    food
+    keys for chest and locked gear
+    surprise box
+    vouchers
+  -->
+</p>
+<p>[[Back|DngPC_G4]]</p>
+</article><article id="LogPanel"></article></section>
+<script>
+function findWaresToBuy(){
+    let item,list = [],list2 = [],_d=window.story.state.DngPC,_t=_d.tmp.tier;
+    list=[window.gm.ItemsLib['HealthPotionSmall'](),window.gm.ItemsLib['HealthPotion']()
+    ,window.gm.ItemsLib['SpearWodden']()
+    ,window.gm.ItemsLib['DaggerSteel']()
+    ,window.gm.ItemsLib['SerenityPotionSmall']()
+    //window.gm.ItemsLib['Vaginarium'](),
+    //window.gm.ItemsLib['Penilium']()
+    ];
+    if(_t>=1){
+        item = new window.storage.constructors['BracerLeather']();
+        item = window.gm.makeCursedItem(item,{minItems:2,convert:'GlovesRubber'});
+        item = window.gm.makeBonusItem(item,{statBoost:'agility', statBonus:2});
+        list.push(item);
+        list.push(window.gm.ItemsLib['VoucherIron']())
+    }
+    if(_t>=0){
+        item = new window.gm.ItemsLib['AnalPlugSmall']();
+        item.name= "Plug of the fire spell"
+        item = window.gm.makeBonusItem(item,{skillid:"SkillFireball",skillname:'PlugFireBall'});
+        list.push(item);
+    }
+    for(var el of list) {  //todo sort by tag - name
+        let cost = window.gm.shop.calculateBuyPrice(el);
+        if(cost) {
+            list2.push({item:el,cost:cost});
+        }
+    }
+    window.gm.shop.WaresToBuy = list2;
+}
+findWaresToBuy();
+renderToSelector("#panel", "listbuy");
+</script> 
+
+</article><article id="LogPanel"></article></section>
+
+:: DngPC_Retreat 
+<div><a0 id='retreat' onclick='(function($event){document.querySelector("#"+id+"~p").toggleAttribute("hidden");})(this);'>Retreat to sanctuary</a>
+<p hidden>Do you relly want to abort your run and return with what you have earned so far?<a0 onclick='window.gm.addTime(120),window.story.show("DngPC_G4")'> Yes </a></p></br></div>
+
+
+:: DngPC_Cell
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%><div id="panel"></div></br>
+This is your "home", a small cell carved out of the stone with a splintering, wodden door and a shaggy cot.</br>
+You could rest here to recover health and energy. It might also be a good idea to save your progress.
+<%if(window.gm.getTimeStruct().hour<11) { %>
+<a0 onclick='($("tw-passage").fadeOut(1000, function(){window.gm.player.sleep(1800);window.story.show("DngPC_Sleep");}));'>Sleep Until Evening</a> 
+<%} else {%>
+<a0 onclick='($("tw-passage").fadeOut(1000, function(){window.gm.player.sleep(700);window.story.show("DngPC_Sleep");}));'>Sleep Until Morning</a>
+<%}%>
+<%=window.gm.renderRoom(window.passage.name)%>
+[[Sanctuary|DngPC_G4]] [[Storage Chest|GlobalChest]]</br></br>
+</article><article id="LogPanel"></article></section>
+<%=window.story.render("DngPC_Encounters")%>
+
+
+:: DngPC_G4
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%><%=window.story.render(window.story.state.DngSY.dng+"_MAP")%><div id="panel"></div></br>
+You are now in a large hall with adjoining cells set into the walls. One of them is reserved as your private space.</br>
+<a0 id='howtoplay' onclick='(function($event){document.querySelector("#"+id+"~p").toggleAttribute("hidden");})(this);'>Hint</a>
+<p hidden>You were send to this dungeon to pay up for your crimes.</br>
+The dungeon consist of several arenas that you have to pass one after another.If you pass the test in the arena, you gain money and loot. </br>
+However, if you are defeated you will loose most of the things you carry with you (except money and "special" gear) and respawn in the starting zone.</br>
+There is a chest in your cell where you can store anything that you dont want to take with you on your trials.</br>
+Also the dungeons is somehow permeated with crude magic that might affect you.</br>
+You should weight the option to retreat early and invest earned money in better gear. That might give you better chances to survive the tougher fights at the cost of fighting the previous foes again.</br>
+By donating to the "shrine of jurisprudence" you pay off your surcharge. If you dont do so regulary, you might get some bonus punishment. There are also some services available for a fee.</br>
+</p>
+<a0 id='howtoplay2' onclick='(function($event){document.querySelector("#"+id+"~p").toggleAttribute("hidden");})(this);'>Hint</a>
+<p hidden>Keep an eye on your savagness-stat.</br>
+Its an indicator how - well - savage you get. It increases when experiencing ignoble situations. If the stat hits its maximum, bad end for you.</br>
+There are consumables and items to reduce the score and just having a good rest helps.</br>
+Notice that the maximum might increase in some situations, meaning you can experience more savageness. And thats a good thing, right? </br>
+</p>
+<%=window.gm.renderRoom(window.passage.name)%>
+[[Your cell|DngPC_Cell]] [[Shrine|DngPC_Shrine]] [[Vendor|DngPC_Vendor]] [[Storage Chest|GlobalChest]]</br></br>
+Some heavy doors lead into the dungeon: <%=window.gm.printNav2()%>
+</article><article id="LogPanel"></article></section>
+<%=window.story.render("DngPC_Encounters")%>
+<script>function checkTask() { //if a task is running but time is over -> punishment
+    let s=window.story.state,_t=s.DngPC.task;
+    if(!_t || !_t.id) return;
+    if(_t.time!==0,window.gm.getDeltaTime(window.gm.getTime(),_t.start)>_t.time) {
+        s.DngPC.task={};
+        window.story.show('DngPC_Timeout');
+    }
+}
+checkTask();
+</script>
+
+:: DngPC_Timeout [_nosave_]
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<div id="panel"></div></br>
+todo you failed to finish the given task and get punished </br>
+<p>[[Back|DngPC_G4]]</p>
+</article><article id="LogPanel"></article></section>
+
+
+:: DngPC_H3
+<%=window.story.render("DngPC_F4")%>
+
+
+:: DngPC_F4
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%><%=window.story.render(window.story.state.DngSY.dng+"_MAP")%><div id="panel"></div></br>
+Another Arena</br><%=window.story.render("DngPC_Retreat")%>
+<%=window.gm.renderRoom(window.passage.name)%><%=window.gm.printNav2()%>
+</article><article id="LogPanel"></article></section>
+<%=window.story.render("DngPC_Encounters")%>
+
+:: DngPC_H4
+<%=window.story.render("DngPC_F4")%>
+
+
+:: DngPC_I4
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%><%=window.story.render(window.story.state.DngSY.dng+"_MAP")%><div id="panel"></div></br>
+Another Arena</br><%=window.story.render("DngPC_Retreat")%>
+<div id='select1' >Water ripples out from a tap into a scoop bassin.
+<a0 onclick='window.gm.player.Stats.increment("health",50);window.gm.printTalkLink("div#select1","div#choice1a"),window.gm.refreshSidePanel()'>Sipping</a> some of that clear water might give you back some energy.</br>
+</div><div id='choice1a' hidden>You feel surprisingly refreshed after some gulps of that clear water.
+</div>
+<%=window.gm.renderRoom(window.passage.name)%><%=window.gm.printNav2()%>
+</article><article id="LogPanel"></article></section>
+<%=window.story.render("DngPC_Encounters")%>
+
+:: DngPC_J4
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%><%=window.story.render(window.story.state.DngSY.dng+"_MAP")%><div id="panel"></div></br>
+<div id='select1'>There is something valueable here. Grab it before you leave:
+<a0 onclick='window.gm.player.Inv.addItem(window.gm.ItemsLib["VoucherSilver"]());window.gm.printTalkLink("div#select1","div#choice1a")'>1x Silver Voucher</a></br>
+</div><div id='choice1a' hidden>Loot aquired</br></div>
+</br><%=window.story.render("DngPC_Retreat")%>
+<%=window.gm.renderRoom(window.passage.name)%><%=window.gm.printNav2()%>
+</article><article id="LogPanel"></article></section>
+<%=window.story.render("DngPC_Encounters")%>
+
+
+:: DngPC_F5
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%><%=window.story.render(window.story.state.DngSY.dng+"_MAP")%><div id="panel"></div></br>
+Another Arena</br><%=window.story.render("DngPC_Retreat")%>
+<%=window.gm.renderRoom(window.passage.name)%><%=window.gm.printNav2()%>
+</article><article id="LogPanel"></article></section>
+<%=window.story.render("DngPC_Encounters")%>
+
+
+:: DngPC_F6
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%><%=window.story.render(window.story.state.DngSY.dng+"_MAP")%><div id="panel"></div></br>
+Another Arena</br><%=window.story.render("DngPC_Retreat")%>
+<%=window.gm.renderRoom(window.passage.name)%><%=window.gm.printNav2()%>
+</article><article id="LogPanel"></article></section>
+<%=window.story.render("DngPC_Encounters")%>
+
+
+:: DngPC_G6
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%><%=window.story.render(window.story.state.DngSY.dng+"_MAP")%><div id="panel"></div></br>
+Another Arena</br><%=window.story.render("DngPC_Retreat")%>
+<%=window.gm.renderRoom(window.passage.name)%><%=window.gm.printNav2()%>
+</article><article id="LogPanel"></article></section>
+<%=window.story.render("DngPC_Encounters")%>
+
+
+:: DngPC_H6
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%><%=window.story.render(window.story.state.DngSY.dng+"_MAP")%><div id="panel"></div></br>
+Another Arena</br><%=window.story.render("DngPC_Retreat")%>
+<%=window.gm.renderRoom(window.passage.name)%><%=window.gm.printNav2()%>
+</article><article id="LogPanel"></article></section>
+<%=window.story.render("DngPC_Encounters")%>

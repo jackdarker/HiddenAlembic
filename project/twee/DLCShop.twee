@@ -1,0 +1,17 @@
+:: DLCShopWelcome [_back_]
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+Welcome to the games Shop where you can buy Quality-of-life-service and equipment for your travel in our game.</br>
+Please note that you need vouchers to buy something. They can be bougth for real money or they can be earned in the game or granted by the content managers. 
+
+[[Buy 100 Bronze-Token for 50$]]
+[[Buy 1000 Bronze-Token for 500$]]
+
+Options to retain equipment after death:</br>
+[[up to 2 health potions - 100 BT]]
+[[up to 100gld - 100 BT]]
+[[starter gear - 300 BT]]
+There might also be some pay-by-use offers at respawn like: removal of status alignment and deseases
+
+<div></br>
+[[Checkout|_back_]]</br></div>
+</article><article id="LogPanel"></article></section>

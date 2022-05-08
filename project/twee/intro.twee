@@ -1,0 +1,222 @@
+:: StartPage
+<article>
+<h1 align="center"><%=window.story.name%> V<%=window.gm.getSaveVersion().toString().replaceAll(",",".")%></h1>
+<h1 align="center">DISCLAIMER</h1>
+<h2 align="center">Warning: Adult content!</h2>
+<hr>
+<div align="center">This is a work of fiction; any resemblance to actual persons, places, or events is unintended. All characters in the game are fictional too. All coincidence with reality is random.
+All characters in this game are fictional and any similarities to any persons living or dead are purely coincidental.
+All explicit images are performed by consenting adults aged 18 or older. Images are for illustrative purposes only.</div>
+<hr><hr>
+<div align="center">Are you 21+ years old and want to play?
+<a0 id='yes' onclick='(function($event){document.querySelector("#"+id+"~p").toggleAttribute("hidden");})(this);'>YES</a>
+<p hidden>Are you sure? I mean really? There might be some sick shit going on here. I recommend to play safe and stay away.</br>
+    [[Get me out of here|StartPage]]  |  [[I'm really sure I want to play this.|Intro]]
+</p>
+<a0 id='no' onclick='(function($event){document.querySelector("#"+id+"~p").toggleAttribute("hidden");})(this);'>NO</a>
+<p hidden>Thats the right decission. Now close this window in your browser, just to be safe.</p>
+</div>
+<hr>
+<hr>
+<div>This game is powered by twine/tweego and snowman.<img src="https://twinery.org/homepage/img/logo.svg" width="32" height="32"></div>
+</article>
+
+:: List_Fetish [_back_]
+<article>
+<p class='author'>There is barely any lewd content right now. Those lists should just reflect what the game would contain if I ever get it done at least halfway.</p>
+<h1 align="center">Primary fetish</h1>
+Those are very present through the game and in the main-story (also check the settings in game to disable some of them):  </br>
+*  Hetero-, Bi-,Homo- and whatever-sexual;</br>
+*  Furries,Scalies and anything else known as anthro</br>
+*  Beastiality; If you dont know what this means, than you are completely wrong here and should leave immediatly!</br>
+*  Not-so-consent-sex, formerly known as rape</br>
+*  Size difference; (between certain body parts of interacting subjects; see previous points)</br>
+*  Enslavement/Submission and Domination</br>
+*  bondage and masochism</br>
+*  slithering, wriggling tentacles
+
+<h1 align="center">Other fetish with rare occurence</h1>
+*  Milking</br>
+*  Egg-Laying</br>
+*  Orgasm denial</br>
+*  Latex-play</br>
+*  gender change</br>
+*  body-transformation</br> 
+*  Size-change (of certain body parts)</br>
+*  Dismembermend; some of your bodyparts have gone missing, we are sorry for the inconvienience</br>
+*  Parasite infestation</br>
+
+<h1 align="center">Fetish that might be added at some point</h1>
+*  Brainwash/Hypnotizing</br>
+*  Watersport</br>
+*  Death and suffering; </br>
+
+<h1 align="center">Things you will definitly not find here</h1>
+*  Scat</br>
+*  Diapers</br>
+*  Child porn</br>
+[[Back|_back_]]
+</article>
+
+
+:: Intro
+<article><%window.gm.initGame();window.gm.player.location=window.passage.name;%>
+<p class='author'>Note that there is no back-button implemented. Pressing the back button of your browser will get your game aborted.</br>
+You might see a lot of links that are formated red-strikethrough. Those are currently broken and you shouldnt use them.</p>
+<p class="author">Player name and start gender are currently unchangeable.</p>
+<p class='author'>Loading of savegame is only possible in game. Saving might be disabled in some locations.</p>
+<p class='author'>[[Fetishes ! (spoiler alert)|List_Fetish]]</p></br></br><hr>
+<p> </br></p>
+<p><a0 onclick='startHC();'>You made a mess...</a></p><hr>
+</article>
+<script>function startHA() {
+    window.story.state.DngSY.remainingNights=0,window.story.state.DngSY.dngLevel=0;
+    window.story.state.vars.spawnAt="HA_ProgressDay";
+    window.gm.enterVR();
+    window.gm.player.levelUp(5);window.gm.player.autoLeveling();
+    window.gm.player.Inv.addItem(window.gm.ItemsLib.ApocaFlower(),4),window.gm.player.Inv.addItem(window.gm.ItemsLib.PurpleBerry(),4);
+}
+function startHC() {
+    window.story.state.DngSY.remainingNights=0,window.story.state.DngSY.dngLevel=0;
+    window.story.state.vars.spawnAt="DngHC_Entry";
+    window.gm.enterVR();
+    window.gm.player.levelUp(5);window.gm.player.autoLeveling();
+}
+</script>
+
+:: FF Endgame
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+This is for testing purpose with some configurable settings.
+<div></br>[[Back|Intro]] <a0 onclick='start();'>Start</a></br></div>
+</article><article id="LogPanel"></article></section>
+<script> function start() {
+    window.story.state.DngSY.remainingNights=1;
+    window.story.state.vars.spawnAt="DngSY_Your_Room";
+    window.gm.enterVR();
+    //window.gm.MutationsLib['swapGender'](window.gm.player,window.storage.constructors["VulvaHuman"]);
+    window.gm.player.levelUp(5);window.gm.player.autoLeveling();
+    window.gm.player.Stats.increment("savagenessMax",100);
+    window.story.state.DngSY.dngLevel=10;//todo
+}
+</script>
+
+:: Intro_DLC
+<article><%window.gm.initGame();window.gm.player.location=window.passage.name;%>
+<p>Welcome to Meason, a town somewhere in these days. </br>
+You are a student in the local university and live in a shared house with some other fellows. </br></p>
+<p class='author'>You might see a lot of links that are formated red-strikethrough. Those are currently broken and you shouldnt use them.</p>
+</br>Press [[Start|Intro2]] to enter the game. 
+<p class="author">Please note: player name and start gender are currently unchangeable.</p>
+<p class='author'>Loading of savegame is only possible in game.</p>
+There are also some options to make a fastforward (might behave oddly): </br>
+[[FF VR Character creation]] </br>
+[[FF before the bridge]]</br>
+[[FF Bridge passage unlocked]]</br>
+debug only! :</br>
+[[FF WolfVictory]]</br>
+[[FF TestArena]]</br>
+</article>
+
+
+:: Intro2
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+Here you are: a student sitting in your dorm, working on the laptop in front.
+Progress in studys isnt going as smooth as expected.</br>
+To divert yourself, you decide to check your emails. 
+<div></br>
+[[Next|GameInvite]]</br></div>
+</article><article id="LogPanel"></article></section>
+
+
+:: FF VR Character creation
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+Start at the character creation screen in the VR-game.
+<div></br>[[Back|Intro]] <a0 onclick='start();window.story.show("CharacterEditor");'>Start</a></br></div>
+</article><article id="LogPanel"></article></section>
+<script> function start() {
+    window.gm.quests.addQuest("qDLCMain",1);
+    window.gm.quests.addQuest("qDiedAgain",1);
+    window.gm.quests.addQuest("qFixLaptop",1);
+    window.gm.quests.addQuest("qBeastKink",1);
+    window.gm.quests.addQuest("qBondageKink",1);
+    window.gm.quests.forceQuestMilestone("qDLCMain",600,1);
+    window.gm.quests.forceQuestMilestone("qFixLaptop",1000,1);
+    window.gm.enterVR();
+}
+</script>
+
+
+:: FF before the bridge
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+Start at forest with introductory quest done so far. Roam around and prepare to defeat bridge boss.
+<div></br>[[Back|Intro]] <a0 onclick='start();window.story.show("ForestSpawn");'>Start</a></br></div>
+</article><article id="LogPanel"></article></section>
+<script> function start() {
+    window.gm.quests.addQuest("qBeastKink",1);
+    window.gm.quests.addQuest("qBondageKink",200);
+    window.gm.quests.addQuest("qDLCMain",600);
+    window.gm.quests.addQuest("qFixLaptop",1000);
+    window.gm.quests.addQuest("qDiedAgain",300);    //?? 100
+    window.gm.quests.addQuest("qPurpleBerry",100);
+    window.gm.enterVR();
+}
+</script>
+
+
+:: FF Bridge passage unlocked
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+You can now pass the bridge and leave the forest.
+<div></br>[[Back|Intro]] <a0 onclick='start();window.story.show("ForestBridge");'>Start</a></br></div>
+</article><article id="LogPanel"></article></section>
+<script> function start() {
+    window.gm.quests.addQuest("qBeastKink",1);
+    window.gm.quests.addQuest("qBondageKink",400);
+    window.gm.quests.addQuest("qDLCMain",600);
+    window.gm.quests.addQuest("qFixLaptop",1000);
+    window.gm.quests.addQuest("qDiedAgain",300);
+    window.gm.quests.addQuest("qPurpleBerry",100);
+    window.gm.enterVR();
+    window.gm.player.Outfit.addItem(new window.gm.ItemsLib["CollarQuest"]());
+}
+</script>
+
+
+:: FF WolfVictory
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+<div></br>[[Back|Intro]] <a0 onclick='start();window.story.show("WolfVictory");'>Start</a></br></div>
+</article><article id="LogPanel"></article></section>
+<script> function start() {
+    window.gm.quests.addQuest("qBeastKink",1);
+    window.gm.quests.addQuest("qBondageKink",400);
+    window.gm.quests.addQuest("qDLCMain",600);
+    window.gm.quests.addQuest("qFixLaptop",1000);
+    window.gm.quests.addQuest("qDiedAgain",300);
+    window.gm.quests.addQuest("qPurpleBerry",100);
+    window.gm.enterVR();
+    window.gm.MutationsLib['swapGender'](window.gm.player,window.storage.constructors["VulvaHuman"]);
+    window.gm.player.addEffect(new window.storage.constructors['effLewdMark'](),'effLewdMark');
+    window.gm.player.Stats.increment("arousal",50);
+    var mob = window.gm.Mobs.Wolf();
+    window.story.state.combat.enemyParty[0]=mob;
+}
+</script>
+
+
+:: FF TestArena
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+Enter the Grind-geon.
+<div></br>[[Back|Intro]] <a0 onclick='start();'>Start</a></br></div>
+</article><article id="LogPanel"></article></section>
+<script> function start() {
+    window.story.state.vars.spawnAt="AM_Lv2_Start";
+    window.gm.enterVR();
+    window.gm.player.levelUp(2);window.gm.player.autoLeveling();//todo else its to difficult against wolf
+    window.gm.MutationsLib['swapGender'](window.gm.player,window.storage.constructors["PenisHuman"]);
+}
+</script>

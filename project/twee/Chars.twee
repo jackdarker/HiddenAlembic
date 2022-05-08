@@ -1,0 +1,90 @@
+:: Info_Jake [_back_]
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs") %>
+Jake is here.</br>
+You barely know anything about him.</br>
+[[Back|_back_]]</br></br>
+</article><article id="LogPanel"></article></section>
+
+:: Talk_Cyril [_back_]
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs") %>
+Cyril is here.</br>
+<a0 onclick='window.gm.printOutput("Well, a bulky man in a robe. His face is hidden by the hood.")'>Look at</a></br>
+</br><div id='output'></div></br>   <!--message is rendered here-->
+[[Back|_back_]]</br></br>
+</article><article id="LogPanel"></article></section>
+
+
+:: Info_Mom [_back_]
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs") %>
+Your mom is here.</br>
+<% if(window.gm.player.Rel.get('Mom').value>10) { %>
+She gives you a hug.
+<% } else { %>
+You can see a disapproving look on her face.
+<% }  %>
+</br>
+[[Back|_back_]]</br></br>
+</article><article id="LogPanel"></article></section>
+
+
+:: Info_Trent [_back_]
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs") %>
+You walk over to Trent. He is a horse-man.  
+</br>[[Back|_back_]]</br></br>
+</article><article id="LogPanel"></article></section>
+
+
+:: TrentVictory [_nosave_]
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs") %>
+<% if(window.gm.quests.getMilestoneState("qBondageKink").id<=300) { window.gm.quests.forceQuestMilestone("qBondageKink",400,300);%>
+Finally you found a weak spot in the defense of the stud. Reluctantly he gives up fighting.  </br><!--todo-->
+<p class="dev">"Fine, you won...this time."</p> 
+You dont have any breath left to give him a quirky response. </br>
+His comrades strut over to you and you are worried if they will give you some trouble. </br>
+But they just snicker and mock your opponent.</br>
+<p class="tNPC2">"Whats up trent ? Did this whimp give your pony-ass a hard spanking."</p>
+<span class="dev">"I'm not a pony you fuckers !"</span> he yells. Being called a pony seems really to piss him off.</br>
+<p class="tPC">"I'm on my way then."</p> Better to leave now before things get troublesome.</br>
+<p class="author">This is right now the end of the story. As you can see there is need for a lot of polishing.</p>
+[[Forward to new places]]</br>
+<%} else {%>
+"You just were lucky to pull that trick. Next time I will show you - SLAVE."
+...
+"You are really though." admits the horse "or I'm just a little out of shape."
+...
+[[The winner takes it all]]
+<p class="tPC">"So horsie how about we go for a ride?"</p> 
+Trent looks up to you, he already knows what that means. | Trent looks up to you with lust in his eyes. You should be careful not to end under his muscular body. | The recent acitivties got him quite pent up. But not that much that he will get involved with you. Maybe if you know each other better...  
+<a0 onclick='window.gm.postVictory({flee:false});'>Walk away</a>
+<%}%>
+</br></br>
+</article><article id="LogPanel"></article></section>
+
+
+:: TrentSubmit [_nosave_]
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs") %>
+<% if(window.gm.quests.getMilestoneState("qBondageKink").id<=300) { %>
+<%} else {%>
+<%}%>
+That didnt went as planned. That bully delivered a though blow and knocked you out. It didnt felt that lethal but the game has decided that you earned your death. </br>
+<p class="tPC">'I need to do some leveling and get stronger or find another way to give myself a head start. Maybe the alchemist could help.'</p>
+<a0 onclick='window.gm.postDefeat();'>Black out</a>
+</article><article id="LogPanel"></article></section>
+
+:: Leon_Arrival
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs") %>
+As you make your way back to your room, you run right into Cyril how is accompanied by another person.
+<p class="tNPC2">"Ah, there you are. Please welcome Leon, he is also an acolythe and I'm showing him around."</p>
+<p class="tPC">"Good afternoon Leon, I'm <%= window.gm.player.name%> and I'm seeing to work together."</p> 
+Well, actually you dont know what work that will be but whatever...</br>
+He is around your age, maybe 1 or 2 years off and looks pretty self confident and pampered.</br>
+<p class="tNPC3">"Hello <%= window.gm.player.name%>. Master Cyril is showing me around this fabolous location. I feel chosen to be in such a magical place."</p>
+<p class="tNPC3">"For sure only the best of our circle can be selected to study here and learn the ways of the temple."</p>
+<p class="tNPC3">"Just help me. I cant remember your face and name. You werent in the Aborus-course, or? "</p>
+<p class="tPC">'Uh oh. Thats not good - he could blow my cover.'</p>
+<p class="tPC">"No I was in a different course, a different part of the temple school even."</p>
+<p class="tNPC2">"I'm sorry but we really need to move on. For sure you will find time later for chit-chat."</p>
+<p class="tPC">"Yes, I'm in a hurry too."</p>
+<p class="tPC">'That was close. How am I'm going to keep my cover up?'</p>
+Continue to your [[room|DngSY_Your_Room]]
+</article><article id="LogPanel"></article></section>

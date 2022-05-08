@@ -1,0 +1,237 @@
+:: DngSY_Intro
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+Todo better intro, meet Cyril, ly to him you are acolythe, get sanctuary tour, get told whats expected from you</br>
+You accidently went through a portal and end up in the netherworld.</br>
+You were lucky that you didnt end in one of the more unpleasent areas but in the "Sanctuary".</br>
+Of course you dont want to stay here forever, so better get started making an escape plan.</br>
+<p>[[Next|DngSY_Your_Room]]<p>
+</article><article id="LogPanel"></article></section>
+
+
+:: DngSY_Hallway_Dorms
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+This corridor connects the dorms with the [[Hallway|DngSY_Hall]]. Most of the doors on both sides of the corridor seemm to lead to rooms for the guests here. One of them is assigned as [[Your room|DngSY_Your_Room]].</br>
+</article><article id="LogPanel"></article></section>
+
+
+:: DngSY_Your_Room
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+<%if(window.story.state.DngSY.remainingNights<=0){%>
+    You better get equipped and ready for your next task.</br>
+    <p class="author">Now is a good point to save and and stow everything you don't want to lose in the trunk.</p>
+    <p><a0 onclick='window.story.show(nextDng());'>Seek the portal</a></p>
+<%}else{%>
+    This is your own private room. You can <a href="javascript:void(0)" onclick='($("tw-passage").fadeOut(1000, function() {window.gm.player.sleep(700);window.story.state.DngSY.remainingNights-=1;window.story.show("DngSY_Your_Room_Sleep");}));'>sleep</a> here to regain health and energy.
+    </br>But maybe you shouldnt do that all day, even if you are tired. Look around in the sanctuary, maybe you can find someone to talk to or get some training.
+    <p> You can sleep <b><%=window.story.state.DngSY.remainingNights%> more nights</b> before you have to start another adventure. So better use the time here for preping.</p>
+    <p> <%=(window.story.state.DngSY.dildo & 0x1)?'[[Train your oral skills...|DngSA_Train_OralLv1]]':''%></p>
+    <p> Go to: [[Dorms|DngSY_Hallway_Dorms]] [[Hallway|DngSY_Hall]]</p>
+<%}%>
+</br>There is a [[trunk|GlobalChest]] to store anything you dont want to lose. You might also change your [[Wardrobe]] and take a closer look on yourself in the [[Mirror]].
+</article><article id="LogPanel"></article></section>
+<script>
+function nextDng() {return("DngSY_Lv"+window.story.state.DngSY.dngLevel.toString());}
+</script>
+
+:: DngSY_Your_Room_Sleep [_nosave_]
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+You awake in your room.
+<%if(window.story.state.DngSY.dngLevel===2 && window.gm.player.Skills.countItem('Tease')<1){%>
+    Someone slipped a note through the gap below your door: "meet me in the lab, Kumala". </br>
+    So Kumala want you to [[visit her|DngSA_TeaseLv1]].
+<%}else if(window.story.state.DngSY.remainingNights<=0){%>
+    The thought is poking at your mind that you have to go through the portal today.</br>
+    Startled you notice that Cyril is waiting in the doorframe.<span class="tNPC2">"It is time now. Meet me in the hall."</span>
+    <p> [[Get up|DngSY_Your_Room]]</p>
+<%}else{%>
+    Cyril said that you soon have to go through the portal again and that you should prepare for that. </br>
+    You can sleep <b><%=window.story.state.DngSY.remainingNights%> more nights</b> before you have to start another adventure.
+    <p> [[Get up|DngSY_Your_Room]]</br></p>
+<%}%>
+</article><article id="LogPanel"></article></section>
+
+
+:: DngSY_Recover_Death [_nosave_]
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+Suddenly snapping awake, you find yourself back into Sanctuary. For sure it was just a nightmare you awoke from, a sick dream about a horrible fate. </br>
+You cant even remember what you exactly dreamed, and maybe thats a good thing.
+</br>[[Next|DngSY_Your_Room]]
+</article><article id="LogPanel"></article></section>
+
+
+:: DngSY_Portal
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+In the center of this round hall, a magic portal can be summoned. </br>
+So far, its the only exit you know from this fortress. 
+While you are not busy with other task, you could explore some of the areas that you already visited.</br>
+But why not stay in this cozy home?</br>
+The portal could you bring to the following places:</br>
+<div id='choice'></div> <!--choice is rendered here-->
+<p> [[Back|DngSY_Hall]]</p>
+</article><article id="LogPanel"></article></section>
+<script>
+var msg='',lvl=window.story.state.DngSY.dngLevel;
+msg+=(true)?'<p><a0 onclick=\'window.story.state.DngSY.dngOW=true;window.story.show(\"HC_Entry\");\'>Haunted Castle</a></p>':'';
+msg+=(lvl>=4)?'<p><a0 onclick=\'window.story.state.DngSY.dngOW=true;window.story.show(\"DngFM_Entry\");\'>Farm</a></p>':'';
+msg+=(lvl>=2)?'<p><a0 onclick=\'window.story.state.DngSY.dngOW=true;window.story.show(\"DngCV_Entry\");\'>Crystal Cave</a></p>':'';
+msg+=(lvl>=2)?'<p><a0 onclick=\'window.story.state.DngSY.dngOW=true;window.story.show(\"DngDF_Entry\");\'>Lush forest</a></p>':'';
+msg+=(lvl>=2)?'<p><a0 onclick=\'window.story.state.DngSY.dngOW=true;window.story.show(\"DngMN_Entry\");\'>Silver Mountains</a></p>':'';
+msg+=(lvl>=2||true)?'<p><a0 onclick=\'window.story.state.DngSY.dngOW=true;window.story.show(\"DngAT_Entry\");\'>Ancient Temple</a></p>':'';
+msg+=(false)?'<p><a0 onclick=\'window.story.state.DngSY.dngOW=true;window.story.show(\"DngLB_Entry\");\'>Smudgy Bog</a></p>':'';
+msg+=(false)?'<p><a0 onclick=\'window.story.state.DngSY.dngOW=true;window.story.show(\"SC_Entry\");\'>Sunken City</a></p>':'';
+msg+=(false)?'<p><a0 onclick=\'window.story.state.DngSY.dngOW=true;window.story.show(\"\");\'>Jungle Ruins</a></p>':'';
+msg+=(false)?'<p><a0 onclick=\'window.story.state.DngSY.dngOW=true;window.story.show(\"\");\'>Steam Glacier</a></p>':'';
+msg+=(false)?'<p><a0 onclick=\'window.story.state.DngSY.dngOW=true;window.story.show(\"\");\'>Savanah Rift</a></p>':'';
+msg+=(false)?'<p><a0 onclick=\'window.story.state.DngSY.dngOW=true;window.story.show(\"\");\'>Sky scrapers</a></p>':'';
+window.gm.printOutput(msg,'#choice');
+</script>
+
+:: DngSY_Hall
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+The great hall is the center of this complex. Several large pendant chandeliers spread a pleasantly bright light.</br>
+<!--There is something like a [[Shop]] setup on one side but a sign displays: >>Closed<<.</br>-->
+</br>[[Cyril|Talk_Cyril]] is waiting idle right next to the [[impressive door|DngSY_Portal]] at the end of the hall.</br> 
+Speak to him to get a clue where you are heading next.</br>
+</br> On the left side of the hall a corridor is leading back to the [[dorms|DngSY_Hallway_Dorms]] or to the [[library|DngSY_Library]] if you follow it to the end.</br>
+<%if(window.story.state.DngSY.dngLevel>=4){%>
+    A secluded room nearby contains a [[shrine|DngSY_Shrine]] where you can mediate or pray to whatever god you see fit.</br>
+<%}%>
+<%if(window.story.state.DngSY.dngLevel>=2){%>
+    The corridor on the right side leads to the [[Training grounds|DngSA_Entry]] and [[Laboratory|DngSY_Lab]].</br> 
+<%}%>
+</article><article id="LogPanel"></article></section>
+
+:: DngSY_Library
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+A lot of books and scrolls are waiting for someone to read them. </br>
+You can spend some time reading, maybe you learn a spell or some ancient language. Or at least find something to distract your thoughts.</br>
+[[Browse for some food for your mind|NOP]]
+<p>[[Back|DngSY_Hall]]</p>
+</article><article id="LogPanel"></article></section>
+<script></script>
+
+:: DngSY_Book [_back_]
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+TODO: soothe mind / learn arcana / learn language
+<p> [[Back|_back_]] </br></p>
+</article><article id="LogPanel"></article></section>
+<script></script>
+
+:: DngSY_Shrine
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+TODO: what gods?  mediation helps with? confession both to revel in your perverted thoughts?</br>
+On one side of the room a ornate chest is placed on a desk. It is used for [[donations|NOP]] to the community.</br>
+<p>[[Back|DngSY_Hall]]</p>
+</article><article id="LogPanel"></article></section>
+<script></script>
+
+:: DngSY_Donation [_back_]
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+TODO: The keepers expect that you show your dedication by offering donations.</br>
+Contributing something valuable might improve your standing and secure you the benevolence of fate.</br>
+An improper offering on the other side could have some consequences.</br>
+Actually, your offerings might rank: damnable unworthy disappointing bad aberrant nothing low frugal good significant high enormous</br>
+Would you like to [[offer|NOP]] something?</br>
+<p> [[Back|_back_]]</p>
+</article><article id="LogPanel"></article></section>
+<script></script>
+
+:: DngSY_Lab 
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+This is Kumalas Laboratory. And Kitchen. </br>
+As usual she is busy on some of the retorts, concentratin on reading some recipe book and stiring a pot with a spoon in her free hand.</br> 
+Maybe you an [[ask her|NOP]] about mixing up some potions or if she needs something.</br>
+<p>[[Back|DngSY_Hall]]</p>
+</article><article id="LogPanel"></article></section>
+
+
+:: DngSY_Lv1
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<p class="tNPC2">"Your task is to take this glas and fill it with the water from the crystal lake and make your way back to the portal."</p>
+<p class="tPC">"Crystal lake? I dont know where that is. And where does that portal lead anyway?"</p>
+<p class="tNPC2">"The portal brings you into a cave system. Just follow the lights down the tunnels until you find a lake where you see large blue crystals growing in a underground lake."</p>
+<p class="tPC">"And thats all? Go to the lake, fill that glas and walk back? Why does it have to be a glas, dont you have a bottle or waterskin?"</p>
+<p class="tNPC2">"No, it has to be the glass. The path should be lightened with candles but sometime they just go out."</p>
+You grab the glas.</br>
+<p class="tNPC2">"Just follow the candles, dont strive into the darker areas."</p>
+<p class="tPC">"I know, I know, pitfalls and such."</p>
+<p class="tNPC2">"Yes...and such."</p>
+That somehow sounds like more dangers than falling into a hole might be waiting for you.</br>
+<p> <a0 onclick='window.story.state.DngSY.dngOW=false,window.story.show("DngCV_Entry");'>Lets go</a></p>
+</article><article id="LogPanel"></article></section>
+
+
+:: DngSY_Lv2
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<p class="tNPC2">"Your task is to gather 3 ripe plums from the trees growing in the forest."</p>
+<p class="tPC">"Only 3? From this no one gets full."</p>
+<p class="tNPC2">"Feel free to collect more if you like."</p>
+Did he just snicker? 
+<p class="tPC">"Fine."</p>
+<p> <a0 onclick='window.story.state.DngSY.dngOW=false,window.story.show("DngDF_Entry");'>Lets go</a></p>
+</article><article id="LogPanel"></article></section>
+
+
+:: DngSY_Lv3
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<p class="tNPC2">"As you may have seen we have a large library. Unfortunatly some books have gone missing due to some - unfortunate circumstance.</br>
+Your task would be to gather pages from a book called Igneum Frigus Thalamum. At least 2 pages should be somewhere in a valley.</p>
+<p class="tPC">"Somewhere in a valley? Some more information would be helpful."</p>
+<p class="tNPC2">"Well, one seems to be used as building material for a nest. A rather large nest located near a crevice somewhere in the northern wall of the valley."</p>
+<p class="tNPC2">"The other one is stuck on the roof of a hut. That one is part of a small settlement but I dont have a clue where this settlement is."</p>
+<p class="tPC">"Its still not clear to me how to find them, but whatever...."</p>
+....
+<p> <a0 onclick='window.story.state.DngSY.dngOW=false,window.story.show("DngMN_Entry");'>Lets go</a></p>
+</article><article id="LogPanel"></article></section>
+
+:: DngSY_Lv4
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<p class="tNPC2">"I'm not sure we can trust you with a job. Therefore, you will work on the farm until we decide how to proceed."</p>
+<p class="tPC">"There is a farm? "</p>
+<p class="tNPC2">"Yes. Where do you think all the food is coming from."</p>
+<p class="tNPC2">"Kelly is the boss there, she will explain what you have to do. I dont need to remind you that you have to earn your stay here, do I?"</p>
+<p class="tPC">"No sir."</p>
+<p> <a0 onclick='window.story.state.DngSY.dngOW=false,window.story.show("DngFM_Entry");'>Lets go</a></p>
+</article><article id="LogPanel"></article></section>
+
+
+:: DngSY_Lv5
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<p class="tNPC1">"I need some BogBovus from the forest. Thats a kind of mushroom, bloated with a purple bulb and yellow splotches. Please be careful when you collect it."</p>
+<p class="tPC">"Are they safe? I mean they arent poisonous or something ? "</p>
+<p class="tNPC1">"I recommend not to get in contact with the yellow splotches or the milky sap. It doesn't kill you, but it might already be uncomfortable."</p>
+<p class="tPC">"How muh do you need?"</p>
+<p class="tNPC1">"4 or 5 should be enough. Just make sure they have the right color: yellow on purple."</p>
+<p class="tNPC1">"And stay on the path. Dont wander into the muddier hollows. And stay away from the water."</p>
+<p>You wonder what water she means, last time you didnt see any water there. </p>
+<p> <a0 onclick='window.story.state.DngSY.dngOW=false,window.story.show("DngLB_Entry");'>Lets go</a></p>
+</article><article id="LogPanel"></article></section>
+
+
+:: DngSY_Lv6
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<p class="tNPC2">"According to the information we have gathered from the pages, the "Ring of Burden" should be located in an ancient temple.</br>
+Most likely it is in the central chamber.</p>
+<p class="tPC">'What exactly is this ring good for?'</p>
+<p class="tNPC2">"Right now I dont know. But I think it would be give us an advantage if we get it in our hand before someone else does."</p>
+<p class="tPC">"And what kind of temple is that? Its not some kind bloodbowl of the crazy maneaters, or?"</p>
+<p class="tNPC2">"I dont think there is anyone. Maybe some guard."</p>
+<p class="tPC">"You mean armor clad, bored men with spikey halberds?"</p>
+<p class="tNPC2">"Not exactly. There was a hint about some minotaur roaming the temple."</p>
+<p class="tPC">"A what! You send me into a cursed ancient temple guarded by some bloody minotaur!"</p>
+<p class="tNPC2">"Not bloody. There was just a sentence of a 'minotaur guardian made of bronze'. I assume its just a statue."</p>
+<p class="tPC">"Oh, you mean those decorations I also saw in the temple at home."</p>
+<p class="tNPC2">"Take this. Those are some flares you can use to lighten your path. They might also scare of or divert anything that prefers darkness."</p>
+He hands you a couple thumb-thick rolls. They are made of cardboard and a handspan long.</br>
+<p class="tNPC2">"They ignite if you undo the cap. They even burn in water."</p>
+<p class="tPC">'Great, a stick and some flares. What else would I need to handle a minotaur.'</p>
+You mumble before <a0 onclick='window.story.state.DngSY.dngOW=false,window.story.show("DngAT_Entry");'>stepping</a> into the portal.
+</article><article id="LogPanel"></article></section>

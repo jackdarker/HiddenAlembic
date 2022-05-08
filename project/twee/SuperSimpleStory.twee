@@ -1,0 +1,721 @@
+:: _SuperSimpleStory_ {"position":"1200,125"}
+<%if(visited(window.passage.name)<=1) {%>
+Welcome to this short story.</br></br>
+<%}%>
+<mark>The previous part is an example how to conditional build the html output </br></mark>
+You are lying in your bed.</br>
+What would you like to do.</br>
+[[Sleep|SleepALittle]]</br>
+[[Wakeup]] </br>
+
+:: SleepALittle {"position":"400,825"}
+You are sleeping some more. </br>
+<mark>The folowing is an example how to print a javascript calculation to html:</br></mark>
+It is now <%= 5*visited(window.passage.name)%> minutes later.</br>
+[[Continue|_SuperSimpleStory_]]
+
+:: Wakeup {"position":"575,825"}
+You groan as you wake up. 'Damn life'</br>
+[[Start]]
+
+:: _ImagesAndOtherMedia_ {"position":"1075,125"}
+<mark>embed images in the following way:</mark></br>
+stored on a server:</br>
+<img alt="twinerylogo" src="https://twinery.org/homepage/img/logo.svg" width="256" height="256"></br>
+stored in .dist/assets:</br>
+<img alt="tweegoicon" src="assets/favicon.png" ></br>
+animated gif:</br>
+<img alt="bird.gif" src="assets/bird.gif" ></br>
+audio with manual control:</br> 
+<audio id="audio_with_controls" controls src="assets/drink.ogg" type="audio/ogg" ></audio>
+audio autoplay:</br>
+<audio id="audio_autoplay" autoplay src="assets/chimes.ogg" type="audio/ogg" ></audio>
+video with autoplay:</br>
+<video id="player2" autoplay >
+  <source src="assets/Comedy.mp4" type="video/mp4">
+</video>
+
+video with integrated and separate controls:</br>
+<video id="player" controls>
+  <source src="assets/Comedy.mp4" type="video/mp4">
+</video>
+
+<button id="play">Play</button>
+<button id="pause">Pause</button>
+<button id="duration">Länge anzeigen</button>
+<p id="ausgabe"></p>
+ 
+<script>
+  var song = document.getElementById('player');
+  document.getElementById('play').addEventListener('click', function() { song.play(); }, false);
+  document.getElementById('pause').addEventListener('click', function() { song.pause(); }, false);
+  document.getElementById('duration').addEventListener('click', function() { 
+  document.getElementById('ausgabe').innerHTML = 'Die Dauer des Videos beträgt: '+ song.duration; +' Sekunden.'}, false);
+</script>
+[[Start]]
+
+
+:: _ControlElements_ {"position":"1200,25"}
+<div id="choice">
+<p>click on image to show related text and border</p>
+<table><tbody>
+<tr>
+<td><img id="1" src="https://twinery.org/homepage/img/logo.svg" width="256" height="256" onclick='window.gm.onSelect(this,"div#choice table tbody tr td *","div#info");'></td>
+<td><img id="2" src="https://twinery.org/homepage/img/logo.svg" width="256" height="256" onclick='window.gm.onSelect(this,"div#choice table tbody tr td *","div#info");'></td>
+</tr>
+<tr>
+<td><img id="3" src="https://twinery.org/homepage/img/logo.svg" width="256" height="256" onclick='window.gm.onSelect(this,"div#choice table tbody tr td *","div#info");'></td>
+</tr>
+</tbody></table>
+</div>
+<div id="info">
+<p id="1" hidden>Text 1</p><p id="2" hidden>[[Start]]</p><p id="3" hidden>Text 3</p>
+</div>
+<p>Geben Sie Ihre Zahlungsweise an:</p>
+  <fieldset> <legend>creditcard</legend>
+    <input type="radio" id="mc" name="Zahlmethode" value="Mastercard" disabled>
+    <label for="mc"> Mastercard</label> 
+    <input type="radio" id="vi" name="Zahlmethode" value="Visa" checked>
+    <label for="vi"> Visa</label>
+    <input type="radio" id="ae" name="Zahlmethode" value="AmericanExpress">
+    <label for="ae"> American Express</label> 
+  </fieldset>
+<label>static dropdown:
+		<select id="person" onchange='selectperson(this)'>
+			<option value="23">Albers, Alfred</option>
+			<option value="24" selected>Braun, Berta</option>
+      <option value="25">Zeta, Bort</option>
+		</select>
+</label>
+<form name="terminauswahl">
+	<label>Professor:
+		<select id="professor">
+			<option value="">Bitte wählen:</option>
+      <option value="P23">Albers, Alfred</option>
+			<option value="P24">Braun, Berta</option>
+			<option value="P25">Drachenzaun, Doris</option>
+			<option value="P26">Münz, Stephan</option>
+			<option value="P27">Meier, Manfred</option>
+		</select>
+	</label>
+	<label>Lesung:
+		<select id="vorlesung" disabled>
+			<option value="">------</option>
+		</select>
+	</label>
+	<label>Termin:
+		<select id="termin" disabled>
+			<option value="">------</option>
+		</select>
+	</label>
+  	<output id="auswahl"></output>
+</form>
+<div id='output'></div>
+<script>
+function selectperson(elmnt) {
+		var menu = document.getElementById(elmnt.id);
+		document.querySelector('div#output').innerHTML = menu.value +""+menu.options[menu.selectedIndex].label+" "+menu.options[menu.selectedIndex].value;		
+}
+/*class SelectionController extends EventTarget {
+    constructor(selectElement, datasource, parentNode = null) {
+        super(); // Pflicht: Konstruktor der Superklasse aufrufen
+        if (!(selectElement instanceof HTMLSelectElement)) {
+            throw new Error(
+                "Controller-Objekt benötigt ein select Element als ersten Parameter");
+        }
+        if (parentNode && !(parentNode instanceof SelectionController)) {
+            throw new Error(
+                "Controller-Objekt benötigt einen SelectionController als zweiten Parameter"
+            );
+        }
+        this.selectElement = selectElement;
+        this.parentNode = parentNode;
+        this.dataSource = dataSource;
+        this.selectElement.addEventListener("change", event => this._handleChangeEvent(event))
+        if (parentNode) {
+            parentNode.addEventListener("change", event => this.mapData(event.selectedObject)); //?? event => this.mapData(event.selectedObject));
+        }
+    }
+    // Ordnet dem select Element eine Datenquelle zu. 
+    // dataSource ist ein Objekt, aus dem die getValueList die Daten für die
+    // select-Optionen ermitteln kann, oder null, um das select-Element zu disablen
+    mapData(dataSource) {
+        // Quelldaten-Objekt im Controller speichern.
+        this.dataSource = dataSource;
+        // Optionen nur anfassen, wenn eine getValueList Methode vorhanden ist.
+        //  Andernfalls davon ausgehen, dass die options durch das HTML
+        // bereitgestellt werden.
+        if (typeof this.getValueList == "function") {
+            // Existierende Optionen entfernen
+            removeOptions(this.selectElement);
+            // Wenn dataSource nicht null war, die neuen Optionen daraus beschaffen
+            // Andernfalls das select-Element deaktivieren
+            const options = dataSource && this.getValueList(dataSource(this.selectElement.id,this.selectElement.value))//??this.getValueList(dataSource);
+            if (!options || !options.length) {
+                setToDisabled(this.selectElement)
+            } else {
+                setToEnabled(this.selectElement, options);
+            }
+        }
+        // Zum Abschluss ein change-Event auf dem select-Element feuern, damit
+        // jeder weiß, dass hier etwas passiert ist
+        this.selectElement.dispatchEvent(new Event("change"));
+        // Helper: Entferne alle options aus einem select Element	
+        function removeOptions(selectElement) {
+                while (selectElement.length > 0) selectElement.remove(0);
+            }
+            // Helper: select-Element auf disabled setzen und eine Dummy-Option 
+            // eintragen. Eine Variante wäre: das selectElement auf hidden setzten
+        function setToDisabled(selectElement) {
+                addOption(selectElement, "", "------");
+                selectElement.disabled = true;
+            }
+            // Helper: disabled-Zustand vom select-Element entfernen und die
+            // übergebenen Optionen eintragen. Vorweg eine Dummy-Option "Bitte wählen".
+        function setToEnabled(selectElement, options) {
+                addOption(selectElement, "", "Bitte wählen:");
+                for (var optionData of options) {
+                    addOption(selectElement, optionData.value, optionData.text);
+                }
+                selectElement.disabled = false;
+            }
+            // Helper: Option-Element erzeugen, ausfüllen und im select-Element eintragen
+        function addOption(selectElement, value, text) {
+            let option = document.createElement("option");
+            option.value = value;
+            option.text = text
+            selectElement.add(option);
+        }
+    }
+    // Abstrakte Methode! Wird sie nicht überschrieben, wird der TypeError geworfen
+    getValue(key) {
+      this.datasource(this.selectElement.id,key);
+        //throw new TypeError("Die abstrakte Methode 'getValue' wurde nicht implementiert!");
+    }
+    // Stellt den im select Element ausgewählten Optionswert zur Verfügung
+    get selectedKey() {
+        return this.selectElement.value;
+    }
+    // Liefert das Datenobjekt zum ausgewählten Optionswert
+    get selectedObject() {
+            return this.dataSource ? this.getValue(this.selectElement.value) : null;
+    }
+    // privat
+    // Die Methode reagiert auf das change-Event des select-Elements
+    // und stellt es als eigenes change-Event des Controllers zur Verfügung
+    _handleChangeEvent(event) {
+        let nodeChangeEvent = new Event("change");
+        nodeChangeEvent.selectedObject = this.selectedObject;
+        this.dispatchEvent(nodeChangeEvent);
+    }
+}*/
+/*class ProfessorController extends SelectionController {
+  constructor(selectElement) {
+    super(selectElement, null);
+  }
+  getValue(quelle, profId) {
+    return quelle.find(prof => prof.id == profId);
+  }
+}
+class VorlesungController extends SelectionController {
+  constructor(selectElement, parentController) {
+    super(selectElement, parentController);
+  }
+  getValueList(professor) {
+    return professor.vorlesungen.map(vorlesung => ({
+      value: vorlesung.nummer,
+      text: vorlesung.thema
+    }));
+  }
+  getValue(professor, vorlesungNr) {
+    return professor.vorlesungen.find(vorlesung => vorlesung.nummer ==
+      vorlesungNr);
+  }
+}
+class TerminController extends SelectionController {
+  constructor(selectElement, parentController) {
+    super(selectElement, parentController);
+  }
+  getValueList(vorlesung) {
+    return vorlesung.termine.map(termin => ({
+      value: termin.id,
+      text: termin.zeit
+    }));
+  }
+  getValue(vorlesung, terminId) {
+    return vorlesung.termine.find(termin => termin.id == terminId);
+  }
+}*/
+function datasource(category,key) {
+    if(category==="professor") {
+      return([{ value: "V1", text: "vorlesung1"}]);
+    } else if (category==="vorlesung") {
+      return([{ value: "T1", text: "termin11"}]);
+    } else {
+      return([{ value: "P1", text: "professor1"}]);
+    }
+}/*
+//document.addEventListener('DOMContentLoaded', 
+(function () {
+  const form = document.forms.terminauswahl;
+  const profCtrl = new SelectionController(form.professor);
+  const vorlesungCtrl = new SelectionController(form.vorlesung, profCtrl);
+  const terminCtrl = new SelectionController(form.termin, vorlesungCtrl);
+  terminCtrl.addEventListener("change", terminChanged)
+  profCtrl.mapData(data)
+  function terminChanged(event) {
+    let terminCtrl = event.target;
+    let vorlesungCtrl = terminCtrl.parentNode;
+    let profCtrl = vorlesungCtrl.parentNode;
+    let ausgabe = document.getElementById('auswahl');
+    ausgabe.textContent = terminCtrl.selectedKey != "" ?
+      `${profCtrl.selectedKey}:${profCtrl.selectedObject.name} / ` +
+      `${vorlesungCtrl.selectedKey}:${vorlesungCtrl.selectedObject.thema} / ` +
+      `${terminCtrl.selectedKey}:${terminCtrl.selectedObject.zeit}` : "";
+  }
+})();//);*/
+</script>
+
+:: _ControlElements2_ {"position":"1200,25"}
+<div id="choice">
+<p>click on image to show related text and border</p>
+<table><tbody>
+<tr>
+<td><img id="1" src="https://twinery.org/homepage/img/logo.svg" width="256" height="256" onclick='window.gm.onSelect(this,"div#choice table tbody tr td *","div#info");'></td>
+<td><img id="2" src="https://twinery.org/homepage/img/logo.svg" width="256" height="256" onclick='window.gm.onSelect(this,"div#choice table tbody tr td *","div#info");'></td>
+</tr>
+<tr>
+<td><img id="3" src="https://twinery.org/homepage/img/logo.svg" width="256" height="256" onclick='window.gm.onSelect(this,"div#choice table tbody tr td *","div#info");'></td>
+</tr>
+</tbody></table>
+</div>
+<div id="info">
+<p id="1" hidden>Text 1</p><p id="2" hidden>[[Start]]</p><p id="3" hidden>Text 3</p>
+</div>
+<label>static dropdown:
+		<select id="person" onchange='selectperson(this)'>
+			<option value="23">Albers, Alfred</option>
+			<option value="24" selected>Braun, Berta</option>
+      <option value="25">Zeta, Bort</option>
+		</select>
+</label>
+<form name="terminauswahl">
+	<label>Professor:
+		<select id="professor">
+			<option value="">Bitte wählen:</option>
+      <option value="P23">Albers, Alfred</option>
+			<option value="P24">Braun, Berta</option>
+			<option value="P25">Drachenzaun, Doris</option>
+			<option value="P26">Münz, Stephan</option>
+			<option value="P27">Meier, Manfred</option>
+		</select>
+	</label>
+	<label>Lesung:
+		<select id="vorlesung" disabled>
+			<option value="">------</option>
+		</select>
+	</label>
+	<label>Termin:
+		<select id="termin" disabled>
+			<option value="">------</option>
+		</select>
+	</label>
+  	<output id="auswahl"></output>
+</form>
+<div id='output'></div>
+<script>
+function selectperson(elmnt) {
+		var menu = document.getElementById(elmnt.id);
+		document.querySelector('div#output').innerHTML = menu.value +""+menu.options[menu.selectedIndex].label+" "+menu.options[menu.selectedIndex].value;		
+}
+var data = [
+	{
+		id: "P23",
+		name: "Albers, Alfred",
+		vorlesungen: [
+			{
+				nummer: "L55",
+				thema: "Katzen in der freien Wildbahn",
+				termine: [
+					{
+						id: "T123",
+						zeit: "freitags 10 - 12"
+					},
+					{
+						id: "T124",
+						zeit: "sonntags 18 - 20"
+					}
+				]
+			},
+			{
+				nummer: "L56",
+				thema: "Katzen im Gefängnis",
+				termine: [
+					{
+						id: "T125",
+						zeit: "montags 12 - 14"
+					},
+					{
+						id: "T126",
+						zeit: "dienstags 8 - 10"
+					}
+				]
+			},
+			{
+				nummer: "L57",
+				thema: "Katzen in Musicals",
+				termine: [
+					{
+						id: "T127",
+						zeit: "dienstags 10 - 12"
+					},
+					{
+						id: "T128",
+						zeit: "mittwochs 13 - 15"
+					}
+				]
+			}
+		]
+	},
+	{
+		id: "P24",
+		name: "Braun, Berta",
+		vorlesungen: [
+			{
+				nummer: "L65",
+				thema: "Hunde im Himmel",
+				termine: [
+					{
+						id: "T163",
+						zeit: "freitags 10 - 12"
+					},
+					{
+						id: "T164",
+						zeit: "sonntags 18 - 20"
+					}
+				]
+			},
+			{
+				nummer: "L66",
+				thema: "Hunde in der Hölle",
+				termine: [
+					{
+						id: "T165",
+						zeit: "montags 12 - 14"
+					},
+					{
+						id: "T166",
+						zeit: "dienstags 8 - 10"
+					}
+				]
+			},
+			{
+				nummer: "L67",
+				thema: "Höllenhunde",
+				termine: [
+					{
+						id: "T167",
+						zeit: "dienstags 10 - 12"
+					},
+					{
+						id: "T168",
+						zeit: "mittwochs 13 - 15"
+					}
+				]
+		}
+	  ]
+	},
+	{
+		id: "P25",
+		name: "Drachenzaun, Doris",
+		vorlesungen: [
+			{
+				nummer: "L75",
+				thema: "Wirtschaftskram I",
+				termine: [
+					{
+						id: "T171",
+						zeit: "freitags 10 - 12"
+					},
+					{
+						id: "T172",
+						zeit: "sonntags 18 - 20"
+					}
+				]
+			},
+			{
+				nummer: "L76",
+				thema: "Wirtschaftskram II",
+				termine: [
+					{
+						id: "T173",
+						zeit: "montags 12 - 14"
+					},
+					{
+						id: "T174",
+						zeit: "dienstags 8 - 10"
+					}
+				]
+			},
+			{
+				nummer: "L77",
+				thema: "Wirtschaftskram III",
+				termine: [
+					{
+						id: "T175",
+						zeit: "dienstags 10 - 12"
+					},
+					{
+						id: "T176",
+						zeit: "mittwochs 13 - 15"
+					}
+				]
+			}
+		]
+	},
+	{
+		id: "P26",
+		name: "Münz, Stefan",
+		vorlesungen: [
+			{
+				nummer: "L85",
+				thema: "Webdesign in den 90ern",
+				termine: [
+					{
+						id: "T181",
+						zeit: "freitags 10 - 12"
+					},
+					{
+						id: "T182",
+						zeit: "sonntags 18 - 20"
+					}
+				]
+			},
+			{
+				nummer: "L86",
+				thema: "Webdesign nach der Jahrtausendwende",
+				termine: [
+					{
+						id: "T183",
+						zeit: "montags 12 - 14"
+					},
+					{
+						id: "T184",
+						zeit: "dienstags 8 - 10"
+					}
+				]
+			},
+			{
+				nummer: "L87",
+				thema: "Responsives Webdesign",
+				termine: [
+					{
+						id: "T185",
+						zeit: "dienstags 10 - 12"
+					},
+					{
+						id: "T186",
+						zeit: "mittwochs 13 - 15"
+					}
+				]
+			}
+		],
+	},
+	{
+		id: "P27",
+		name: "Meier, Manfred",
+		vorlesungen: [
+			{
+				nummer: "L95",
+				thema: "Althochdeutsch",
+				termine: [
+					{
+						id: "T191",
+						zeit: "freitags 10 - 12"
+					},
+					{
+						id: "T192",
+						zeit: "sonntags 18 - 20"
+					}
+				]
+			},
+			{
+				nummer: "L96",
+				thema: "Mittelhochdeutsch",
+				termine: [
+					{
+						id: "T193",
+						zeit: "montags 12 - 14"
+					},
+					{
+						id: "T194",
+						zeit: "dienstags 8 - 10"
+					}
+				]
+			},
+			{
+				nummer: "L97",
+				thema: "Deutsch für Angefangene",
+				termine: [
+					{
+						id: "T195",
+						zeit: "dienstags 10 - 12"
+					},
+					{
+						id: "T196",
+						zeit: "mittwochs 13 - 15"
+					}
+				]
+			}
+		]
+	}
+];
+class SelectionController extends EventTarget {
+    constructor(selectElement, parentNode = null) {
+        super(); // Pflicht: Konstruktor der Superklasse aufrufen
+        if (!(selectElement instanceof HTMLSelectElement)) {
+            throw new Error(
+                "Controller-Objekt benötigt ein select Element als ersten Parameter");
+        }
+        if (parentNode && !(parentNode instanceof SelectionController)) {
+            throw new Error(
+                "Controller-Objekt benötigt einen SelectionController als zweiten Parameter"
+            );
+        }
+        this.selectElement = selectElement;
+        this.parentNode = parentNode;
+        this.selectElement.addEventListener("change", event => this._handleChangeEvent(
+            event))
+        if (parentNode) {
+            parentNode.addEventListener("change", event => this.mapData(event.selectedObject));
+        }
+    }
+    // Ordnet dem select Element eine Datenquelle zu. 
+    // dataSource ist ein Objekt, aus dem die getValueList die Daten für die
+    // select-Optionen ermitteln kann, oder null, um das select-Element zu disablen
+    mapData(dataSource) {
+        // Quelldaten-Objekt im Controller speichern.
+        this.dataSource = dataSource;
+        // Optionen nur anfassen, wenn eine getValueList Methode vorhanden ist.
+        //  Andernfalls davon ausgehen, dass die options durch das HTML
+        // bereitgestellt werden.
+        if (typeof this.getValueList == "function") {
+            // Existierende Optionen entfernen
+            removeOptions(this.selectElement);
+            // Wenn dataSource nicht null war, die neuen Optionen daraus beschaffen
+            // Andernfalls das select-Element deaktivieren
+            const options = dataSource && this.getValueList(dataSource);
+            if (!options || !options.length) {
+                setToDisabled(this.selectElement)
+            } else {
+                setToEnabled(this.selectElement, options);
+            }
+        }
+        // Zum Abschluss ein change-Event auf dem select-Element feuern, damit
+        // jeder weiß, dass hier etwas passiert ist
+        this.selectElement.dispatchEvent(new Event("change"));
+        // Helper: Entferne alle options aus einem select Element	
+        function removeOptions(selectElement) {
+                while (selectElement.length > 0) selectElement.remove(0);
+            }
+            // Helper: select-Element auf disabled setzen und eine Dummy-Option 
+            // eintragen. Eine Variante wäre: das selectElement auf hidden setzten
+        function setToDisabled(selectElement) {
+                addOption(selectElement, "", "------");
+                selectElement.disabled = true;
+            }
+            // Helper: disabled-Zustand vom select-Element entfernen und die
+            // übergebenen Optionen eintragen. Vorweg eine Dummy-Option "Bitte wählen".
+        function setToEnabled(selectElement, options) {
+                addOption(selectElement, "", "Bitte wählen:");
+                for (var optionData of options) {
+                    addOption(selectElement, optionData.value, optionData.text);
+                }
+                selectElement.disabled = false;
+            }
+            // Helper: Option-Element erzeugen, ausfüllen und im select-Element eintragen
+        function addOption(selectElement, value, text) {
+            let option = document.createElement("option");
+            option.value = value;
+            option.text = text
+            selectElement.add(option);
+        }
+    }
+    // Abstrakte Methode! Wird sie nicht überschrieben, wird der TypeError geworfen
+    getValue(key) {
+        throw new TypeError(
+            "Die abstrakte Methode 'getValue' wurde nicht implementiert!");
+    }
+    // Stellt den im select Element ausgewählten Optionswert zur Verfügung
+    get selectedKey() {
+        return this.selectElement.value;
+    }
+    // Liefert das Datenobjekt zum ausgewählten Optionswert
+    get selectedObject() {
+            return this.dataSource ? this.getValue(this.dataSource, this.selectElement.value) : null;
+    }
+    // privat
+    // Die Methode reagiert auf das change-Event des select-Elements
+    // und stellt es als eigenes change-Event des Controllers zur Verfügung
+    _handleChangeEvent(event) {
+        let nodeChangeEvent = new Event("change");
+        nodeChangeEvent.selectedObject = this.selectedObject;
+        this.dispatchEvent(nodeChangeEvent);
+    }
+}
+class ProfessorController extends SelectionController {
+  constructor(selectElement) {
+    super(selectElement, null);
+  }
+  getValue(quelle, profId) {
+    return quelle.find(prof => prof.id == profId);
+  }
+}
+class VorlesungController extends SelectionController {
+  constructor(selectElement, parentController) {
+    super(selectElement, parentController);
+  }
+  getValueList(professor) {
+    return professor.vorlesungen.map(vorlesung => ({
+      value: vorlesung.nummer,
+      text: vorlesung.thema
+    }));
+  }
+  getValue(professor, vorlesungNr) {
+    return professor.vorlesungen.find(vorlesung => vorlesung.nummer ==
+      vorlesungNr);
+  }
+}
+
+:: _VariablesAndScript_ {"position":"1075,25"}
+<script>
+function getBanana(elmnt,val) {
+    window.story.state.vars.bananas +=val;
+    //window.story.show(window.passage.name); this would reload the passage but would overwrite the elmnt-replace
+    elmnt.replaceWith("took bananas "+val); //replace the calling link with simple text to it a one-timer. But it will be restored if passage is reloaded 
+}
+</script>
+<%
+//initialise game state
+//s is window.story.state from snowman!
+//create a vars-container and define startvalues for some variables
+if (!s.vars) { 
+	s.vars = {
+    bananas : 0
+  }; 
+}
+%>
+<% if(visited(window.passage.name)<=1) {
+    s.vars.bananas+=2;}
+%>
+You have <%=s.vars.bananas%> bananas. </br>
+<mark>If you want to call functions in this way you have to add them to a global object.This is done in the StoryScrip-passage. See there. </br></mark>
+You droped a banana and have now <%-window.gm.dropBanana()%>. </br>
+
+<mark>This is a empty link that is used to trigger a function that is defined in the page-script </br></mark>
+<a0 onclick=getBanana(this,5)>Get more banana</a> </br>
+<mark>or calling a anonymous function (take notice how alert-string is escaped):</br></mark>
+<a0 id='money' onclick='(function ( $event ) { alert("alert ".concat($event.id)); })(this);'>Get much money</a>
+<mark>Press refreh to update page display </br></mark>
+[[Refresh|_VariablesAndScript_]] </br>
+[[Start]]

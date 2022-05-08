@@ -1,0 +1,39 @@
+:: StoryTitle
+HiddenAlembic
+
+
+:: StoryData
+{
+	"ifid": "A440E3EC-8B67-4FD6-B38B-0CCB4FCD4A96",	"ifid_name":"SanctumPortal",
+	"format": "Snowman",
+	"format-version": "2.0.2",
+	"Start": "Intro",
+	"tag-colors": {
+		"template": "orange",
+		"_back_": "gray",
+		"_nosave_": "yellow",
+		"_nodeffered_": "yellow",
+		"_isdeffered_": "brown",
+		"_noshortkey_": "brown"
+	},
+	"zoom": 1
+}
+
+:: Story JavaScript [script]
+
+:: Start
+Select a Link:
+<ul>
+    <li>[[_SuperSimpleStory_]]</li>
+	<li>[[_ImagesAndOtherMedia_]]</li>
+    <li>[[_VariablesAndScript_]]</li>
+	<li>[[_ControlElements_]]</li>
+    <li>[[_Inventory_]]</li>
+    <li>[[_SaveAndRestore_]]</li>
+    <li>[[StartPage]]</li>
+</ul>
+
+:: NewGamePlus
+You finished the game in some way but maybe you have missed something. </br>
+Would you like to start a new game while taking some of your equipment/skills with you?</br>
+<a0 onclick='window.gm.newGamePlus()'>Start new game plus</a></br>
