@@ -99,23 +99,18 @@ window.gm.encounters.succubus = function(params) {
     if(!_params.noStart) window.gm.Encounter.initCombat();
 }
 window.gm.encounters.mechanicguy = function(params) {
-    var amount=(params&&params.amount)?params.amount:1, location=(params&&params.location)?params.location:window.passage.name;
-    var type =(params&&params.type)?params.type:0, levelUp=(params&&params.levelUp)?params.levelUp:0;
-    var noStart = (params&&params.noStart)?true:false;
-    window.gm.Encounter = new Encounter();
+    let _params=window.gm.encounters._setup(params);
     window.gm.Encounter.EnemyFunc = (function() { 
         let mobs =[];
-        for(var i=amount;i>0;i-=1) {
-            let x = window.gm.Mobs.Mechanic(); x.scaleLevel(window.gm.player.level+levelUp);
+        for(var i=_params.amount;i>0;i-=1) {
+            let x = window.gm.Mobs.Mechanic(); x.scaleLevel(window.gm.player.level+_params.levelUp);
             x.name+='#'+i;mobs.push(x);
         }
         return(mobs);});
-    window.gm.Encounter.Location = location;
-    window.gm.Encounter.scenePic = window.gm.getScenePic(window.gm.Encounter.Location);
-    if(!noStart) window.gm.Encounter.initCombat();
+    if(!_params.noStart) window.gm.Encounter.initCombat();
 }
 window.gm.encounters.hawk = function(params) {
-    let _params=window.gm.encounters._setup(params);rue:false;
+    let _params=window.gm.encounters._setup(params);
     window.gm.Encounter.EnemyFunc = (function() { 
         let mobs =[];
         for(var i=_params.amount;i>0;i-=1) {
@@ -199,9 +194,9 @@ window.gm.encounters.wolf = function(params) {
     let _params=window.gm.encounters._setup(params);
     window.gm.Encounter.EnemyFunc = (function() { 
         let mobs =[];
-        for(var i=amount;i>0;i-=1) {
+        for(var i=_params.amount;i>0;i-=1) {
             let x;
-            x = window.gm.Mobs.Wolf(type); x.scaleLevel(window.gm.player.level+levelUp);
+            x = window.gm.Mobs.Wolf(_params.type); x.scaleLevel(window.gm.player.level+_params.levelUp);
             if(_.random(1,100)>50) {
                 window.gm.MutationsLib.swapGender(x,window.storage.constructors["VulvaHuman"]);
             } 

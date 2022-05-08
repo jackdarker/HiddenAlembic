@@ -12,90 +12,18 @@ You are trapped in this dungeon and need to find a way out of it.
 </br><p> [[Next|DngHC_H3]] </br></p>
 </article><article id="LogPanel"></article></section>
 <script>
-function buildRooms() {
-    const _m=[
-        'F2--G2--H2--I2--J2  K2--L2',
-        '|   |           |   |   | ',
-        'F3  G3  H3  I3--J3--K3  L3',
-        '    |   |   |           | ',
-        'F4--G4--H4--I4  J4--K4  L4',
-        '|   |           |       | ',
-        'F5  G5--H5--I5--J5--K5--L5',
-        '|       |       |        ',
-        'F6--G6--H6  I6--J6--K6--L6'];
-    let grid =[
-    {room:'F2', dirs:['G2','F3']},
-    {room:'G2', dirs:['H2','G3']},
-    {room:'H2', dirs:['I2']},
-    {room:'I2', dirs:['J2']},
-    {room:'J2', dirs:['I2','J3']},
-    {room:'K2', dirs:['L2','K3']},
-    {room:'L2', dirs:['K2','L3']},
-    {room:'F3', dirs:['F2']},
-    {room:'G3', dirs:['G2','G4']},
-    {room:'H3', dirs:['H4']             ,anno:['S']},
-    {room:'I3', dirs:['I4','J3']},
-    {room:'J3', dirs:['I3','K3','J2']},
-    {room:'K3', dirs:['J3','K2']},
-    {room:'L2', dirs:['L2','L4']},
-    {room:'F4', dirs:['G4','F5']},
-    {room:'G4', dirs:['F4','H4','G5']},
-    {room:'H4', dirs:['H3','G4','I4']},
-    {room:'I4', dirs:['H4','I3']},
-    {room:'J4', dirs:['J5','K4']},
-    {room:'K4', dirs:['J4']},
-    {room:'L4', dirs:['L3','K5']},
-    {room:'F5', dirs:['F4','F6']},
-    {room:'G5', dirs:['G4','H5']},
-    {room:'H5', dirs:['G5','I5','H6']},
-    {room:'I5', dirs:['H5','J5']},
-    {room:'J5', dirs:['I5','J6','K5','J4']},
-    {room:'K5', dirs:['J5','L5']},
-    {room:'L5', dirs:['K5']},
-    {room:'G6', dirs:['F6']}, //,'H6'
-    {room:'F6', dirs:['F5','G6']},
-    {room:'H6', dirs:['H5','G6']},
-    {room:'I6', dirs:['J6']},
-    {room:'J6', dirs:['J5','I6','K6']},
-    {room:'K6', dirs:['L6','J6']},
-    {room:'L6', dirs:['K6']}];
-    let dng={grid:grid,width:14,height:8,legend:'S=Sanctuary  E=Portal'}
-    var s = window.story.state;
-    s.DngSY.dngMap=dng;
-    s.DngSY.dng='DngHC';
+    var s = window.story.state,map,data;
+    ({map,data}=window.gm.build_DngHC());
+    s.DngPC=data;
+    s.DngSY.dngMap=map;s.DngSY.dng='DngHC';
     s.vars.spawnAt="DngHC_Respawn";
-    s.DngHC.tmp={tickPass:''};
-    s.DngHC.tmp.evtEnter = { //events on tile-enter               todo need to make sure this is rebuild on load but only if in dungeon
-        G3: {dog:{tick:'',state:0 }},
-        I3: {dog:{tick:'',state:0 }}, 
-        J4: {dog:{tick:'',state:0 }},
-        F4: {dog:{tick:'',state:0 }}
-    }
-    s.DngHC.tmp.doors = { //doors
-        H5: {G5:{tick:'',state:0 }}, 
-        G5: {H5:{tick:'',state:0 }},
-        J4: {K4:{tick:'',state:0 }},
-    }
-    s.DngHC.tmp.evtSpawn = { //respawn evts 
-        DngHC_I3: {chest:{tick:window.gm.getTime(),state:0},
-                    mushroom:{tick:window.gm.getTime(),state:0,loot:"BrownMushroom" }}
-        ,DngHC_G3: {mushroom:{tick:window.gm.getTime(),state:0,loot:"ViolettMushroom" }}
-        ,DngHC_G4: {lectern:{tick:window.gm.getTime(),state:0,loot:1 }}
-        ,DngHC_H5: {mushroom:{tick:window.gm.getTime(),state:0,loot:"ViolettMushroom" }}
-    }
-    s.DngHC.tmp.mobs = [ //wandering mobs pos=current tile
-      //{id:"carlia", pos:"I5",state:1},
-      {id:"HornettI4",mob:"hornett",pos:"I4",path:["I4","H4","I3"],state:0,tick:'',aggro:0}
-    ]
-}
-    buildRooms();
 </script>
+
 
 :: DngHC_Encounters
 <script>
 function tick() {
     let here = window.gm.player.location,_d=window.story.state.DngHC.tmp;
-    window.gm.randomTask();
     if(here===_d.tickPass) return;
     _d.tickPass=here;
     for(var i=_d.mobs.length-1;i>=0;i--){
@@ -134,8 +62,7 @@ tick();
 <div id='select1'>Some kind of lectern or stand is placed in an alcoven.</br>Looks like some <b id='choice'></b> is placed on it.</br>It might be useful. On the other hand it could also be a trap. So, are you going to  
 <a0 onclick='grab();window.gm.printTalkLink("div#select1","div#choice1a")'>grab it</a>? Or just 
 <a0 onclick='window.gm.printTalkLink("div#select1","div#choice1b")'>ignore it</a></br>
-</div><div id='choice1a' hidden></br>
-</div>
+</div><div id='choice1a' hidden></br></div>
 <div id='choice1b' hidden></br>
   Might be a good decision to not touch that lectern and walk away.
 </div>
@@ -170,6 +97,27 @@ var loot=[];
 randomLoot();
 </script>
 
+:: DngHC_Trent [_nosave_]
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+TODO Meet horsy. </br>
+You may try your luck and <a0 onclick=''>sneak around</a> , boldly <a0 onclick=''>walk toward it</a> or rush and try to <a0 onclick='fight()'>strike first</a>. 
+</br>Safest option would be to retreat <a0 onclick='window.story.show(window.story.state.DngSY.prevLocation)'>retreat</a>.
+<div id='output'></div>
+</article><article id="LogPanel"></article></section>
+
+
+:: DngHC_wolf [_nosave_]
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+There is wolf resting on the ground. It might be sleeping. </br>
+You may try your luck and <a0 onclick=''>sneak around</a> , boldly <a0 onclick=''>walk toward it</a> or rush and try to <a0 onclick='fight()'>strike first</a>. 
+</br>Safest option would be to retreat <a0 onclick='window.story.show(window.story.state.DngSY.prevLocation)'>retreat</a>.
+<div id='output'></div>
+</article><article id="LogPanel"></article></section>
+<script>function fight(){
+  window.gm.encounters['wolf']({type:'AlphaWolf',noFlee:true});
+  window.gm.Encounter.initCombat();                
+}
+</script>
 
 :: DngHC_Meet_Dog [_nosave_]
 <section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
@@ -201,7 +149,7 @@ There is a gate in front of you but it is locked.</br>
 </article><article id="LogPanel"></article></section>
 <%=window.story.render("DngHC_Encounters")%>
 
-:: DngHC_Mushroom
+:: DngHC_Mushroom [_nosave_ _fragm_]
 </br><%if(window.story.state.DngHC.tmp.evtSpawn[window.passage.name]["mushroom"].state===0){%>There is a <%=window.story.state.DngHC.tmp.evtSpawn[window.passage.name]["mushroom"].loot%>. Do you collect it?
 <div id='select992' >
 <a0 onclick='var _evt=window.story.state.DngHC.tmp.evtSpawn[window.passage.name]["mushroom"];_evt.state=1;_evt.tick=window.gm.getTime();window.gm.player.changeInventory(window.gm.ItemsLib[_evt.loot](),1);window.gm.printTalkLink("div#select992","div#choice992a")'>Yes</a></br>
@@ -211,7 +159,7 @@ There is a gate in front of you but it is locked.</br>
 No mushrooms growing here right now.
 <%}%>
 
-:: DngHC_Chest
+:: DngHC_Chest [_nosave_ _fragm_]
 </br><%if(window.story.state.DngHC.tmp.evtSpawn[window.passage.name]["chest"].state===0){%>There is a chest. Do you dare open it?
 <a0 onclick='window.story.state.DngHC.tmp.evtSpawn[window.passage.name]["chest"].state=1;window.story.state.tmp.args[1]=70;window.story.state.tmp.args[2]=window.passage.name;window.story.show("DngHC_LootChest")'>Yes</a></br>
 <%}else{%>

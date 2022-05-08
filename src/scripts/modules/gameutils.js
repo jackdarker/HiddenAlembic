@@ -182,10 +182,10 @@ window.gm.initGameFlags = function(forceReset,NGP=null) {
       prevLocation:'', nextLocation:'', //used for nav-logic
       dngMap:{} //dungeon map info
   };
-  let DngPC = dataPrototype();
-  if(s.DngPC) { //update if exist
-    ({map,data}=window.gm.build_DngPC());
-    s.DngPC=window.gm.util.mergePlainObject(DngPC,s.DngPC);
+  let DngHC = dataPrototype();
+  if(s.DngHC) { //update if exist
+    ({map,data}=window.gm.build_DngHC());
+    s.DngHC=window.gm.util.mergePlainObject(DngHC,s.DngHC);
   }
   let Lab={}
   let Known={
@@ -196,6 +196,7 @@ window.gm.initGameFlags = function(forceReset,NGP=null) {
   s.Settings=window.gm.util.mergePlainObject(Settings,s.Settings);
   s.DngSY=window.gm.util.mergePlainObject(DngSY,s.DngSY);
   s.Lab=window.gm.util.mergePlainObject(Lab,s.Lab);
+  s.DngHC=window.gm.util.mergePlainObject(DngHC,s.DngHC);
   s.Known=window.gm.util.mergePlainObject(Known,s.Known);
   //todo cleanout obsolete data ( filtering those not defined in template) 
 }
@@ -404,7 +405,7 @@ window.gm.printNav=function(label,dir,args=null){
   for(i=grid.length-1;i>=0;i--){
     if(grid[i].room===here){
       for(k=grid[i].dirs.length-1;k>=0;k--){
-        if(grid[i].dirs[k]===to) {found=true;break;}
+        if(grid[i].dirs[k].dir===to) {found=true;break;}
       }
       if(found) break;
     }
@@ -527,7 +528,7 @@ window.gm.printMap2=function(dng,playerTile,reveal,visitedTiles) {
       if(room.room===playerTile) {_rA.removeClass('roomFound').addClass('playerPosition');} else _rA.addClass('roomVisited');
       addAnno();
       for(k=room.dirs.length-1;k>=0;k--) {//foreach direction create path to next room
-        dir=room.dirs[k];
+        dir=room.dirs[k].dir;
         xyB=nameToXY(dir); dx=xyB.x-xy.x,dy=xyB.y-xy.y;
         lPath.polyline([[_rA.cx()+ox,_rA.cy()+oy],[_rA.cx()+ox+dx/2,_rA.cy()+oy+dy/2]]).addClass('pathFound');//.insertBefore(_rA)
       }

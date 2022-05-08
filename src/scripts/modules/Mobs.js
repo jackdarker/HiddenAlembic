@@ -811,8 +811,7 @@ class Trent extends Mob {
         this.Outfit.addItem(PenisHuman.factory('horse'));
         this.Outfit.addItem(new ShortsLeather());
         this.Outfit.addItem(new MaceSteel());
-        this.Stats.increment('strength',3);
-        this.levelUp(6);
+        this.levelUp(6);//this.Stats.increment('strength',3);
         this.autoLeveling();
     }
 }

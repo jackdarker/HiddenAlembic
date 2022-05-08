@@ -40,12 +40,37 @@ window.gm.navHere = function(to) {
     window.story.show(to);
 }
 window.gm.navEvent = function(to,from) {
-    let _targ = '',evt,evts,dng=window.story.state.DngSY.dng;
+    let _targ = '',dir,dirs,evt,evts,dng=window.story.state.DngSY.dng;
     let _to=to.replace(dng+"_",""),_from=from.replace(dng+"_","");
     let _room=to.replace(dng+"_","");
     //tick = timestamp  
     //state: 0-active  1-inactive  
-    var _now=window.gm.getTime(), _rnd=_.random(0,100);
+    let _leaveChance=0,_allChances=0,_now=window.gm.getTime(), _rnd=_.random(0,100);
+    evts = window.story.state[dng].tmp.evtLeave[_from+'_'+_to]; 
+    if(evts) { //leave-check
+        evts=evts.filter(x=>(x.state===0));
+        evts.forEach(x=>(_allChances+=x.chance));
+        dir=null,dirs=window.gm.getRoomDirections(_from);
+        for(var i=dirs.length-1;i>=0;i--){
+            if(dirs[i].dir===_to) {
+                dir=dirs[i];break;
+            }
+        }
+        if(dir){ //choose an event; the more you explored that direction, the higher the chance to find the exit
+            //0x: 0%    1x: 10%   5x: 50%    10x: 70%  100x: 90%  of OVERALL-chance
+            _leaveChance=(dir.exp>=5)?50.0:((dir.exp>=1)?10.0:(0));
+            _leaveChance=_leaveChance/100.0*_allChances;_allChances+=_leaveChance;
+            dir.exp+=1;//exp-count is updated
+            _rnd=_.random(0,_allChances-0.01);
+            for(var i = evts.length-1;i>=0;i--) { 
+                if(_rnd<_allChances && _rnd>=(_allChances-evts[i].chance)) {
+                    window.story.state.tmp.args=[evts[i],_from+'_'+_to];
+                    return(dng+'_'+evts[i].id); //DngPC_wolf5
+                }
+                _allChances-=evts[i].chance;
+            }//if no event rolled continue with door check 
+        }
+    }
     evts = window.story.state[dng].tmp.doors[_from];
     if(evts) { //door-check
         evt = evts[_to];
@@ -73,23 +98,23 @@ window.gm.navEvent = function(to,from) {
     }
     return(_targ);
 }
-window.gm.mobAI = function(mob){
-    function getRoomDirections(from) {
-        let rooms=window.story.state.DngSY.dngMap.grid
-        for(var i=rooms.length-1;i>=0;i--){
-            if(rooms[i].room===from) {
-                return(rooms[i].dirs)
-            }
+window.gm.getRoomDirections=function(from) {
+    let rooms=window.story.state.DngSY.dngMap.grid
+    for(var i=rooms.length-1;i>=0;i--){
+        if(rooms[i].room===from) {
+            return(rooms[i].dirs)
         }
-        return([]);
     }
+    return([]);
+};
+window.gm.mobAI = function(mob){
     var _now=window.gm.getTime();
     if(mob.state!==0 || mob.tick==='') {mob.tick=_now;return;}
     if(window.gm.getDeltaTime(_now,mob.tick)>30) {
         mob.tick=_now;
-        var _to = getRoomDirections(mob.pos).filter(el=> mob.path.includes(el));
+        var _to = getRoomDirections(mob.pos).filter(el=> mob.path.includes(el.dir));
         if(_to.length>0) {
-            mob.pos=_to[_.random(0,_to.length-1)];
+            mob.pos=_to[_.random(0,_to.length-1)].dir;
             //alert(mob.id+' now moving to '+mob.pos);
         }
     }
@@ -124,27 +149,8 @@ window.gm.renderRoom= function(room){
     }
     return(msg);
 }
-window.gm.randomTask = function() {
-    let tasks;
-    if(tasks==={}) { //init tasks
-        //within 1 day gather 3 mushrooms
-        //find 3 black candles
-
-        //banish 2 hounds
-        //open 4 containers within 3 days
-        //drink 3 mysterious potions 
-        //deliver 2l milk in 2 days
-        //help milikin the steeds and collect 2l cum
-        //get pierced
-        //recover your virginity within 5days
-        //
-        //walk around nude (except forced gear) for 3 days
-        //wear a tail-plug for 3 days
-
-    }
-}
 window.gm.finishTask=function(){
-    let task=window.story.state.DngPC.task,_res={OK:(task.done>0),msg:''};
+    let task=window.story.state.DngHC.task,_res={OK:(task.done>0),msg:''};
     switch(task.id) {
         case 'getEarsPierced':
             break;
@@ -170,14 +176,14 @@ window.gm.finishTask=function(){
             throw new Error('unknown task'+task.id);
     }
     if(_res.OK===true){
-        window.story.state.DngPC.tasks[task.id].cnt+=1,window.story.state.DngPC.tasks[task.id].done=0,window.story.state.DngPC.task={};//,window.story.show(window.passage.name);
-        window.story.state.DngPC.tmp.tier+=1;_res.msg='donation request fullfilled. Your tier is now: '+window.story.state.DngPC.tmp.tier+'</br>';
-        if(window.story.state.DngPC.tmp.tier%3===0) {_res.msg="A <b>golden token</b> is your price that you can use to open another door in the dungeon.</br>";window.gm.player.Inv.addItem(window.gm.ItemsLib.VoucherGold());}
+        window.story.state.DngHC.tasks[task.id].cnt+=1,window.story.state.DngHC.tasks[task.id].done=0,window.story.state.DngHC.task={};//,window.story.show(window.passage.name);
+        window.story.state.DngHC.tmp.tier+=1;_res.msg='donation request fullfilled. Your tier is now: '+window.story.state.DngHC.tmp.tier+'</br>';
+        if(window.story.state.DngHC.tmp.tier%3===0) {_res.msg="A <b>golden token</b> is your price that you can use to open another door in the dungeon.</br>";window.gm.player.Inv.addItem(window.gm.ItemsLib.VoucherGold());}
     }
     window.gm.printOutput(_res.msg,'#choice');
 };
 window.gm.getAvailableTasks=function() { 
-    var _task,_tasks=[],_d=window.story.state.DngPC,_t=_d.tmp.tier;
+    var _task,_tasks=[],_d=window.story.state.DngHC,_t=_d.tmp.tier;
     var msg='choose a task:</br>';
     function taskDescr(task){
         var msg='';
@@ -205,7 +211,7 @@ window.gm.getAvailableTasks=function() {
         return(msg);
     }
     function foo(task){
-        msg+=taskDescr(task)+window.gm.printLink("Choose this",'window.story.state.DngPC.task={id:\"'+task.id+'\",help:0,start:'+window.gm.getTime()+',time:'+task.time+',data:\"'+task.data+'\"},window.story.show(window.passage.name)')+'</br></br>';
+        msg+=taskDescr(task)+window.gm.printLink("Choose this",'window.story.state.DngHC.task={id:\"'+task.id+'\",help:0,start:'+window.gm.getTime()+',time:'+task.time+',data:\"'+task.data+'\"},window.story.show(window.passage.name)')+'</br></br>';
     }
     function fooList(){_d.rolledTask.forEach(x=>(x.start=window.gm.getTime(),foo(x)));}
     //if task in progress - show task-info instead
@@ -271,92 +277,52 @@ window.gm.getAvailableTasks=function() {
     window.gm.printOutput(msg,'#choice');
 };
 //build the map and other data; if the dng is already initilized and has the correct version, the actual data is returned
-window.gm.build_DngPC=function() {
+window.gm.build_DngHC=function() {
     const _m=[
-        'D1  E1  F1--G1--H1--I1--J1--K1--L1',
-        '                                  ',
         'D2--E2  F2--G2--H2--I2--J2--K2--L2',
-        '|       |   |           |       | ',
-        'D3--E3--F3  G3--H3--I3--J3--K3  L3',
-        '    |   |       |           |     ',
-        'D4--E4  F4--G4--H4--I4--J4--K4--L4',
-        '    |   |   |           |         ',
-        'D5--E5  F5  G5--H5--I5  J5--K5--L5',
-        '|       |           |   |         ',
-        'D6--E6--F6--G6--H6--I6--J6--K6--L6'];
-    let grid =[
-    {room:'D2', dirs:['E2']},
-    {room:'E2', dirs:[]},
-    {room:'F2', dirs:['G2','F3']},
-    {room:'G2', dirs:['F2','H2','G3']},
-    {room:'H2', dirs:['I2','G2']},
-    {room:'I2', dirs:['J2','H2']},
-    {room:'J2', dirs:['I2','J3']},
-    {room:'K2', dirs:['L2','K3']},
-    {room:'L2', dirs:['K2','L3']},
-    {room:'D3', dirs:['D2']},
-    {room:'E3', dirs:['D3','E4','F3']},
-    {room:'F3', dirs:['F2']},
-    {room:'G3', dirs:['G2','G4']},
-    {room:'H3', dirs:['H4']},
-    {room:'I3', dirs:['I4','J3']},
-    {room:'J3', dirs:['I3','K3','J2']},
-    {room:'K3', dirs:['J3','K2']},
-    {room:'L2', dirs:['L2','L4']},
-    {room:'D4', dirs:[]},
-    {room:'E4', dirs:['D4']},
-    {room:'F4', dirs:['G4','F5']},
-    {room:'G4', dirs:['F4','H4','G5']    ,anno:['S']},
-    {room:'H4', dirs:['G4','I4','H3']},
-    {room:'I4', dirs:['H4','J4']},
-    {room:'J4', dirs:['I4','J5','K4']    ,anno:['B']},      
-    {room:'K4', dirs:['L4','K3']},
-    {room:'L4', dirs:['L3','K5']    ,anno:['B']},
-    {room:'D5', dirs:['D6','E5']},
-    {room:'E5', dirs:['E4','D5']},
-    {room:'F5', dirs:['F4','F6']},
-    {room:'G5', dirs:['G4','H5']},
-    {room:'H5', dirs:['G5','I5','H6']},
-    {room:'I5', dirs:['H5','J5']},
-    {room:'J5', dirs:['K5']},
-    {room:'K5', dirs:['J5', 'K6','L5']},
-    {room:'L5', dirs:['K5']},
-    {room:'D6', dirs:['D5','E6']},
-    {room:'E6', dirs:['D6','F6']},
-    {room:'G6', dirs:['F6','H6']}, 
-    {room:'F6', dirs:['E6','F5','G6']    ,anno:['B']},
-    {room:'H6', dirs:['I6','G6']},
-    {room:'I6', dirs:['I5','H6','J6']},
-    {room:'J6', dirs:['J5','I6','K6']},
-    {room:'K6', dirs:['L6','J6']},
-    {room:'L6', dirs:['K6']}];
+        '|       |                       | ',
+        'D3--E3--F3  G3  H3  I3--J3  K3  L3',
+        '    |       |   |   |       |     ',
+        'D4--E4  F4--G4--H4--I4  J4--K4--L4'];
+        let grid =[
+            {room:'G3', dirs:[{dir:'G4',exp:0}]},
+            {room:'H3', dirs:[{dir:'H4',exp:0}]             ,anno:['S']},
+            {room:'I3', dirs:[{dir:'I4'},{dir:'J3',exp:0}]},
+            {room:'J3', dirs:[{dir:'I3',exp:0}]},
+            {room:'F4', dirs:[{dir:'G4',exp:0}]},
+            {room:'G4', dirs:[{dir:'F4',exp:0},{dir:'H4',exp:0}]},
+            {room:'H4', dirs:[{dir:'H3',exp:0},{dir:'G4',exp:0},{dir:'I4',exp:0}]},
+            {room:'I4', dirs:[{dir:'H4',exp:0},{dir:'I3',exp:0}]}
+            ];
     let data,map={grid:grid,width:14,height:8,legend:'S=Start  B=Boss'}
     var s = window.story.state;    
-    const version=3;                            // <== increment this if you change anything below
-    if(s.DngPC && s.DngPC.version===version) {
-        data=s.DngPC;
+    const version=1;                            // <== increment this if you change anything below
+    if(s.DngHC && s.DngHC.version===version) {
+        data=s.DngHC;
     } else {
-        data=s.DngPC,data.version=version;
+        data=s.DngHC,data.version=version;
         data.tmp={tickPass:'', tier:0};
+        data.tmp.evtLeave = { //events on tile-leave
+            H3_H4: [{id:"wolf",type:'encounter',instance:"Ruff",tick:window.gm.getTime(),state:0,chance:100 },
+                    {id:"Trent",type:'encounter',instance:"Trent",tick:window.gm.getTime(),state:0,chance:100 }],
+            H4_I4: null
+        }
         data.tmp.evtEnter = { //events on tile-enter
             H4: {gas:{tick:window.gm.getTime(),state:0 }},
         }
         data.tmp.doors = { //doors
-            H4:{H3:{tick:'',state:0,token:2,tier:6}}
-            ,G4:{F4:{tick:'',state:0,token:1,tier:3 }}
-            ,J4:{K4:{tick:'',state:0,token:1,tier:3 },J5:{tick:'',state:0,token:1,tier:3 }}
-            ,K4:{K3:{tick:'',state:0,token:1,tier:3 }}
-            ,H6:{I6:{tick:'',state:0,token:1,tier:3 }}
+            G4:{F4:{tick:'',state:0,token:1,tier:3 }}
         }
         data.tmp.evtSpawn = { //respawn evts 
-            DngPC_I4: {chest:{tick:window.gm.getTime(),state:0, loot:[{id:"Money",count:30}]},
+            DngHC_I4: {chest:{tick:window.gm.getTime(),state:0, loot:[{id:"Money",count:30}]},
                         mushroom:{tick:window.gm.getTime(),state:0,loot:"BrownMushroom" }}
-            ,DngPC_K4: {mushroom:{tick:window.gm.getTime(),state:0,loot:"ViolettMushroom" }}
-            ,DngPC_F5: {mushroom:{tick:window.gm.getTime(),state:0,loot:"ViolettMushroom" }}
-            ,DngPC_G6: {chest:{tick:window.gm.getTime(),state:0,loot:[{id:"Money",count:30}]}}
+            ,DngHC_K4: {mushroom:{tick:window.gm.getTime(),state:0,loot:"ViolettMushroom" }}
+            ,DngHC_F5: {mushroom:{tick:window.gm.getTime(),state:0,loot:"ViolettMushroom" }}
+            ,DngHC_G6: {chest:{tick:window.gm.getTime(),state:0,loot:[{id:"Money",count:30}]}}
         }
-        data.tmp.mobs = [ //wandering mobs
-        ];
+        data.tmp.mobs = [ //wandering mobs pos=current tile
+            //{id:"HornettI4",mob:"hornett",pos:"I4",path:["I4","H4","I3"],state:0,tick:'',aggro:0}
+          ]
         data.task = {},data.rolledTask=[]; //active task
         data.tasks = { //task list  tick=timestamp last update  cnt=Number of finished task  min=minimum tierlevel   start=timestamp start
             bringIron:{tick:'',done:0,cnt:0,min:1}
