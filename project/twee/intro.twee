@@ -67,11 +67,11 @@ You might see a lot of links that are formated red-strikethrough. Those are curr
 <p class='author'>Loading of savegame is only possible in game. Saving might be disabled in some locations.</p>
 <p class='author'>[[Fetishes ! (spoiler alert)|List_Fetish]]</p></br></br><hr>
 <p> </br></p>
-<p><a0 onclick='startHC();'>You made a mess...</a></p><hr>
+<p><a0 onclick='startHA();'>You made a mess...</a></p><hr>
 </article>
 <script>function startHA() {
     window.story.state.DngSY.remainingNights=0,window.story.state.DngSY.dngLevel=0;
-    window.story.state.vars.spawnAt="HA_ProgressDay";
+    window.story.state.vars.spawnAt="HA_YourRoom";
     window.gm.enterVR();
     window.gm.player.levelUp(5);window.gm.player.autoLeveling();
     window.gm.player.Inv.addItem(window.gm.ItemsLib.ApocaFlower(),4),window.gm.player.Inv.addItem(window.gm.ItemsLib.PurpleBerry(),4);

@@ -5,6 +5,14 @@ window.gm.AlchemyDef = (function (Lib) {
     Lib.HealthPotion={name:'health potion', tier:0, ingr:['ApocaFlower','PurpleBerry','ApocaFlower'], result:'HealthPotion'};
     Lib.DominancePotion={name:'dominance potion', tier:0, ingr:['PurpleBerry','PurpleBerry','ApocaFlower'], result:'DominancePotion'};
 return Lib; }(window.gm.AlchemyDef || {}));
+
+window.gm.printGoto=function(location,time,energy,alias){
+    let msg='';
+    msg=window.gm.printLink((alias===''?location:alias),
+    "window.gm.addTime("+time.toString()+");window.story.show(\""+location+"\");")
+    return(msg);
+};
+
 window.gm.__Ingrds={};//temp- lookuptable
 //create list of recipes OR ingredients
 window.gm.brewInit=function(mode) {

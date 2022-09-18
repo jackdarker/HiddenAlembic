@@ -1,27 +1,26 @@
 :: HA_NextDay
 <section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
 <%window.gm.player.location=window.passage.name;%>
-A new day started and you need to decide how to move along.</br>
-</br>[[HA_ProgressDay]]
-At least you can decide for yourself and don't have to do what others say.
+A new day started and you need to decide how to move along.</br>At least you can decide for yourself and don't have to do what others say.
+</br>[[HA_YourRoom]]
 </article><article id="LogPanel"></article></section>
 
-:: HA_ProgressDay
+:: HA_YourRoom
 <section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
 <%window.gm.player.location=window.passage.name;%>
-A new day started and you need to decide how to move along.
+<p>A new day started and you need to decide how to move along.</p>
 <a0 id='howtoplay' onclick='(function($event){document.querySelector("#"+id+"~p").toggleAttribute("hidden");})(this);'>Hint</a>
 <p hidden>Every day you can choose multiple actions that will require time and energy.</p>
-</br></br>[[brew something|HA_Lab]] [[search ingredients|HA_Search_Home]]
+</br></br>[[brew something|HA_Lab]]
 </br></br>[[go somewhere|HA_Visit]]
 <a0 id='helpscout' onclick='(function($event){document.querySelector("#"+id+"~p").toggleAttribute("hidden");})(this);'>Hint</a>
 <p hidden>Walk around to familarize yourself with the surrounding. Maybe you can find something of use. Revisit locations you already know and try to find some specific resource. You will get a small skill gain and better skill provide better result. But you need the proper equipment like arrows and traps.</p>
 </br>todo its late, get some rest
 <a0 id='helpsleep' onclick='(function($event){document.querySelector("#"+id+"~p").toggleAttribute("hidden");})(this);'>Hint</a>
 <p hidden>Pass time by resting or sleep up until a new day. Both recovers some portion of health& energy.</p>
-</br><a0 onclick='($("tw-passage").fadeOut(1000,function(){window.gm.addTime(60);window.story.show("HA_ProgressDay");}));'>Nap 1hour</a>
+</br><a0 onclick='($("tw-passage").fadeOut(1000,function(){window.gm.addTime(60);window.story.show("HA_YourRoom");}));'>Nap 1hour</a>
 <%if(window.gm.getTimeStruct().hour<11) { %>
-<a0 onclick='($("tw-passage").fadeOut(1000,function(){window.gm.player.sleep(1800);window.story.show("HA_ProgressDay");}));'>Sleep Until Evening</a> 
+<a0 onclick='($("tw-passage").fadeOut(1000,function(){window.gm.player.sleep(1800);window.story.show("HA_YourRoom");}));'>Sleep Until Evening</a> 
 <%} else {%>
 <a0 onclick='($("tw-passage").fadeOut(1000,function(){window.gm.player.sleep(700);window.story.show("HA_Sleep");}));'>Sleep Until Morning</a>
 <%}%>
@@ -29,23 +28,26 @@ A new day started and you need to decide how to move along.
 todo quickaccess to work
 </article><article id="LogPanel"></article></section>
 
+
 :: HA_Visit
 <section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
 <%window.gm.player.location=window.passage.name;%>
 <a0 onclick='explore()'>explore</a></br>
+</br><%if(!!window.story.state.Known.places.Garden){%>[[go to garden|HA_Garden]] <%}%>
 </br>close by:
 </br>[[visit Inn]] [[visit Thomas]] </br>
 </br>further away: (requires time and energy)
 </br><%if(!!window.story.state.Known.places.Farm){%>[[go to farm|HA_Farm]] <%};if(!!window.story.state.Known.places.Forest){%>[[walk into the woods|HA_Forest]]<%}%> [[go to city Redwick|HA_Road_Redwick]] </br>
-</br>[[go home|HA_ProgressDay]]</br>
+</br><%=window.gm.printGoto('HA_YourRoom',5,0,'go home')%></br>
 </article><article id="LogPanel"></article></section>
 <script> function explore() {
     let rnd = _.random(0,100), s=window.story.state;
     window.gm.pushLog("rolled "+rnd);
     s.tmp.args = [];
-    if(!s.Known.places.Barellless) { window.story.show('HA_Barellless_Intro');return;}
-    if(!s.Known.places.Forest) { window.story.show('HA_Woods_Intro');return;}
-    if(!s.Known.places.Farm) { window.story.show('HA_Farm_Intro');return;}
+    if(!s.Known.places.Barellless){window.story.show('HA_Barellless_Intro');return;}
+    if(!s.Known.places.Garden){window.story.show('HA_Garden_Intro');return;}
+    if(!s.Known.places.Forest){window.story.show('HA_Woods_Intro');return;}
+    if(!s.Known.places.Farm){window.story.show('HA_Farm_Intro');return;}
     if(rnd > 70 ) {
          window.story.show('ForestWolfEncounter');
     } else if(rnd > 65 ) {
@@ -74,7 +76,7 @@ Also, higher tier potions might need better equipment.</p>
 </br><a0 onclick='window.gm.brewInit("new")'>new recipe</a>
 </br><div id='recipe'></div><div id='retorte'></br>
 </div><a0 onclick='window.gm.brewCraftPotion()'>brew</a></br><div id='output'></div>
-</br></br>[[back|HA_ProgressDay]]
+</br></br>[[back|HA_YourRoom]]
 </article><article id="LogPanel"></article></section>
 
 :: HA_Sleep
@@ -91,8 +93,9 @@ Todo intro
 
 :: HA_Forest
 <section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
-Visit the woods
-</br>[[Next|HA_Visit]]
+You walk along the paths through the wood.
+For sure you might find some ingredients here. But is it worth to walk deeper into the forest? You dont know what is lurking there.
+</br>[[Return Home|HA_Visit]]
 </article><article id="LogPanel"></article></section>
 
 
@@ -109,6 +112,27 @@ For sure you might find some ingredients here. But is it worth to walk deeper in
 <%window.story.state.Known.places.Farm=1;%>
 Near the crossroad is a farm. 
 </br>[[Next|HA_Visit]]
+</article><article id="LogPanel"></article></section>
+
+
+:: HA_Garden_Intro
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.story.state.Known.places.Garden=1;%>
+Beneath the house is a small, overgrown garden. It would take some effort to clear away the brush and weeds to make room for herbs and vegetables. 
+</br>[[Next|HA_Garden]]
+</article><article id="LogPanel"></article></section>
+
+:: HA_Garden
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.story.state.Known.places.Garden=1;%>
+There is a plot of earth that needs to be cleared of scrubs (0% done). [Use hoe]
+</br>To try to tear out the tough growths with bare hands seems futile. Better get a hoe to speed this up. 
+
+</br>Plants on this plot are growing well but the earth looks dry (Apoca blum 30%). [water] [fertilizer] [hoe]
+
+</br>Plants on this plot are ready for harvesting. [harvest]
+
+</br>[[Return Home|HA_Visit]]
 </article><article id="LogPanel"></article></section>
 
 :: HA_Barellless_Intro
