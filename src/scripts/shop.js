@@ -23,10 +23,10 @@ window.gm.shop.printShopBuyEntry= function(item,cost,cbCanBuy,cbPostBuy=null){
     var entryBuy = document.createElement('a'); //entryBuy is a link that actual buys something or shows why not
     entryBuy.id=item.id;entryBuy.href='javascript:void(0)';
     entryBuy.textContent="Buy (got "+_available+")";
-    if(cost.for>0) {
+    if(cost.for>0){
         var result = cbCanBuy(item);
         desc2 = item.name+" (x"+cost.for+")";
-        if(result.OK===false) {
+        if(result.OK===false){
             entryBuy.textContent="";
             desc2 = desc2 + " "+ result.msg;
         } else {
@@ -50,7 +50,7 @@ window.gm.shop.printShopBuyEntry= function(item,cost,cbCanBuy,cbPostBuy=null){
   window.gm.shop.defaultCanBuy =function(item,cost){
     var result ={OK:true,msg:''};//, postBuy:null};
     var money= window.gm.player.Inv.countItem(cost.id);
-    if(money>=cost.count) {
+    if(money>=cost.count){
         result.msg='buy for '+cost.count+'x '+cost.id;
     } else {
         result.OK=false;
@@ -79,16 +79,16 @@ window.gm.shop.printShopBuyEntry= function(item,cost,cbCanBuy,cbPostBuy=null){
     $("div#choice")[0].offsetWidth; //this forces the browser to notice the class removal
     $("div#choice")[0].classList.add("div_alarm");
   };
-  window.gm.shop.cbCanBuyPerverse = function(item,cost,pervcost) {
+  window.gm.shop.cbCanBuyPerverse = function(item,cost,pervcost){
     var result = window.gm.shop.defaultCanBuy(item,cost);
-    if(window.gm.player.Stats.get('corruption').value<pervcost) {
+    if(window.gm.player.Stats.get('corruption').value<pervcost){
         result.msg += ' ; requires corruption> '+pervcost;
         result.OK=false;
     }
     return(result);
   };
   //this will add item to player; money-deduct or other cost has to be done in cbPostBuy ! 
-  window.gm.shop.buyFromShop=function(item, cost,cbPostBuy) {
+  window.gm.shop.buyFromShop=function(item, cost,cbPostBuy){
     window.gm.player.changeInventory(item,cost.for);
     if(cbPostBuy) cbPostBuy(item);
     //window.gm.refreshAllPanel(); dont refresh fullscreen or might reset modified textoutput
@@ -96,7 +96,7 @@ window.gm.shop.printShopBuyEntry= function(item,cost,cbCanBuy,cbPostBuy=null){
     renderToSelector("#panel", "listbuy");
   };
   //this will remove item from player; money-deduct or other cost has to be done in cbPostSell ! 
-  window.gm.shop.sellToShop=function(item, cost,cbPostSell) {
+  window.gm.shop.sellToShop=function(item, cost,cbPostSell){
     window.gm.player.changeInventory(item,-1*cost.for);
     if(cbPostSell) cbPostSell(item);
     //window.gm.refreshAllPanel(); dont refresh fullscreen or might reset modified textoutput
@@ -122,9 +122,9 @@ window.gm.shop.printShopBuyEntry= function(item,cost,cbCanBuy,cbPostBuy=null){
     entrySell.id=item.id; entrySell.href='javascript:void(0)';
     entrySell.textContent="Sell (got "+_available+")";
     var desc2 = item.name+" (x"+cost.for+")";
-    if(_available>=cost.for) {
+    if(_available>=cost.for){
         var result = cbCanSell(item);
-        if(result.OK===false) {
+        if(result.OK===false){
             entrySell.textContent="";
             desc2 = desc2 + " "+ result.msg;
         } else {

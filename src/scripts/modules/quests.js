@@ -1,3 +1,8 @@
+window.gm.FKnow = { //Flag-names what the player "knows"
+    LewdMark : "LewdMark",
+    Slime: "Slime"
+};
+
 //this holds the definition of all quests; but which quests/ms are active is stored in window.story.state.quests !
 window.gm.questDef = window.gm.questDef || {};
 {
@@ -5,7 +10,7 @@ window.gm.questDef = window.gm.questDef || {};
     let mile1 = new QuestMilestone(1,"Find the garden","You heard rumors that there is a garden behind the house.Find it.",
         //each milestone should define a function that checks if the milestone is fullfilled or not or if no more milestones
         function(){ 
-          if(window.passage.name==="Garden") {
+          if(window.passage.name==="Garden"){
             return(100);
           }
           else return (0);

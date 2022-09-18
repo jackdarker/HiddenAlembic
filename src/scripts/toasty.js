@@ -1,7 +1,7 @@
 /*! Toasty.js - v1.5.0 - 2018-05-04
 * https://jakim.me/Toasty.js/
 * Copyright (c) 2015-2018 Jakim Hernández; Licensed MIT */
-;(function () {
+;(function (){
 
     'use strict';
     
@@ -75,11 +75,11 @@
 
         // callback:
         // onShow function will be fired when a toast message appears.
-        onShow: function (type) {},
+        onShow: function (type){},
 
         // callback:
         // onHide function will be fired when a toast message disappears.
-        onHide: function (type) {},
+        onHide: function (type){},
 
         // the placement where prepend the toast container:
         prependTo: document.body.childNodes[0]
@@ -126,7 +126,7 @@
      *
      * @return object
      */
-    function extend () {
+    function extend (){
 
         var extended = {};
         var deep = false;
@@ -134,14 +134,14 @@
         var length = arguments.length;
 
         // check if a deep merge
-        if (Object.prototype.toString.call(arguments[0]) === '[object Boolean]' ) {
+        if (Object.prototype.toString.call(arguments[0]) === '[object Boolean]' ){
             deep = arguments[0];
             i ++;
         }
 
         // merge the object into the extended object
-        var merge = function (obj) {
-            for (var prop in obj) if (Object.prototype.hasOwnProperty.call(obj, prop) === true) {
+        var merge = function (obj){
+            for (var prop in obj) if (Object.prototype.hasOwnProperty.call(obj, prop) === true){
                 // if deep merge and property is an object, merge properties
                 if (deep && Object.prototype.toString.call(obj[prop]) === '[object Object]')
                     extended[prop] = extend(true, extended[prop], obj[prop]);
@@ -151,7 +151,7 @@
         };
 
         // loop through each object and conduct a merge
-        for (i; i < length; i++) {
+        for (i; i < length; i++){
             var obj = arguments[i];
             merge(obj);
         }
@@ -164,7 +164,7 @@
      *
      * @return HTML Element
      */
-    function node(name) {
+    function node(name){
         return document.createElement(name || 'div');
     }
 
@@ -173,7 +173,7 @@
      *
      * @return HTML Element
      */
-    function parentElement (el) {
+    function parentElement (el){
         return el.parentElement || el.parentNode;
     }
 
@@ -182,7 +182,7 @@
      *
      * @return RegExp Obj
      */
-    function classReg (className) {
+    function classReg (className){
         return new RegExp('(^|\\s+)' + className + '(\\s+|$)');
     }
 
@@ -196,13 +196,13 @@
      * 
      * @return bool
      */
-    function containsClass (el, className) {
+    function containsClass (el, className){
         var fn;
-        if (document.documentElement.classList) {
-            fn = function (el, className) { return el.classList.contains(className); }
+        if (document.documentElement.classList){
+            fn = function (el, className){ return el.classList.contains(className); }
         } else {
-            fn = function (el, className) {
-                if (! el || ! el.className)
+            fn = function (el, className){
+                if (! n || ! el.className)
                     return false;
                 return el.className.match(classReg(className));
             }
@@ -220,22 +220,22 @@
      *
      * @return HTML Element|bool false
      */
-    function addClass (el) {
+    function addClass (el){
         var fn;
         var classNames = arguments;
-        if (classNames.length <= 1 || typeof el != 'object')
+        if (classNames.length <= 1 || typeof n != 'object')
             return false;
 
         if (document.documentElement.classList)
-            fn = function (el, classNames) {
-                for (var i = 1; i < classNames.length; i ++) if (typeof classNames[i] == 'string') {
+            fn = function (el, classNames){
+                for (var i = 1; i < classNames.length; i ++) if (typeof classNames[i] == 'string'){
                     el.classList.add(classNames[i]);
                 }
                 return el;
             }
         else
-            fn = function (el, classNames) {
-                for (var i = 1; i < classNames.length; i ++) if (! containsClass(el, classNames[i]) && typeof classNames[i] == 'string') {
+            fn = function (el, classNames){
+                for (var i = 1; i < classNames.length; i ++) if (! containsClass(el, classNames[i]) && typeof classNames[i] == 'string'){
                     el.className += (el.className ? ' ' : '') + classNames[i];
                 }
                 return el;
@@ -254,22 +254,22 @@
      *
      * @return HTML Element|bool false
      */
-    function removeClass (el) {
+    function removeClass (el){
         var fn;
         var classNames = arguments;
-        if (classNames.length <= 1 || typeof el != 'object')
+        if (classNames.length <= 1 || typeof n != 'object')
             return false;
         
         if (document.documentElement.classList)
-            fn = function (el, classNames) {
-                for (var i = 1; i < classNames.length; i ++) if (typeof classNames[i] == 'string') {
+            fn = function (el, classNames){
+                for (var i = 1; i < classNames.length; i ++) if (typeof classNames[i] == 'string'){
                     el.classList.remove(classNames[i]);
                 }
                 return el;
             }
         else
-            fn = function (el, classNames) {
-                for (var i = 1; i < classNames.length; i ++) if (containsClass(el, classNames[i]) && typeof classNames[i] == 'string') {
+            fn = function (el, classNames){
+                for (var i = 1; i < classNames.length; i ++) if (containsClass(el, classNames[i]) && typeof classNames[i] == 'string'){
                     el.className = el.className.replace(classReg(classNames[i]), '$2');
                 }
                 return el;
@@ -287,12 +287,12 @@
      *
      * @return bool
      */
-    function toggleClass (el, className) {
+    function toggleClass (el, className){
         var fn;
         if (document.documentElement.classList)
-            fn = function (el, className) { return el.classList.toggle(className); }
+            fn = function (el, className){ return el.classList.toggle(className); }
         else
-            fn = function (el, className) {
+            fn = function (el, className){
                 var exists = containsClass(el, className);
                 var caller = exists === true ? removeClass : addClass;
                     caller(el, className);
@@ -314,14 +314,14 @@
      * @param  {boolean}  bubbling
      * @return el
      */
-    function addEvent (el, evt, fn, bubble) {
-        if ('addEventListener' in el) {
+    function addEvent (el, evt, fn, bubble){
+        if ('addEventListener' in el){
             // BBOS6 doesn't support handleEvent, catch and polyfill:
             try {
                 el.addEventListener(evt, fn, bubble);
-            } catch (e) {
-                if (typeof fn === 'object' && fn.handleEvent) {
-                    el.addEventListener(evt, function (e) {
+            } catch (e){
+                if (typeof fn === 'object' && fn.handleEvent){
+                    el.addEventListener(evt, function (e){
                         // bind fn as this and set first arg as event object:
                         fn.handleEvent.call(fn, e);
                     }, bubble);
@@ -329,10 +329,10 @@
                     throw e;
                 }
             }
-        } else if ('attachEvent' in el) {
+        } else if ('attachEvent' in el){
             // check if the callback is an object and contains handleEvent:
-            if (typeof fn === 'object' && fn.handleEvent) {
-                el.attachEvent('on' + evt, function () {
+            if (typeof fn === 'object' && fn.handleEvent){
+                el.attachEvent('on' + evt, function (){
                     // bind fn as this:
                     fn.handleEvent.call(fn);
                 });
@@ -357,22 +357,22 @@
      * @param  {boolean}  bubbling
      * @return el
      */
-    function removeEvent (el, evt, fn, bubble) {
-        if ('removeEventListener' in el) {
+    function removeEvent (el, evt, fn, bubble){
+        if ('removeEventListener' in el){
             try {
                 el.removeEventListener(evt, fn, bubble);
-            } catch (e) {
-                if (typeof fn === 'object' && fn.handleEvent) {
-                    el.removeEventListener(evt, function (e) {
+            } catch (e){
+                if (typeof fn === 'object' && fn.handleEvent){
+                    el.removeEventListener(evt, function (e){
                         fn.handleEvent.call(fn, e);
                     }, bubble);
                 } else {
                     throw e;
                 }
             }
-        } else if ('detachEvent' in el) {
-            if (typeof fn === 'object' && fn.handleEvent) {
-                el.detachEvent('on' + evt, function () {
+        } else if ('detachEvent' in el){
+            if (typeof fn === 'object' && fn.handleEvent){
+                el.detachEvent('on' + evt, function (){
                     fn.handleEvent.call(fn);
                 });
             } else {
@@ -391,9 +391,9 @@
      *
      * @return string|undefined (if transitions not supported by client)
      */
-    function whichTransitionEvent () {
+    function whichTransitionEvent (){
         var t,
-            el = node('transitionElement');
+            n = node('transitionElement');
 
         var transitions = {
             WebkitTransition : 'webkitTransitionEnd',
@@ -402,7 +402,7 @@
             transition       : 'transitionend'
         };
 
-        for (t in transitions) if (el.style[t] !== undefined) {
+        for (t in transitions) if (el.style[t] !== undefined){
             return transitions[t];
         }
     }
@@ -413,7 +413,7 @@
      * 
      * @return number
      */
-    function getAutoCloseDuration (message, duration, settings) {
+    function getAutoCloseDuration (message, duration, settings){
             duration = duration || settings.duration;
         if (duration == 0)
             duration = message.length * (_timeOffset /2);
@@ -425,16 +425,16 @@
      *
      * @return object
      */
-    function walker (obj, map) {
+    function walker (obj, map){
 
-        for (var o in obj) if (obj.hasOwnProperty(o) === true) {
+        for (var o in obj) if (obj.hasOwnProperty(o) === true){
         // ini loop:
-            switch (typeof obj[o]) {
+            switch (typeof obj[o]){
                 case 'object':
                     walker(obj[o], map);
                     break;
                 case 'string':
-                    for (var m in map) if (map.hasOwnProperty(m) === true) {
+                    for (var m in map) if (map.hasOwnProperty(m) === true){
                         obj[o] = obj[o].replace(m, map[m]);
                     }
                     break;
@@ -451,10 +451,10 @@
      *
      * @return void
      */
-    var playSound = function (type, container, sounds, playerclass) {
+    var playSound = function (type, container, sounds, playerclass){
         var sound = sounds[type],
             audio = addClass(node('audio'), playerclass);
-            addEvent(audio, 'ended', function() {
+            addEvent(audio, 'ended', function(){
                 var parent = parentElement(this);
                     this.remove();
                 // also, remove the main container if it empty:
@@ -472,22 +472,22 @@
      *
      * @return void
      */
-    var showToast = function (type, el, container, animate, duration, insertBefore, callback) {
+    var showToast = function (type, el, container, animate, duration, insertBefore, callback){
 
         var timer = 0;
-        var delay = function (callback, ms) {
+        var delay = function (callback, ms){
             clearTimeout(timer);
             timer = setTimeout(callback, ms);
         };
 
-        var onShowToast = function (e) {
+        var onShowToast = function (e){
             removeEvent(e.target, e.type, onShowToast, false);
             if (typeof callback == 'function') callback(type);
         };
 
-        var show = function () {
+        var show = function (){
             var transitionEvent = whichTransitionEvent();
-            if (transitionEvent !== undefined) {
+            if (transitionEvent !== undefined){
                 // initialize the CSS transition event:
                 addEvent(el, transitionEvent, onShowToast, false);
             } else {
@@ -510,32 +510,32 @@
      *
      * @return void
      */
-    var hideToast = function (type, el, duration, animate, callback) {
+    var hideToast = function (type, el, duration, animate, callback){
 
         var timer = 0;
-        var delay = function (callback, ms) {
+        var delay = function (callback, ms){
             clearTimeout(timer);
             timer = setTimeout(callback, ms);
         };
 
-        var onHideToast = function (e) {
+        var onHideToast = function (e){
             removeEvent(e.target, e.type, onHideToast, false);
             remove();
             if (typeof callback == 'function') callback(type);
         };
 
-        var remove = function () {
+        var remove = function (){
             var container = parentElement(el); // the wrapper.
             el.remove();
             var num = container.childNodes.length;
-            if (num < 1) {
+            if (num < 1){
                 parentElement(container).remove();
             }
         };
 
-        var hide = function () {
+        var hide = function (){
             var transitionEvent = whichTransitionEvent();
-            if (transitionEvent !== undefined) {
+            if (transitionEvent !== undefined){
                 // initialize the CSS transition event:
                 addEvent(el, transitionEvent, onHideToast, false);
             } else {
@@ -555,8 +555,8 @@
      *
      * @return void
      */
-    var hideToastOnClick = function (type, el, animate, callback, class2close) {
-        var hideOnClick = function (e) {
+    var hideToastOnClick = function (type, el, animate, callback, class2close){
+        var hideOnClick = function (e){
             e.stopPropagation();
             removeClass(el, class2close);
             hideToast(type, el, 0, animate, callback);
@@ -570,26 +570,26 @@
      *
      * @return void
      */
-    var showProgressBar = function (type, el, duration, transition) {
+    var showProgressBar = function (type, el, duration, transition){
         
         var timer = 0;
-        var delay = function (callback, ms) {
+        var delay = function (callback, ms){
             clearTimeout(timer);
             timer = setTimeout(callback, ms);
         };
 
-        var progressbar = function () {
+        var progressbar = function (){
             var progressBar = addClass(node('div'), transition.progressbar, transition.progressbar + '--' + type);
             el.appendChild(progressBar);
 
             var iterat = 0,
                 offset = 0;
-            var interval = setInterval(function() {
+            var interval = setInterval(function(){
 
                 iterat ++;
                 offset = Math.round((1000 *iterat) / duration);
             
-                if (offset > 100) {
+                if (offset > 100){
                     clearInterval(interval);
                 } else {
                     progressBar.style.width = offset + '%';
@@ -606,8 +606,8 @@
      *
      * @return string
      */
-    var registerTransition = function (self, name) {
-        if (typeof name === "string") {
+    var registerTransition = function (self, name){
+        if (typeof name === "string"){
             self.classmap[name] = extend(true, _mappings, {});
             self.classmap[name] = walker(self.classmap[name], {
                 '{:class-name}': self.settings.classname,
@@ -621,28 +621,28 @@
      * The exposed public object:
      */
 
-    var Toasty = function (options) {
+    var Toasty = function (options){
         this.settings = {};
         this.classmap = {};
         this.configure(typeof options === 'object' ? options : {});
         // add classmap for default transitions:
         if (typeof _transitions === 'object')
-            for (var key in _transitions) if (_transitions.hasOwnProperty(key) === true) {
+            for (var key in _transitions) if (_transitions.hasOwnProperty(key) === true){
                 registerTransition(this, _transitions[key]);
             }
     };
 
-    Toasty.prototype.configure = function (options) {
+    Toasty.prototype.configure = function (options){
         this.settings = extend(true, _defaults, this.settings, options);
         return this;
     };
 
-    Toasty.prototype.transition = function (name) {
+    Toasty.prototype.transition = function (name){
         this.settings.transition = registerTransition(this, name);
         return this;
     };
 
-    Toasty.prototype.toast = function (type, message, duration) {
+    Toasty.prototype.toast = function (type, message, duration){
         
         var classes = this.classmap;
         var options = this.settings;
@@ -661,7 +661,7 @@
             container = document.querySelector('.' + transition.container);
 
         var containerExists = !! container;
-        if (containerExists) {
+        if (containerExists){
             // create the toast container if not exists:
             container = container.querySelector('.' + transition.mainwrapp); // use the wrapper instead of main container.
         } else {
@@ -724,32 +724,32 @@
         return this;
     };
 
-    Toasty.prototype.info = function (message, duration) {
+    Toasty.prototype.info = function (message, duration){
         duration = getAutoCloseDuration(message, duration, this.settings);
         this.toast("info", message, duration);
     };
 
-    Toasty.prototype.success = function (message, duration) {
+    Toasty.prototype.success = function (message, duration){
         duration = getAutoCloseDuration(message, duration, this.settings);
         this.toast("success", message, duration);
     };
 
-    Toasty.prototype.warning = function (message, duration) {
+    Toasty.prototype.warning = function (message, duration){
         duration = getAutoCloseDuration(message, duration, this.settings);
         this.toast("warning", message, duration);
     };
 
-    Toasty.prototype.error = function (message, duration) {
+    Toasty.prototype.error = function (message, duration){
         duration = getAutoCloseDuration(message, duration, this.settings);
         this.toast("error", message, duration);
     };
 
     // FALLBACK:
     // Create Element.remove() function if not exist:
-    if ('remove' in Element.prototype) {
+    if ('remove' in Element.prototype){
         // the browser supports .remove() function...
     } else {
-        Element.prototype.remove = function() {
+        Element.prototype.remove = function(){
             if (this.parentNode)
                 this.parentNode.removeChild(this);
         };

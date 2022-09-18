@@ -1,13 +1,14 @@
 "use strict";
 class Item {
-    constructor(name) {
+    constructor(name){
         this.id = this.name = name;  //id is unique in database(no whitespace !); name is for display
         this.tags = [];
+        this.bonus =[]; //Curse or Bonus assigned to item   //todo can ITEMS be cursed too?
         this.price=this.basePrice=10; //how much worth it is
     }
-    get parent() {return this._parent?this._parent():null;}
+    get parent(){return this._parent?this._parent():null;}
     _relinkItems(parent){this._parent=window.gm.util.refToParent(parent);}
-    _updateId() { 
+    _updateId(){ 
         //because equipment can have dynamic assigned curses, id needs to be generated dynamical too
         //and then we also have to update id in inventory list
         var nId="_"+md5(JSON.stringify(this));  //add _ or queryselector() might not work if id starts with number ?!
@@ -17,13 +18,13 @@ class Item {
         if(this.parent) this.parent._updateId(_oldId);
     }
     //called by SkillUseItem
-    targetFilter(targets) {
+    targetFilter(targets){
         return([]); //default unuseable in combat
     }
     //tag or [tag]
-    hasTag(tags) {
-        if(tags instanceof Array) {
-            for(var i=0;i<tags.length;i++) {
+    hasTag(tags){
+        if(tags instanceof Array){
+            for(var i=0;i<tags.length;i++){
                 if(this.hasTag(tags[i])) return(true);
             }
             return(false);
@@ -40,78 +41,80 @@ class Item {
             if(!this.tags.includes(tags[i])) this.tags.push(tags[i]);
         }
     }
+    //returns the svg-piture name to display in inventory or wardrobe
+    get pictureInv(){return ("unknown")}
     //implement this for description
-    get desc() { return(this.descShort);}
+    get desc(){ return(this.descShort);}
     //implement this for description
-    get descShort() { return(this.name);}
+    get descShort(){ return(this.name);}
     //context is the owner of item (parent of inventory), on is target (character)
-    usable(context,on=null) {return({OK:false, msg:'Cannot use.'});}  //todo add 2.useslot?
-    use(context,on=null) {return({OK:false, msg:'Cannot use.'});}
-    onTimeChange(now) {};
+    usable(context,on=null){return({OK:false, msg:'Cannot use.'});}  //todo add 2.useslot?
+    use(context,on=null){return({OK:false, msg:'Cannot use.'});}
+    onTimeChange(now){};
 }
 //an Inventory-Component to store items
 class Inventory {
-    constructor(externlist) {  
+    constructor(externlist){  
         this.list = externlist ? externlist : [];
       window.storage.registerConstructor(Inventory);
     }
-    get parent() {return this._parent?this._parent():null;}
-    toJSON() {return window.storage.Generic_toJSON("Inventory", this); }
-    static fromJSON(value) { 
+    get parent(){return this._parent?this._parent():null;}
+    toJSON(){return window.storage.Generic_toJSON("Inventory", this); }
+    static fromJSON(value){ 
         var _x = window.storage.Generic_fromJSON(Inventory, value.data);
         return(_x);
     }
-    _relinkItems() {  //call this after loading save data to reparent; if you get an error that the function is missing, you might have forgotten to window.storage.registerConstructor
-        for(var i=0; i<this.list.length; i++) {
+    _relinkItems(){  //call this after loading save data to reparent; if you get an error that the function is missing, you might have forgotten to window.storage.registerConstructor
+        for(var i=0; i<this.list.length; i++){
             if(this.list[i].item) this.list[i].item._relinkItems(this);
         }
     }
-    _updateId(oldId) { //updates id if changed, see item._updateId
+    _updateId(oldId){ //updates id if changed, see item._updateId
         let slot = findItemSlot(oldId);
         if(slot<0) return;
         this.list[slot].id = this.list[slot].item.id;
     }
-    postItemChange(id,operation,msg) {
+    postItemChange(id,operation,msg){
         window.gm.pushLog('Inventory: '+operation+' '+id+' '+msg);
     }
-    count() {return(this.list.length);}
-    countItem(id) {
+    count(){return(this.list.length);}
+    countItem(id){
         var _i = this.findItemSlot(id);
         if(_i<0) return(0);
         return(this.list[_i].count);  
     }
-    findItemSlot(id) {
-        for (var i = 0; i < this.count(); i++) {
+    findItemSlot(id){
+        for (var i = 0; i < this.count(); i++){
             if(this.list[i].id===id) return(i);
         }
         return(-1);
     }
-    getItemId(slot) {
+    getItemId(slot){
         return(this.list[slot].id);
     }
-    getItem(id) {
+    getItem(id){
         var _idx = this.findItemSlot(id);
         if(_idx<0) throw new Error('no such item: '+id);
         return(this.list[_idx].item);
     }
     //returns all Ids in list
-    getAllIds() {   
+    getAllIds(){   
         var ids=[];
-        for(var i=0;i<this.list.length;i++) {
+        for(var i=0;i<this.list.length;i++){
             ids.push(this.list[i].id);
         }
         return(ids);
     }
-    addItem(item,count=1) {
+    addItem(item,count=1){
         var _i = this.findItemSlot(item.id);
         item._parent=window.gm.util.refToParent(this);
-        if(_i<0) {
+        if(_i<0){
             this.list.push({id: item.id,count: count, item:item});
         }
         else this.list[_i].count+=count;
         this.postItemChange(item.name,"added","");
     }
-    removeItem(id,count=1) {
+    removeItem(id,count=1){
         var _i = this.findItemSlot(id);
         if(_i<0) return; //just skip if not found
         var _item = this.getItem(id);
@@ -120,15 +123,15 @@ class Inventory {
         this.postItemChange(_item.name,"removed","");
     }
     //convience method to check if item is usable
-    usable(id,on=null) {
+    usable(id,on=null){
         var _item = this.getItem(id);
         return (_item.usable(this,on));
     }
     //uses an item by calling item.use
-    use(id,on=null) {
+    use(id,on=null){
         var _item = this.getItem(id);
         var result = _item.use(this,on);
-        if(result.OK) {
+        if(result.OK){
             this.postItemChange(_item.name,"used",result.msg);
         }
         return(result);

@@ -11,12 +11,12 @@
   * @extends {Inventory}
   */
  class StatsDictionary extends Inventory {
-    constructor(externlist) {
+    constructor(externlist){
         super(externlist);
         window.storage.registerConstructor(StatsDictionary);
     }
-    toJSON() {return window.storage.Generic_toJSON("StatsDictionary", this); };
-    static fromJSON(value) {
+    toJSON(){return window.storage.Generic_toJSON("StatsDictionary", this); };
+    static fromJSON(value){
         let _x = window.storage.Generic_fromJSON(StatsDictionary, value.data);
         return(_x);
     }
@@ -27,8 +27,8 @@
      * @return {*} 
      * @memberof StatsDictionary
      */
-    get(id) {return(this.getItem(id));}
-    modifyHidden(id,hidden) {
+    get(id){return(this.getItem(id));}
+    modifyHidden(id,hidden){
         let _data = this.get(id).data;
         _data.hidden=hidden;
     }
@@ -37,7 +37,7 @@
      * adds a modifier to a Stat or replaces it
      * @memberof StatsDictionary
      */
-    addModifier(toId, modData) {
+    addModifier(toId, modData){
         let _stat = this.get(toId);
         let _oldMods = _stat.data.modifier;
         let _x=-1;
@@ -48,7 +48,7 @@
         _oldMods.push(modData);
         window.gm.pushLog(_stat.Calc().msg);
     }
-    removeModifier(toId,modData) {
+    removeModifier(toId,modData){
         let _stat = this.get(toId);
         let _oldMods = _stat.data.modifier;
         let _x=-1;
@@ -59,19 +59,19 @@
         window.gm.pushLog(_stat.Calc().msg);
     }
     //override
-    postItemChange(id,operation,msg) {
+    postItemChange(id,operation,msg){
         window.gm.pushLog('Stats: '+operation+' '+id+' '+msg);
     }
     //override; only use to create new stats !
-    addItem(stat) {
+    addItem(stat){
         let _i = this.findItemSlot(stat.name);
-        if(_i<0) {
+        if(_i<0){
             stat._parent=window.gm.util.refToParent(this);
             this.list.push({'id': stat.id,'count': 1, item:stat});
         }
     }
     //override
-    removeItem(id) {
+    removeItem(id){
         let _i = this.findItemSlot(id);
         if(_i<0) return; //just skip if not found
         let _stat = this.get(id);
@@ -79,15 +79,27 @@
         _stat.calc();   //trigger update of dependent stat
     }
     /**
-     *
+     * adds value to the stats value
      *
      * @param {*} id
      * @param {*} value
      * @memberof StatsDictionary
      */
-    increment( id, value) {
+    increment( id, value){
         let attr = this.get(id);
         attr.data.base += value;
+        window.gm.pushLog(attr.Calc(this,id).msg); // todo show only for player
+    }
+    /**
+     * modifys stats value relative, f.e. 0.3 -> add 30% of stats value
+     *
+     * @param {*} id
+     * @param {*} value
+     * @memberof StatsDictionary
+     */
+    scaleValue(id,value){
+        let attr = this.get(id);
+        attr.data.base = attr.data.base*(1.0+value);
         window.gm.pushLog(attr.Calc(this,id).msg); // todo show only for player
     }
 }
@@ -97,44 +109,71 @@
  * @class Stat
  */
 class Stat {
-    static dataPrototype() {    
-        return({id: '', base: 0,value: 0, limits: [],modifier:[], modifys:[], hidden:0});
+    static dataPrototype(){    
+        return({id: '', base: 0,value: 0, limits: [{max:999999,min:-999999}],modifier:[], modifys:[], hidden:0});
         //limit = {min: max:}   limit to apply to value and base; either statid or number
         //modifier {id: bonus:}      Stat that modifys value, bonus is value to add             todo: multiplier but then we have to sort modifiers somehow
         //modifys {id:}         point to the Stats that have modifiers from this stat or is used as limit
         //hidden 0 = visible, 1= name unreadable, 2= value unreadable, 4= hidden
     }
-    constructor() {
+    //returns array with Max,Min,Regen,Stat that you have to add to your stats list; you also need to adjust limits
+    static setupStatWithLimitAndRegen(name,opt={base:100},def={}){
+        let stats=[],_stat,_n;
+        if(opt.max!==undefined){
+            _stat=(def.max?def.max:new Stat()),_n=_stat.data; 
+            _n.id=name+'Max',_n.base=opt.max,_n.hidden=4,_n.value=opt.max,_n.modifys=[{id:name}],_n.limits=[{max:999999,min:0}];
+            stats.push(_stat);
+        }
+        if(opt.min!==undefined){
+            _stat=(def.min?def.min:new Stat()),_n=_stat.data; 
+            _n.id=name+'Min',_n.base=opt.min,_n.hidden=4,_n.value=opt.min,_n.modifys=[{id:name}],_n.limits=[{max:0,min:-999999}];
+            stats.push(_stat);
+        }
+        if(opt.regen!==undefined){
+            _stat=(def.regen?def.regen:new Stat()),_n=_stat.data; 
+            _n.id=name+'Regen',_n.base=opt.regen,_n.hidden=4,_n.value=opt.regen,_n.limits=[{max:100,min:-100}];
+            stats.push(_stat);
+        }
+        _stat=new Stat(),_n=_stat.data; 
+        _n.id=name,_n.base=opt.base,_n.value=opt.base,
+        _n.limits=[{max:((opt.max!==undefined)?(name+'Max'):0),min:((opt.min!==undefined)?(name+'Min'):0)}];
+        stats.push(_stat);
+        return(stats);
+    }
+    constructor(){
         this.data = Stat.dataPrototype();
     }
+    toJSON(){return window.storage.Generic_toJSON("Stat", this); };
+    static fromJSON(value){ return window.storage.Generic_fromJSON(Stat, value.data);};
     // Attention !!_parent will be added dynamical
-    get parent() {return this._parent?this._parent():null;}
+    get parent(){return this._parent?this._parent():null;}
     _relinkItems(parent){this._parent=window.gm.util.refToParent(parent);}
-    get name() {return(this.data.id);}
-    get id() {return(this.data.id);}
-    get base() {return(this.data.base);}
-    get value() {return(this.data.value);}
-    get hidden() {return(this.data.hidden);}
-    //this is called to update value of the stat and will trigger calculation of dependend stats 
-    Calc( ) {
+    get name(){return(this.data.id);}
+    get id(){return(this.data.id);}
+    get base(){return(this.data.base);}
+    get value(){return(this.data.value);}
+    get hidden(){return(this.data.hidden);}
+    //this is called to update value of the stat and will trigger calculation of dependend stats; 
+    //requires that the stats where added to the dictionary! 
+    Calc( ){
         let attr = this.data;
         let min = -999999;
         let max = 999999;
         let msg = '';
         //get limits
-        for(let k=0;k<attr.limits.length;k++) {//this might behave odly if any min>max
+        for(let k=0;k<attr.limits.length;k++){//this might behave odly if any min>max
             let lmin = attr.limits[k].min, lmax = attr.limits[k].max;  //lm__ is id or number
-            if (lmin || lmin===0) {
+            if (lmin || lmin===0){
                 min= (typeof lmin ==='string')? Math.max(this.parent.get(lmin).value,min): Math.max(lmin,min);
             }
-            if (lmax || lmax===0) {
+            if (lmax || lmax===0){
                 max=(typeof lmax ==='string') ? Math.min(this.parent.get(lmax).value,max): Math.min(lmax,max);
             }
         }
         //recalculate modifiers
         let _old =  attr.value;
         attr.base = attr.value = Math.max(min,Math.min(max,attr.base));  
-        for(let i=0;i<attr.modifier.length;i++) {
+        for(let i=0;i<attr.modifier.length;i++){
             attr.value += attr.modifier[i].bonus;
         }
         let _new = Math.max(min,Math.min(max,attr.value));
@@ -142,20 +181,20 @@ class Stat {
         msg+=this.formatMsgStatChange(attr,_new,_old);//todo no log hidden
         this.updateModifier();
         //trigger recalculation of dependend Stats
-        for(let m=0;m<attr.modifys.length;m++) {
+        for(let m=0;m<attr.modifys.length;m++){
             msg+=this.parent.get(attr.modifys[m].id).Calc().msg;
         }
         return({OK:true,msg:msg});
     }
-    formatMsgStatChange(attr,_new,_old) {
-        if((_new-_old)>0) { 
+    formatMsgStatChange(attr,_new,_old){
+        if((_new-_old)>0){ 
             return('<statup>'+attr.id+" off "+this.parent.parent.name+" regenerated by "+(_new-_old).toFixed(1).toString()+"</statup>");
-        } else if((_new-_old)<0) {
+        } else if((_new-_old)<0){
             return('<statdown>'+attr.id+" off "+this.parent.parent.name+" decreased by "+(_new-_old).toFixed(1).toString()+"</statdown>");
         }
         return("");
     };
-    updateModifier() {};
+    updateModifier(){};
 }
 /////////////////////////////////////////////////////////////////////////
 /**
@@ -163,15 +202,15 @@ class Stat {
  * @class Effects
  * @extends {Inventory}
  */
-class Effects extends Inventory {  //Todo ?
-    constructor(externlist) {
+class Effects extends Inventory {
+    constructor(externlist){
         super(externlist);
         window.storage.registerConstructor(Effects);
         //! this doesnt work after load! see PubSub comments
         //window.gm.timeEvent.subscribe("change", this.updateTime.bind(this) ); 
     }
-    toJSON() {return window.storage.Generic_toJSON("Effects", this); };
-    static fromJSON(value) {
+    toJSON(){return window.storage.Generic_toJSON("Effects", this); };
+    static fromJSON(value){
         let _x = window.storage.Generic_fromJSON(Effects, value.data);
         return(_x);
     }
@@ -181,15 +220,15 @@ class Effects extends Inventory {  //Todo ?
     /*
     * findItemslot uses id, this one finds all effects with a name
     */
-    findEffect(name) {
+    findEffect(name){
         let _items = [] ;
-        for (let i = 0; i < this.count(); i++) {
+        for (let i = 0; i < this.count(); i++){
             if(this.list[i].item.name===name) _items.push(this.list[i].item);
         }
         return(_items);
     }
     //override
-    removeItem(id) {
+    removeItem(id){
         let _i = this.findItemSlot(id);
         if(_i<0) return; //just skip if not found
         let _eff = this.get(id);
@@ -197,27 +236,28 @@ class Effects extends Inventory {  //Todo ?
         _eff.onRemove(this,this.list[_i]);
         this.postItemChange(id,"removed","");
     }
-    addItem(effect,id='') {
-        if(id==='') id= effect.name;
+    addItem(effect,id=''){
+        id=effect.id; //if(id==='') id= effect.name; todo effects remove themself by id, not by name
         let _i = this.findItemSlot(id);
         let res;
+        //todo what if there are 2 damage effects from 2 attackers, blunt for 2 rounds , blunt for 3 ??
         //if effect with same id is already present, merge them
-        if(_i>-1) {
+        if(_i>-1){
             let _old = this.get(id);//effect.id);
             res = _old.merge(effect);
-            if(res!=null) {
-                if(res===true) {}
+            if(res!=null){
+                if(res===true){}
                 else res(this); //should be a function
                 this.postItemChange(id,"merged","");
                 return;
             }  
         }
         //or if there are similiar effects try to merge with them
-        for(let i=0;i<this.list.length;i++) {
+        for(let i=0;i<this.list.length;i++){
             let _old = this.list[i].item;
             res = _old.merge(effect);
-            if(res!=null) {
-                if(res===true) {}
+            if(res!=null){
+                if(res===true){}
                 else res(this); //should be a function
                 this.postItemChange(id,"merged","");
                 return;
@@ -229,7 +269,7 @@ class Effects extends Inventory {  //Todo ?
         effect.onApply();
         this.postItemChange(id,"added","");
     }
-    replace(id, neweffect) {
+    replace(id, neweffect){
         let _i = this.findItemSlot(id);
         if(_i<0) return; //Todo do nothing
         let _old = this.get(id);
@@ -238,7 +278,7 @@ class Effects extends Inventory {  //Todo ?
         this.list[_i].id= neweffect.id,this.list[_i].item = neweffect;
         neweffect.onApply();
     }
-    updateTime() {
+    updateTime(){
         let now =window.gm.getTime();
         for(let i=0;i<this.list.length;i++){
             let _eff = this.list[i].item;
@@ -247,9 +287,9 @@ class Effects extends Inventory {  //Todo ?
         }
     }
     //override
-    postItemChange(id,operation,msg) {
+    postItemChange(id,operation,msg){
         window.gm.pushLog('Effects: '+operation+' '+id+' '+msg,
-            window.story.state._gm.debug || (window.gm.player && (window.gm.player.id === this.parent.parent.id)));
+            window.story.state._gm.debug || (window.gm.player && (window.gm.player.id === this.parent.id)));
     }
 }
 /////////////////////////////////////////////////////////////////////////
@@ -257,11 +297,11 @@ class Effects extends Inventory {  //Todo ?
  * @class Effect
  */
 class Effect {  
-    constructor() {
+    constructor(){
         this.data = Effect.dataPrototype();
         this.data.time = window.gm.getTime();
     }
-    static dataPrototype() {
+    static dataPrototype(){
         return({id:'xxx', name: Effect.name, time: 0, duration:0,hidden:0});
         //hidden 0 = visible, 1= name unreadable, 2= value unreadable, 4= hidden
     }
@@ -271,23 +311,23 @@ class Effect {
      * @readonly
      * @memberof Effect
      */
-    get parent() {return this._parent?this._parent():null;}
+    get parent(){return this._parent?this._parent():null;}
     _relinkItems(parent){this._parent=window.gm.util.refToParent(parent);}
     // id = SlumberPotion:Stunned;  name = Stunned
-    get id() {return(this.data.id);}
-    set id(id) { this.data.id=id;}
+    get id(){return(this.data.id);}
+    set id(id){ this.data.id=id;}
     /**
      * Attention !!  effTired.name returns constructor-name but Effects.getById('effTired').name returns data.name
      *
      * @readonly
      * @memberof Effect
      */
-    get name() {return(this.data.name);}
-    get time() {return(this.data.time);}
-    get duration() {return(this.data.duration);}
-    get hidden() {return(this.data.hidden);}
-    get desc() {return(this.name);}
-    get shortDesc() {return(this.name);}
+    get name(){return(this.data.name);}
+    get time(){return(this.data.time);}
+    get duration(){return(this.data.duration);}
+    get hidden(){return(this.data.hidden);}
+    get desc(){return(this.name);}
+    get shortDesc(){return(this.name);}
         
     //
     /**
@@ -300,7 +340,7 @@ class Effect {
      * @return {*} 
      * @memberof Effect
      */
-    merge(neweffect) {
+    merge(neweffect){
         return(null);
     }
     /**
@@ -309,7 +349,7 @@ class Effect {
      * @return {*} 
      * @memberof Effect
      */
-    onTimeChange(time) {
+    onTimeChange(time){
         return(null);
     }
     /**
@@ -331,7 +371,7 @@ class Effect {
  * @extends {Effect}
  */
 class CombatEffect extends Effect {
-    constructor() {
+    constructor(){
         super(); this.castMsg='';
     }
     /**
@@ -340,14 +380,14 @@ class CombatEffect extends Effect {
      * @readonly
      * @memberof CombatEffect
      */
-    get shortDesc() {return(this.desc+" for " + this.data.duration+" turns");}  //duration in turns !
+    get shortDesc(){return(this.desc+" for " + this.data.duration+" turns");}  //duration in turns !
     /**
      *shown when casting the effect
      *
      * @return {*} 
      * @memberof CombatEffect
      */
-    castDesc() {return(this.castMsg);}
+    castDesc(){return(this.castMsg);}
 
     /**
      * called after victory/defeat (before -scene plays)
@@ -360,15 +400,15 @@ class CombatEffect extends Effect {
     /**
      * 
      */
-    onCombatStart(){}
+    onCombatStart(){return({OK:false,msg:''});}
     /**
      * called before targets turn
      *
      * @return {*} 
      */
-    onTurnStart() { return({OK:true,msg:''}); }
+    onTurnStart(){ return({OK:true,msg:''}); }
     //at end of targets turn   UNUSED
-    //onTurnEnd() { return({OK:true,msg:''}); }
+    //onTurnEnd(){ return({OK:true,msg:''}); }
 }
 
 

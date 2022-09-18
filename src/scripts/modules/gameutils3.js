@@ -1,4 +1,40 @@
 "use strict";
+window.gm.initGameFlags = function(forceReset,NGP=null) {
+    let s= window.story.state,map,data;
+    function dataPrototype(){return({visitedTiles:[],mapReveal:[],tmp:{},version:0});}
+    if (forceReset) {  
+      s.Settings=s.DngCV=s.DngDF=s.DngAM=s.DngSY=s.DngMN=s.DngAT=null; 
+      s.DngFM=s.DngSC=s.DngLB=s.DngHC=s.DngPC=null;
+      s.Lab=s.Known=null;
+    }
+    let Settings = {
+      showCombatPictures:true,
+      showNSFWPictures:true,
+      showDungeonMap:true
+    };
+    let DngSY = {
+        remainingNights: 0,
+        dngLevel: 1, //tracks the mainquest you have finished
+        dngOW: false, //if this flag is set while in dng, player is here for some freeplay (no quest)  
+        dildo:0, //1 small oraltraining,
+        pussy:0,
+        visitedTiles: [],mapReveal: [],
+        dng:'', //current dungeon name
+        prevLocation:'', nextLocation:'', //used for nav-logic
+        dngMap:{} //dungeon map info
+    };
+    let Lab={}
+    let Known={
+      recipes:{}  //'LustPotion:20%'
+      ,places:{},study:{}
+    }
+    //see comment in rebuildFromSave why this is done
+    s.Settings=window.gm.util.mergePlainObject(Settings,s.Settings);
+    s.DngSY=window.gm.util.mergePlainObject(DngSY,s.DngSY);
+    s.Lab=window.gm.util.mergePlainObject(Lab,s.Lab);
+    s.Known=window.gm.util.mergePlainObject(Known,s.Known);
+    //todo cleanout obsolete data ( filtering those not defined in template) 
+  }
 //database of all recipes
 window.gm.AlchemyDef = (function (Lib) {
     Lib.HealthPotionSmall={name:'weak health potion', tier:0, ingr:['ApocaFlower','ApocaFlower'], result:'HealthPotionSmall'};
@@ -36,15 +72,14 @@ window.gm.brewInit=function(mode) {
 };
 window.gm.brewUpdateView=function(){
     let entry,panel,all =window.gm.AlchemyDef;
-    let z,y,x=window.gm.player.Inv.getAllIds(),lab=window.story.state.Lab;
+    let z,y,x=window.gm.player.Inv.getAllIds(),s=window.story.state,lab=window.story.state.Lab;
     panel=document.getElementById('recipe');
     for(var i=panel.childNodes.length-1;i>=0;i-- ) {
         panel.removeChild(panel.childNodes[i]);
     } 
     if(lab.mode==='known' || lab.mode==='potential' || lab.mode==='unavailable') {
         //if recipe is selected, replace all ingredients in batch
-        
-        let list=window.story.state.Known.recipes,ids=Object.keys(list);
+        let list=s.Known.recipes,ids=Object.keys(list);
         for(var el of ids){ //list recipes
             x= all[el];
             const _id=el;

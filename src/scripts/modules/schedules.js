@@ -14,17 +14,17 @@ onAddTime-CB is called when time passes; can be used to check if task was done o
  */
 
 class Job {
-    constructor(id,name,descr) {
+    constructor(id,name,descr){
         this.id=id,this.name=name;
         this.descr=descr, this.reqEnergy=0,this.reqTime=0,
         this.startTimeMin=0,this.startTimeMax=0,this.DoW=[], 
         this.onAddTimeCB = null;
     }
-    onAddTime() {
+    onAddTime(){
     }
-    isDisabled() { return(false); }
-    disabledReason() { return(""); }
-    isHidden() { return(false); }
+    isDisabled(){ return(false); }
+    disabledReason(){ return(""); }
+    isHidden(){ return(false); }
 }
 
 {
@@ -47,6 +47,6 @@ class Job {
     job = new Job("Home_Study","Studying","Do some studying for your graduation.");
     job.reqEnergy = 20, job.reqTime=120,job.startTimeMin=700,job.startTimeMax=1800,job.DoW =[1,2,3,4,5,6,7];
     job.isDisabled = function (){ return(true);};
-    job.disabledReason=function() {return("You are not in the mood to waste your time with books.");};
+    job.disabledReason=function(){return("You are not in the mood to waste your time with books.");};
     window.gm.jobs[job.id] = job;
 }

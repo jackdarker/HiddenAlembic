@@ -4,7 +4,7 @@
 <div><%=window.gm.util.printLocationName(window.gm.player.location)%></br><%=window.gm.getTimeString()%></br><%=window.gm.getDateString()%></br></div><hr>
 <div><%=window.gm.player.name%></br>
 <%=window.gm.util.statsbar("health","red")%><%=window.gm.util.statsbar("energy","yellow")%><%=window.gm.util.statsbar("will","green")%>
-<%=window.gm.util.statsbar("arousal","coral")%><%=window.gm.util.statsbar("hunger","rosybrown")%><%=window.gm.util.statsbar("savageness","darkred")%></div>
+<%=window.gm.util.statsbar("arousal","coral")%><%=window.gm.util.statsbar("savageness","darkred")%></div>
 <div>Money: <%=window.gm.player.Inv.countItem('Money')%></div>
 <!--<div <%=window.gm.player.canLevelUp?"class=\"green\"":""%>>XP/Level: <%=window.gm.player._data.XP+"/"+window.gm.player._data.level%></div>-->
 <hr>

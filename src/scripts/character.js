@@ -3,7 +3,7 @@
 * a class to provide methods to work with PC & NPC
 */
 class Character {
-    static defaultData() {
+    static defaultData(){
         return({
         id:'',
         name: '',
@@ -21,7 +21,7 @@ class Character {
         skills: []
         });
     }
-    constructor(externlist) {
+    constructor(externlist){
         this._data = externlist ? externlist : Character.defaultData();
         this.Outfit = new Outfit(this._data.outfit);
         this.Outfit._parent = window.gm.util.refToParent(this);
@@ -39,26 +39,27 @@ class Character {
         this.Skills._parent = window.gm.util.refToParent(this);
         //create basic stats
         stHealth.setup(this.Stats,10,10),stEnergy.setup(this.Stats,30,30),stWill.setup(this.Stats,0,0);
-        stHunger.setup(this.Stats,30,100);
-        for(let el of window.gm.combat.TypesDamage) {
-            stResistance.setup(this.Stats,0,el.id);
-            stArmor.setup(this.Stats,0,el.id); 
+        stSatiation.setup(this.Stats,30,100);
+        for(let n of window.gm.combat.TypesDamage){
+            stResistance.setup(this.Stats,0,n.id);
+            stArmor.setup(this.Stats,0,n.id); 
         }
         stAgility.setup(this.Stats,10,100),stIntelligence.setup(this.Stats,10,100),stLuck.setup(this.Stats,10,100);
         stCharisma.setup(this.Stats,10,100),stPerception.setup(this.Stats,10,100),stStrength.setup(this.Stats,10,100),stEndurance.setup(this.Stats,10,100);
         stSavageness.setup(this.Stats,0,10),stCorruption.setup(this.Stats,0,100),stArousal.setup(this.Stats,0,50);
-        for(let name of stFetish.listFetish()) {
+        for(let name of stFetish.listFetish()){
             stFetish.setup(this.Stats,0,10,name);
         }         
         this.Skills.addItem(new SkillAttack());this.Skills.addItem(new SkillUseItem());this.Skills.addItem(new SkillStruggle());
         this.Skills.addItem(new SkillFlee());    
+        this.Skills.addItem(new SkillFairyLight());    
         this.Effects.addItem(new effHunger());this.Effects.addItem(new effSanity());this.Effects.addItem(new effLibido());
         this.Effects.addItem(new effCombatRecovery());
         this.Effects.addItem(new effSpermDecay());
         window.storage.registerConstructor(Character);
     }
-    toJSON() {return window.storage.Generic_toJSON("Character", this); }
-    static fromJSON(value) { 
+    toJSON(){return window.storage.Generic_toJSON("Character", this); }
+    static fromJSON(value){ 
         var _x = window.storage.Generic_fromJSON(Character, value.data);
         _x.rebuildAfterLoad();
         return(_x);
@@ -78,37 +79,37 @@ class Character {
     * @param {int} XP available
     * @returns {int} level from
     */
-    static calcXPToLevel(XP,fromLvl=1) {
+    static calcXPToLevel(XP,fromLvl=1){
         let XP2 = Character.calcLevelToXP(fromLvl);
         return(Math.floor((-1+Math.sqrt(1+(XP+XP2)*4/50))/2));
     }
-    static calcLevelToXP(lvl) {
+    static calcLevelToXP(lvl){
         return(100*lvl*(lvl+1)/2); //Gauss-Sum
     }
     /**
      * id of char
      */
-    get id() { return(this._data.id);  }
-    set id(id) {this._data.id=id;}
-    get name() { return(this._data.name);  }
-    set name(name) {this._data.name=name;}
-    get faction() { return this._data.faction; } 
-    set faction(name) {this._data.faction=name;}
-    get location() {
+    get id(){ return(this._data.id);  }
+    set id(id){this._data.id=id;}
+    get name(){ return(this._data.name);  }
+    set name(name){this._data.name=name;}
+    get faction(){ return this._data.faction; } 
+    set faction(name){this._data.faction=name;}
+    get location(){
         return(this._data.location);    
     }
-    set location(name) {this._data.location=name;}
-    get level() {return(this._data.level);  }
-    get canLevelUp() {
+    set location(name){this._data.location=name;}
+    get level(){return(this._data.level);  }
+    get canLevelUp(){
         let next = Character.calcXPToLevel(this._data.XP,this._data.level)
         return(next!==this._data.level);
     }
     get level(){return(this._data.level);}
-    addXP(XP) { this._data.XP+=XP; }
+    addXP(XP){ this._data.XP+=XP; }
     /*
      * upgrade level by 1;this will increase level even if not enough XP !
     */
-     levelUp(add=1) { 
+     levelUp(add=1){ 
         if(add<1) return;
         let reqXP=Character.calcLevelToXP(this._data.level+add)-Character.calcLevelToXP(this._data.level);
         this._data.XP-=reqXP; //calculate requires XP and subtract from already gained
@@ -118,50 +119,50 @@ class Character {
     }
     //overwrite this to define the wheighting for autoLeveling
     //returns an array of objects with "id" matching the statname and "wgt" as a number that defines the relativ wheight (f.e. if 1 stat should be 50% more then other set this to 20 and all other to 10)
-    autolevelWheight() {return([{id:"strength",wgt:10},{id:"agility",wgt:11},{id:"intelligence",wgt:10},{id:"luck",wgt:8},{id:"charisma",wgt:8},{id:"perception",wgt:8},{id:"endurance",wgt:9}]);}
+    autolevelWheight(){return([{id:"strength",wgt:10},{id:"agility",wgt:11},{id:"intelligence",wgt:10},{id:"luck",wgt:8},{id:"charisma",wgt:8},{id:"perception",wgt:8},{id:"endurance",wgt:9}]);}
     // this is called for NPC to automatically spent XP and distribute stat-points according to autolevelWheight-property
-    autoLeveling() {
-        let add = Character.calcXPToLevel(this._data.XP,this._data.level)-this._data.level;
+    autoLeveling(){
+        let n,add = Character.calcXPToLevel(this._data.XP,this._data.level)-this._data.level;
         this.levelUp(add);
         let weight = this.autolevelWheight();        
         let sort = function(a,b){return(b.new-a.new);};
-        while(this._data.unspentStat>0) {
+        while(this._data.unspentStat>0){
             //get the actual stats; immagine wgt as the goal-shape how the values are set at a certain level 
             let sumC =0, sumG = 0; 
-            for(el of weight){
-                el.value = this.Stats.get(el.id).base;
-                sumC += el.value, sumG +=el.wgt;
+            for(n of weight){
+                n.value = this.Stats.get(n.id).base;
+                sumC += n.value, sumG +=n.wgt;
             }
             //calculate the difference between current value and goal defined by playstyle
-            for(el of weight){ //new is the difference in points; +1 to force distribution if the current matches the goal
-                el.new = Math.ceil(((el.wgt/sumG) -(el.value/sumC))*sumC) +1 ;
-                if(el.new<=0) el.new =1;
+            for(n of weight){ //new is the difference in points; +1 to force distribution if the current matches the goal
+                n.new = Math.ceil(((n.wgt/sumG) -(n.value/sumC))*sumC) +1 ;
+                if(n.new<=0) n.new =1;
             }   
             //and distribute pt
             weight=weight.sort(sort);
-            for(el of weight){
-                let x = Math.floor(el.new);
+            for(n of weight){
+                let x = Math.floor(n.new);
                 x =  Math.min(this._data.unspentStat,2,x);
-                this.Stats.increment(el.id,x);
+                this.Stats.increment(n.id,x);
                 this._data.unspentStat-=x;
             }
         }
     }
-    isDead() {return(this.Stats.get('health').value<=0);}
-    isKnockedOut() {return(this.isDead()||(this.Stats.get('arousal').value>=this.Stats.get('arousalMax').value));}
+    isDead(){return(this.Stats.get('health').value<=0);}
+    isKnockedOut(){return(this.isDead()||(this.Stats.get('arousal').value>=this.Stats.get('arousalMax').value));}
     /** 
     * "naked" - naked
     * "primal" - cover genitals 
     * "civil" - wears some trousers,footwear and torsocovers
     * "formal" - ...wears underwear too
     */
-    clothLevel() { //TODO
+    clothLevel(){ //TODO
         let uwOK = false,civOK =false;
         if(this.Outfit.getItemId(window.gm.OutfitSlotLib.uHips)!=='' && this.Outfit.getItemId(window.gm.OutfitSlotLib.uBreast)!=='')  {
             uwOK= true;
         }
         if(this.Outfit.getItemId(window.gm.OutfitSlotLib.Hips)!=='' && this.Outfit.getItemId(window.gm.OutfitSlotLib.Breast)!=='' &&
-            this.Outfit.getItemId(window.gm.OutfitSlotLib.Feet)!=='') {
+            this.Outfit.getItemId(window.gm.OutfitSlotLib.Feet)!==''){
                 civOK= true;
         }
         if(uwOK && civOK) return "formal";
@@ -169,27 +170,30 @@ class Character {
         if(uwOK ) return "primal"  
         return('naked');
     }
-    health() {return({value:this.Stats.get('health').value, max:this.Stats.get('healthMax').value, min:0});}
-    energy() {return({value:this.Stats.get('energy').value, max:this.Stats.get('energyMax').value, min:0});}
-    will() {return({value:this.Stats.get('will').value, max:this.Stats.get('willMax').value, min:0});}
-    arousal() {return({value:this.Stats.get('arousal').value, max:this.Stats.get('arousalMax').value, min:this.Stats.get('arousalMin').value});}
-    sleep(until=700) {
+    health(){return({value:this.Stats.get('health').value, max:this.Stats.get('healthMax').value, min:0});}
+    energy(){return({value:this.Stats.get('energy').value, max:this.Stats.get('energyMax').value, min:0});}
+    will(){return({value:this.Stats.get('will').value, max:this.Stats.get('willMax').value, min:0});}
+    arousal(){return({value:this.Stats.get('arousal').value, max:this.Stats.get('arousalMax').value, min:this.Stats.get('arousalMin').value});}
+    sleep(until=700){
         let {msg,delta}=window.gm.forwardTime(until);
         let regen = delta>=360 ? 9999 : parseInt(delta/60*15);  //todo scaling of regeneration
         this.Stats.increment('health',regen);
         this.Stats.increment('energy',regen);
         this.Stats.increment('will',regen);
-        if(delta>360) {
+        if(delta>360){
             this.Effects.addItem(new effNotTired());
         } 
     }
-    addEffect(effect,id,who) {
+    hasEffect(id){
+        return(this.Effects.countItem(id)>0); //todo also check for magnitude
+    }
+    addEffect(effect,id,who){
         this.Effects.addItem(effect,id);
     }
     //helper function to change Relation 
-    gainRelation(char,val) {
+    gainRelation(char,val){
         var _idx = this.Rel.findItemSlot(char);
-        if(_idx<0) {
+        if(_idx<0){
             stRelation.setup(this.Rel,val,100,char);
         } else {
             this.Rel.increment(char,val);
@@ -199,8 +203,8 @@ class Character {
      * helper function to handle wardrobe (not outfit!)/inventory properly; 
      * if amount<0 remove itme, else add
      */
-    changeInventory(item,amount) {
-        if(item.slotUse && !item.hasTag('weapon')) { //equipment goes into wardrobe except weapons
+    changeInventory(item,amount){
+        if(item.slotUse && !item.hasTag('weapon')){ //equipment goes into wardrobe except weapons
             if(amount<0) this.Wardrobe.removeItem(item.id,-1*amount);
             else if(amount>0) this.Wardrobe.addItem(item,amount);
         } else {
@@ -209,9 +213,9 @@ class Character {
         }
       }
     //combat related
-    _canAct() { //todo even if stunned we should be able to struggle
+    _canAct(){ //todo even if stunned we should be able to struggle
         var result = {OK:true,msg:''};
-        if(this.Effects.findEffect("effStunned").length>0) {    //findItemSlot annot use since there might be different effect ids
+        if(this.Effects.findEffect("effStunned").length>0){    //findItemSlot annot use since there might be different effect ids
             result.OK=false;
             result.msg =this.name+ " is stunned and cannot react."
             return(result);
@@ -221,26 +225,26 @@ class Character {
     //combat related; return a msg describing the state of the character
     //"Wolf is currently entangled by vines."
     //"You have your towershield raised to guard against damage. Your mana is drained by an opponents spell."
-    _stateDesc() {
+    _stateDesc(){
         let result = {OK:true,msg:''};
         let isPlayer = window.gm.player.id === this.id;
-        for(let list = this.Effects.getAllIds(), i=list.length-1;i>=0;i-=1) {
-            if(list[i]==="effStunned") {
+        for(let list = this.Effects.getAllIds(), i=list.length-1;i>=0;i-=1){
+            if(list[i]==="effStunned"){
                 result.msg = "$[I]$ $[am]$ stunned and cant do a thing.";
             }
         }
         result.msg = window.gm.util.descFixer(this)(result.msg);
         return(result);
     }
-    getPenis() {
+    getPenis(){
         let penis = this.Outfit.getItemForSlot(window.gm.OutfitSlotLib.bPenis);
         return(penis);
     }
-    getVagina() {
+    getVagina(){
         let vulva = this.Outfit.getItemForSlot(window.gm.OutfitSlotLib.bVulva);
         return(vulva);
     }
-    getAnus() {
+    getAnus(){
         return(this.Outfit.getItemForSlot(window.gm.OutfitSlotLib.bAnus));
     }
 }

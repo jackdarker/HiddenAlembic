@@ -1,16 +1,16 @@
 "use strict";
 class BeeHive extends DngDungeon{
     constructor()    {
-        super("BeeHive", function() { return("There seem to live alot of giant bees here.")},window.story.state.dng[BeeHive.name])
+        super("BeeHive", function(){ return("There seem to live alot of giant bees here.")},window.story.state.dng[BeeHive.name])
         this.buildFloors();
     }
 
-    buildFloors() {
+    buildFloors(){
         var _floors= [];
         var firstFloor//:DngFloor;
         var stairUp//:DngRoom;
         var stairDown//:DngRoom;
-        firstFloor = new DngFloor("1.Floor", function() {return("This is the lowest floor of the beehive.")});
+        firstFloor = new DngFloor("1.Floor", function(){return("This is the lowest floor of the beehive.")});
         var room//:DngRoom;
         //var rooms:LookupTable = new LookupTable(); 
         var rooms= new Map();
@@ -123,19 +123,19 @@ class BeeHive extends DngDungeon{
         DngDirection.createDirection(DngDirection.StairUp, stairUp , stairDown);
         this.setFloors(_floors);//assign floors to dng
     }
-    exitDungeon() {
+    exitDungeon(){
         super.exitDungeon();
         window.story.show("ForestEntrance");
     }
-    encounterTentacle(Me) {
+    encounterTentacle(Me){
         window.story.show('DungeonFoundNothing');
         return true;
     }
-    encounterBee2(Me) {
+    encounterBee2(Me){
         window.story.show('DungeonFoundNothing');
         return true;
     }
-    hasItem(Me) {
+    hasItem(Me){
        /* if (!player.hasItem(ItemType.lookupItem("BeeHony"), 1))
         {
             Me.tooltip = "You dont have a vial of beehoney";
@@ -144,13 +144,13 @@ class BeeHive extends DngDungeon{
         return true;
     }
     //player falls down to 1.floor when entering the room
-    trapDoor(Me) {
+    trapDoor(Me){
         window.story.show('DungeonCrashedThroughFloor');
         return(true);
     }
 }
 class ShatteredCity extends DngDungeon{
-    persistentDngDataTemplate() {
+    persistentDngDataTemplate(){
         let _data = {
             A1Chest:["TailRibbon","HorsePotion"],
             A2defeated : 0
@@ -158,10 +158,10 @@ class ShatteredCity extends DngDungeon{
         return(_data);
     }
     constructor()    {
-        super("ShatteredCity", function() { return("A once thriving city now lies in ruins.")},window.story.state.dng[ShatteredCity.name]);
+        super("ShatteredCity", function(){ return("A once thriving city now lies in ruins.")},window.story.state.dng[ShatteredCity.name]);
         this.buildFloors();
     }
-    buildFloors() {
+    buildFloors(){
         var _floors= [];
         var firstFloor//:DngFloor;
         var stairUp//:DngRoom;
@@ -233,11 +233,11 @@ class ShatteredCity extends DngDungeon{
         _floors.push(firstFloor);
         this.setFloors(_floors);
     }
-    exitDungeon() {
+    exitDungeon(){
         super.exitDungeon();
         window.story.show("ForestEntrance");
     }
-    sneekAround() {
+    sneekAround(){
         let cb = function(that){ 
             return(function(me){
                 that.renderEvent = that.renderSneekAround;
@@ -247,42 +247,42 @@ class ShatteredCity extends DngDungeon{
         });}(this);
         return(cb);        
     }
-    renderSneekAround(evt) {
+    renderSneekAround(evt){
         let msg ='';
         let _rnd = _.random(0,100);
-        if(evt.id===1) {
+        if(evt.id===1){
             window.gm.addTime(30);
             msg = 'There is a gang of barbarians. You could try to sneek around them, talk your way through it or start a surprise attack.</br>';
             msg+= window.gm.printLink("sneak around","window.gm.dng.renderNext(2)");
             msg+= window.gm.printPassageLink("approach","SC_BarbarianMeetup");
             msg+= window.gm.printLink("attack","window.gm.dng._fight(1)");
-        } else if(evt.id===2) {
-            if(_rnd>70) {
+        } else if(evt.id===2){
+            if(_rnd>70){
                 msg+='Someone spotted you !</br>';
                 msg+= window.gm.printLink("Next",'window.gm.dng._fight()');
             } else  {
                 msg = 'You succesfully bypassed the threat.</br>';
                 msg+= window.gm.printLink("Leave","window.gm.dng.resumeRoom()");
             }
-        }else if(evt.id===3) {
+        }else if(evt.id===3){
                 msg+='Someone spotted you !</br>';
                 msg+= window.gm.printLink("Next",'window.gm.dng._fight()');
         }
         return(msg);
     }
-    renderChestA1(evt) { //this is some statemachine to render the screen for lootchest
+    renderChestA1(evt){ //this is some statemachine to render the screen for lootchest
         let msg ='';
-        if(evt.id===1) {
+        if(evt.id===1){
             window.gm.addTime(30);
             msg = 'There is a chest. Do you dare to open it?</br>';
             msg+= window.gm.printLink("open chest","window.gm.dng.renderNext(2)");
             msg+= window.gm.printLink("Leave","window.gm.dng.resumeRoom()");
-        } else if(evt.id===2 && this.data.A1Chest.length>0) {
+        } else if(evt.id===2 && this.data.A1Chest.length>0){
             msg = 'You find:'+this.data.A1Chest.join(",")+'</br>';
             msg+= window.gm.printLink("Take all","window.gm.dng.renderNext(3)");
-        } else if(evt.id===3) {
-            for(el of this.data.A1Chest){
-                this._addItemToPlayer(el);
+        } else if(evt.id===3){
+            for(var n of this.data.A1Chest){
+                this._addItemToPlayer(n);
             }
             this.data.A1Chest = [];
             msg = 'You take everything from the chest.</br>';
@@ -293,13 +293,13 @@ class ShatteredCity extends DngDungeon{
         }
         return(msg);
     }
-    renderScavengeA3(evt) { //
+    renderScavengeA3(evt){ //
         let msg ='';
         let _rnd = _.random(0,100);
-        if(evt.id===1) {
+        if(evt.id===1){
             window.gm.addTime(30);//todo would be better to update time after battle
             msg = 'You search the area for something useful...</br>';
-            if(_rnd>30) {
+            if(_rnd>30){
                 msg+='... and found some trouble !</br>';
                 msg+= window.gm.printLink("Next",'window.gm.dng._fight()');
             } else  {
@@ -309,13 +309,13 @@ class ShatteredCity extends DngDungeon{
         } 
         return(msg);
     }
-    _fight(evt) {
+    _fight(evt){
         if(evt===1) window.gm.encounters.wolf();
         else window.gm.encounters.wolf();
     }
-    _addItemToPlayer(id) {
+    _addItemToPlayer(id){
         let item = new window.storage.constructors[id]();
-        if(item.canEquip) {
+        if(item.canEquip){
             window.gm.player.Wardrobe.addItem(item);
         } else {
             window.gm.player.Inv.addItem(item);
@@ -323,7 +323,7 @@ class ShatteredCity extends DngDungeon{
     }
 }
 class MinoLair extends DngDungeon{
-    persistentDngDataTemplate() {
+    persistentDngDataTemplate(){
         let _data = {
             currentRoom: 0,
             maxRoom : 0,
@@ -340,13 +340,13 @@ class MinoLair extends DngDungeon{
         this.buildFloors();
         this.onEnterRoom = this.checkCollision;
     }
-    static desc() {return("Escape the Mean Mino");}
-    buildFloors() {
+    static desc(){return("Escape the Mean Mino");}
+    buildFloors(){
         var _floors= [];
         var firstFloor//:DngFloor;
         var stairUp//:DngRoom;
         var stairDown//:DngRoom;
-        firstFloor = new DngFloor("1.Floor", function() {return("floor#1.")});
+        firstFloor = new DngFloor("1.Floor", function(){return("floor#1.")});
         var room//:DngRoom;
         var rooms= new Map();
 
@@ -436,7 +436,7 @@ class MinoLair extends DngDungeon{
         DngDirection.createDirection(DngDirection.DirS, rooms.get("F2" ), rooms.get("F3"));
         DngDirection.createDirection(DngDirection.DirS, rooms.get("F3" ), rooms.get("F4"));
         DngDirection.createDirection(DngDirection.DirS, rooms.get("F4" ), rooms.get("F5"));
-        for (room of rooms.values( )) {
+        for (room of rooms.values( )){
             room.operations = [_evt2];
         }
         room =rooms.get("Entrance");
@@ -451,17 +451,17 @@ class MinoLair extends DngDungeon{
         mob=new DngMob(); mob.data.homeTile=mob.data.actualTile='C4',mob.data.name='red bull';
         this.addMob(mob);
     }
-    exitDungeon() {
+    exitDungeon(){
         super.exitDungeon();
         window.story.show("ForestBorder");
     }
-    checkCollision(room) {
+    checkCollision(room){
         //check if there is a mob
-        for(var i=this.Mobs.length-1-this.data.collIt;i>=0;i--) {
+        for(var i=this.Mobs.length-1-this.data.collIt;i>=0;i--){
             this.data.collIt+=1;
             let mob=this.Mobs[i];
             if(mob.data.actualTile!==room.name) continue
-            if(mob.onCollidePlayer()) {
+            if(mob.onCollidePlayer()){
                 this.resumeRoom=this.checkCollision.bind(this,room);
                 return(true);
             }
@@ -470,11 +470,11 @@ class MinoLair extends DngDungeon{
         this.resumeRoom();
         return(false);
     }
-    tickMino(evt) { //
+    tickMino(evt){ //
         let msg ='';
-        if(evt.id===1) {
+        if(evt.id===1){
             this.moveMino();
-            if(window.gm.dng.actualRoom.name===this.data.minoTile) {
+            if(window.gm.dng.actualRoom.name===this.data.minoTile){
                 msg+='The mean mino got you. </br>';
                 msg+= window.gm.printLink("Next",'window.gm.dng.exitDungeon()');
             } else {
@@ -484,7 +484,7 @@ class MinoLair extends DngDungeon{
         } 
         return(msg);
     }
-    extMapInfo(roomInfo) { //show mino on map
+    extMapInfo(roomInfo){ //show mino on map
         for(var i=this.Mobs.length-1;i>=0;i-- ){
             if(roomInfo.name===this.Mobs[i].data.actualTile) roomInfo.boss=1;
         }
@@ -494,11 +494,11 @@ class MinoLair extends DngDungeon{
      * 
      * @param {int} evt: roomNo 
      */
-    _fight(evt) {
+    _fight(evt){
         this.data.currentRoom = evt;
         this.data.maxRoom= (this.data.currentRoom>this.data.maxRoom)?this.data.currentRoom:this.data.maxRoom;
         window.gm.encounters.wolf();
-        window.gm.Encounter.onVictory = (function() { //need to resumeRoom...
+        window.gm.Encounter.onVictory = (function(){ //need to resumeRoom...
             this.data.currentRoom+=1;
             return('Victory ! </br>Some '+this.data.rewards[this.data.currentRoom].id+ ' was added to the reward-pile.</br>'+ window.gm.printLink('Next','window.gm.dng.resumeRoom()'));
         }).bind(this) ;
@@ -507,7 +507,7 @@ class MinoLair extends DngDungeon{
     
 }
 class ArenaTrialsNo1 extends DngDungeon{
-    persistentDngDataTemplate() {
+    persistentDngDataTemplate(){
         let _data = {
             currentRoom: 0,
             maxRoom : 0
@@ -521,13 +521,13 @@ class ArenaTrialsNo1 extends DngDungeon{
         this.data.challenger = ['','wolf','moleX2','wolf','wolf'];
         this.buildFloors();
     }
-    static desc() {return("You have to challenge several enemys one by one. The stakes increase with each challenge and after each fight you may decide to drop out with the rewards you gathered so far. But if you loose, you dont get anything, just your own insights.");}
-    buildFloors() {
+    static desc(){return("You have to challenge several enemys one by one. The stakes increase with each challenge and after each fight you may decide to drop out with the rewards you gathered so far. But if you loose, you dont get anything, just your own insights.");}
+    buildFloors(){
         var _floors= [];
         var firstFloor//:DngFloor;
         var stairUp//:DngRoom;
         var stairDown//:DngRoom;
-        firstFloor = new DngFloor("1.Floor", function() {return("Arena gauntlet #1.")});
+        firstFloor = new DngFloor("1.Floor", function(){return("Arena gauntlet #1.")});
         var room//:DngRoom;
         var rooms= new Map();
         /* first floor
@@ -576,15 +576,15 @@ class ArenaTrialsNo1 extends DngDungeon{
         _floors.push(firstFloor);
         this.setFloors(_floors);
     }
-    exitDungeon() {
+    exitDungeon(){
         super.exitDungeon();
         window.story.show("PlainsFarmland");
     }
-    renderRetreat(evt) { //
+    renderRetreat(evt){ //
         let msg ='';
-        if(evt.id===1) {
-            for(var i=1; i<this.data.rewards.length;i++) {
-                if(this.data.currentRoom>i) {
+        if(evt.id===1){
+            for(var i=1; i<this.data.rewards.length;i++){
+                if(this.data.currentRoom>i){
                     window.gm.player.Inv.addItem(window.gm.ItemsLib[this.data.rewards[i].id](),this.data.rewards[i].amount);
                 }
             }
@@ -597,11 +597,11 @@ class ArenaTrialsNo1 extends DngDungeon{
      * 
      * @param {int} evt: roomNo 
      */
-    _fight(evt) {
+    _fight(evt){
         this.data.currentRoom = evt;
         this.data.maxRoom= (this.data.currentRoom>this.data.maxRoom)?this.data.currentRoom:this.data.maxRoom;
         window.gm.encounters[this.data.challenger[this.data.currentRoom]](window.gm.player.location);
-        window.gm.Encounter.onVictory = (function() { //need to resumeRoom...
+        window.gm.Encounter.onVictory = (function(){ //need to resumeRoom...
             this.data.currentRoom+=1;
             return('Victory ! </br>Some '+this.data.rewards[this.data.currentRoom].id+ ' was added to the reward-pile.</br>'+ window.gm.printLink('Next','window.gm.dng.resumeRoom()'));
         }).bind(this) ;
@@ -610,7 +610,7 @@ class ArenaTrialsNo1 extends DngDungeon{
     
 }
 class ArenaTrialsNo2 extends DngDungeon{  //Todo broken...
-    persistentDngDataTemplate() {
+    persistentDngDataTemplate(){
         let _data = {
             currentRoom: 0,
             maxRoom : 0
@@ -624,15 +624,15 @@ class ArenaTrialsNo2 extends DngDungeon{  //Todo broken...
         this.data.challenger = ['','wolf','moleX2','huntress','wolf'];
         this.buildFloors();
     }
-    static desc() {return("Remember: If you have earned some money you should weight the option to retreat and invest that money in better gear."
+    static desc(){return("Remember: If you have earned some money you should weight the option to retreat and invest that money in better gear."
         +"That might give you better chances to survive the tougher fights at the cost of fighting the previous foes again.</br>"
         +"Grinding is fun. :)  </br>");}
-    buildFloors() {
+    buildFloors(){
         var _floors= [];
         var firstFloor//:DngFloor;
         var stairUp//:DngRoom;
         var stairDown//:DngRoom;
-        firstFloor = new DngFloor("1.Floor", function() {return("Arena gauntlet #2.")});
+        firstFloor = new DngFloor("1.Floor", function(){return("Arena gauntlet #2.")});
         var room//:DngRoom;
         var rooms= new Map();
         /* first floor
@@ -686,18 +686,18 @@ class ArenaTrialsNo2 extends DngDungeon{  //Todo broken...
         _floors.push(firstFloor);
         this.setFloors(_floors);
     }
-    exitDungeon() {
+    exitDungeon(){
         super.exitDungeon();
         window.story.show("PlainsFarmland");
     }
-    retreat() {
+    retreat(){
         this.teleport(this.getFloor("1.Floor").getRoom("Start"));
     }
-    renderRetreat(evt) { //
+    renderRetreat(evt){ //
         let msg ='';
-        if(evt.id===1) {
-            for(var i=1; i<this.data.rewards.length;i++) {
-                if(this.data.currentRoom>i) {
+        if(evt.id===1){
+            for(var i=1; i<this.data.rewards.length;i++){
+                if(this.data.currentRoom>i){
                     window.gm.player.Inv.addItem(window.gm.ItemsLib[this.data.rewards[i].id](),this.data.rewards[i].amount);
                 }
             }
@@ -706,11 +706,11 @@ class ArenaTrialsNo2 extends DngDungeon{  //Todo broken...
         } 
         return(msg);
     }
-    _fight(evt) {
+    _fight(evt){
         this.data.currentRoom = evt;
         this.data.maxRoom= (this.data.currentRoom>this.data.maxRoom)?this.data.currentRoom:this.data.maxRoom;
         window.gm.encounters[this.data.challenger[this.data.currentRoom]](window.gm.player.location);
-        window.gm.Encounter.onVictory = (function() { //need to resumeRoom...
+        window.gm.Encounter.onVictory = (function(){ //need to resumeRoom...
             this.data.currentRoom+=1;
             return('Victory ! </br>Some '+this.data.rewards[this.data.currentRoom].id+ ' was added to the reward-pile.</br>'+ window.gm.printLink('Next','window.gm.dng.resumeRoom()'));
         }).bind(this) ;
@@ -718,10 +718,10 @@ class ArenaTrialsNo2 extends DngDungeon{  //Todo broken...
     }
     
 }
-window.gm.dngs = (function (dngs) {
-    dngs.BeeHive = function () { return(new BeeHive());};  
-    dngs.ShatteredCity = function () { return(new ShatteredCity());};  
-    dngs.ArenaTrialsNo1 = function () { return(new ArenaTrialsNo1());};
-    dngs.MinoLair = function () { return(new MinoLair());};
+window.gm.dngs = (function (dngs){
+    dngs.BeeHive = function (){ return(new BeeHive());};  
+    dngs.ShatteredCity = function (){ return(new ShatteredCity());};  
+    dngs.ArenaTrialsNo1 = function (){ return(new ArenaTrialsNo1());};
+    dngs.MinoLair = function (){ return(new MinoLair());};
     return dngs; 
 }(window.gm.dngs || {}));
