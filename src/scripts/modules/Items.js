@@ -194,6 +194,7 @@ class Ingredient extends Item {
         else if(style===130) this.id=this.name='BlueSlime';
         else if(style===140) this.id=this.name='GreenSlime';
         else if(style===150) this.id=this.name='Cobweb';
+        else if(style===160) this.id=this.name='Ingwer';
         else throw new Error(this.id +' doesnt know '+style);
     }
     get style(){return this._style;}
@@ -676,6 +677,7 @@ window.gm.ItemsLib = (function (ItemsLib){
     ItemsLib['RedSlime'] = function(){ let x=new Ingredient();x.style=120;return(x);};
     ItemsLib['GreenSlime'] = function(){ let x=new Ingredient();x.style=130;return(x);};
     ItemsLib['Cobwebs'] = function(){ let x=new Ingredient();x.style=150;return(x);};
+    ItemsLib['Ingwer'] = function(){ let x=new Ingredient();x.style=160;return(x);};
     //Questitems
     ItemsLib['IgneumPage'] = function(){ let x=new QuestItems();x.style=0;return(x);};
     ItemsLib['RedAnkh'] = function(){ let x=new QuestItems();x.style=10;return(x);};

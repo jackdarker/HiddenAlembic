@@ -1,0 +1,122 @@
+:: HA_Forest
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+You walk along the paths through the wood.
+<%=(!!(window.story.state.Known.places.Forest&0x100)?window.gm.printGoto('HA_Forest_Lookout',90,0,'climb to lookout point'):'')%>
+<%if(window.gm.quests.getMilestoneState("qTraderThomas").id==200){%>
+    <a0 onclick="searchLookout()">Search for that lookout point the Innkeeper mentioned</a>
+<%}%>
+</br>For sure you might find some ingredients here. But is it worth to walk deeper into the forest? You dont know what is lurking there.
+</br><%if(!!window.story.state.Known.study.BasicBrews){%><a0 onclick='explore()'>search ingredients (>60min)</a><%}%>
+</br>[[Return Home|HA_Visit]]
+</article><article id="LogPanel"></article></section>
+<script> function searchLookout(){
+    let rnd = _.random(0,100), s=window.story.state, _thr=80-(s.DngSY.exploreForest*6);
+    window.gm.pushLog("rolled "+rnd);s.DngSY.exploreForest+=1;
+    s.tmp.args = [];
+    window.gm.addTime(60);
+    if(rnd > _thr ) {
+        window.story.show('HA_Forest_Lookout');
+    } else {
+        explore();
+    }
+}
+function explore() {
+    let rnd = _.random(0,100), s=window.story.state;
+    window.gm.pushLog("rolled "+rnd);
+    s.tmp.args = [];
+    window.gm.addTime(60);
+    /*if(rnd > 70 ) {
+         window.story.show('ForestWolfEncounter');
+    } else if(rnd > 65 ) {
+         window.story.show('ForestMudGlade');
+    }else*/ if(rnd > 20 && s.DngSY.resourceForest>0) { //todo limit berys per day
+        let find = ['PurpleBerry','PurpleBerry','ApocaFlower'];
+        let rnd2 = _.random(0,find.length-1);
+        s.tmp.args = [find[rnd2],1];
+        s.DngSY.resourceForest-=1;
+        window.story.show('HA_Forest_Harvest');
+    }
+    else {
+        window.story.show('HA_Forest_Harvest'); //nothing
+    }
+}
+</script>
+
+:: HA_Forest_Harvest [_back_]
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<% let args = window.story.state.tmp.args; if(args[0]==='PurpleBerry' && args[1]>0){ window.gm.player.Inv.addItem(window.gm.ItemsLib[args[0]](),args[1]); %>
+On a secluded spot you found a batch of berry bushes. Most of them dont have any more berrys but you are able to collect a handful.</br>
+<%} else if(args[0]==='PurpleBerry'){%>
+There arent any purple berrys left. You have to search on a different place.</br>
+<%} else if(args[0]==='ApocaFlower' && args[1]>0){ window.gm.player.Inv.addItem(window.gm.ItemsLib[args[0]](),args[1]);%>
+You found some pretty flowers with blue and yellow blossoms.</br>
+<%} else {%>
+Unfortunatly you didnt find anything useful.</br>
+<%}%>
+<div></br>[[Next|_back_]]</br></div>
+</article><article id="LogPanel"></article></section>
+
+
+:: HA_Forest_Animal
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+
+As you wander off the path through the forest you hear something move in the underbrush. 
+You guess it might be ... (detection improves on failure)
+Hide in a bush
+Climb Tree
+Run
+Grab a branch
+Stand your ground
+
+Stag/deer -> charm if you stand still or hide in bush
+Cougar  -> catch you if on tree or run; safe if stand still or offensive
+Wolfes -> catch you if you run or hide in bush; safe on tree
+Bear -> catch if hiding or offensive; safe on tree or run
+Fox (might be a Kitsune) -> charm if you stand still
+Hunter -> catch you if standstill or offensive; safe if hiding
+Logger -> catch you if on tree
+Werwulf ->
+Fairy/Dryad -> 
+Giant Bat -> 
+Giant Snake ->
+if you pass, you gain some fur of the animal
+if you fail, shred your clothes, rape you
+
+
+</br>[[Next|HA_Visit]]
+</article><article id="LogPanel"></article></section>
+
+
+:: HA_Forest_Lookout
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+<% if((window.story.state.Known.places.Forest&0x100)==0){ window.story.state.Known.places.Forest|=0x100, window.gm.quests.forceQuestMilestone("qTraderThomas",300,200);%>
+    You push through the undergrow of this filthy forest as you notice that further up the it seems to get brighter.
+    As you walk on and climb a steep dirtpath, you finally make it above the tree line.
+    You spot some deteriorated walls and a stonetower. 
+    <p class="tPC">"This has to be the lookout point. Lets check the tower."</p>
+    Unfortunalty the entrance to the tower is barraged with some wodden door. There is no lock but the rotten old thing seems to not move an inch.
+    <p class="tPC">"I guess it wouldnt be save to climb that tower if its stairs are as rotten as its door."</p>
+    Making your way around the tower you find that you dont need that tower anyway. There is a cliffside and you have a unhinderned view into the valley.
+    <p class="tPC">"That has to be Redwick and there is the road."</p>
+    You cant see Barellless from here as it is hidden behind the forest trees. 
+    Du benutzt deine Hände um deine Augen von der Sonne abzuschirmen.
+    <p class="tPC">"Hmm, is that a carriage halted on the side of the road?"</p>
+    Indeed there seems some handwaggon some miles up the road midst in the woods. But you cant spot anyone close by.
+    <p class="tPC">"I better report back to the innkeeper."</p>    
+<%}else{%>
+    You find your way back to the lookout point
+<%}%>
+</br>[[Walk down into the forest|HA_Forest]]
+</article><article id="LogPanel"></article></section>
+
+
+:: HA_Forest_Intro
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%><%window.story.state.Known.places.Forest=1;%>
+You walk along the paths through the wood.
+For sure you might find some ingredients here. But is it worth to walk deeper into the forest? You dont know what is lurking there.
+</br>[[Next|HA_Visit]]
+</article><article id="LogPanel"></article></section>

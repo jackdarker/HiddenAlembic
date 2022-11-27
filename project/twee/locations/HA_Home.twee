@@ -1,17 +1,25 @@
 :: HA_NextDay
 <section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
 <%window.gm.player.location=window.passage.name;%>
-A new day started and you need to decide how to move along.</br>At least you can decide for yourself and don't have to do what others say.
-</br>[[HA_YourRoom]]
+
+<%if(window.story.state.DngSY.remainingNights==0){%>
+    Die Banditen wollen ihr Geld. bezahle oder trage die Konsequenzen.
+    TODO [[Pay] [[You dont have the money]]
+    </br>[[HA_YourRoom]]
+<%}else{%>
+    A new day started and you need to decide how to move along.</br>At least you can decide for yourself and don't have to do what others say.
+    </br> 
+    </br>[[HA_YourRoom]]
+<%}%>
 </article><article id="LogPanel"></article></section>
 
 :: HA_YourRoom
 <section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
 <%window.gm.player.location=window.passage.name;%>
-<p>You are in your private room.</p>
+<p>You are in your private room. There is a bed, a small desk with a comfy stool and a bulky wardrobe with a mirror.</p>
 <a0 id='howtoplay' onclick='(function($event){document.querySelector("#"+id+"~p").toggleAttribute("hidden");})(this);'>Hint</a>
 <p hidden>Every day you can choose multiple actions that will require time and energy.</p>
-</br></br><%if(!!window.story.state.Known.study.BasicBrews){%>[[brew something|HA_Lab]]<%}%>
+</br></br><%if(!!window.story.state.Known.study.BasicBrews){%>[[use the laboratory|HA_Lab]]<%}%>
 </br></br>[[go somewhere|HA_Visit]]
 <a0 id='helpscout' onclick='(function($event){document.querySelector("#"+id+"~p").toggleAttribute("hidden");})(this);'>Hint</a>
 <p hidden>Walk around to familarize yourself with the surrounding. Maybe you can find something of use. Revisit locations you already know and try to find some specific resource. You will get a small skill gain and better skill provide better result. But you need the proper equipment like arrows and traps.</p>
@@ -31,14 +39,16 @@ todo quickaccess to work
 
 :: HA_Visit
 <section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
-<%window.gm.player.location=window.passage.name;%>[[back|HA_YourRoom]]</br>
+<%window.gm.player.location=window.passage.name;%>
+You are at home.</br></br>[[go to your private room|HA_YourRoom]]</br> 
 <a0 onclick='explore()'>explore the closer area</a></br>
 <div id='output'></div>
 </br><%if(!!window.story.state.Known.places.Garden){%>[[go to garden|HA_Garden]] <%}%>
-</br>close by:
-</br><%=(!!window.story.state.Known.places.Barellless?window.gm.printGoto('HA_Inn',5,0,'visit Inn'):'')%>
+</br></br>close by:
+</br>
+<%=(!!window.story.state.Known.places.Barellless?window.gm.printGoto('HA_Inn',5,0,'visit Inn'):'')%>
 <%=(!!window.story.state.Known.places.Barellless?window.gm.printGoto('HA_Trader',5,0,'visit Trader'):'')%> [[visit Thomas]] </br>
-</br>further away: (requires time and energy)
+</br></br>further away: (requires time and energy)
 </br><%=(!!window.story.state.Known.places.Farm?window.gm.printGoto('HA_Farm',30,0,'go to farm'):'')%>
 <%=(!!window.story.state.Known.places.Forest?window.gm.printGoto('HA_Forest',30,0,'go to forest'):'')%></br>
 </br><%=(!!window.story.state.Known.places.Redwick?window.gm.printGoto('HA_Road_Redwick',240,0,'travel to Redwick (on foot)'):'')%></br>
@@ -53,7 +63,7 @@ todo quickaccess to work
     if(!s.Known.places.Farm){window.story.show('HA_Farm_Intro');return;}
     if(!window.story.state.Known.study.BasicBrews){window.story.show('HA_Lab_Intro');return;}
     window.gm.printOutput("You didnt find anything useful.");return;
-    /////
+    /////tOdo 
     if(rnd > 70 ) {
          window.story.show('ForestWolfEncounter');
     } else if(rnd > 65 ) {
@@ -74,43 +84,47 @@ todo quickaccess to work
 
 :: HA_Sleep
 <section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
 You drift of to sleep dreaming of....</br>
 </br>[[HA_NextDay]]
 </article><article id="LogPanel"></article></section>
+<script> function newDay(){ //reset daily vars
+    window.story.state.DngY.resourceForest=5;
+    window.story.state.DngY.exploreForest=0;
+}
+newDay();
+</script>
 
 :: HA_Intro
 <section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
-Todo intro
-</br>[[HA_NextDay]]
+<%window.gm.player.location=window.passage.name;%>
+Todo 
+The loanshark wants his money and if you dont have it at time he will send someone to confiscate your belongings.
+Du hast keine Ahnung ob die Ansprüche dieser zwielichtigen Personen berechtigt sind.
+</br>Es wäre sicher nicht verkehrt sich um Geld zu kümmern und gleichzeitig Licht in die Sache zu bringen.
+</br><a0 onclick='start()'>Next</a>
 </article><article id="LogPanel"></article></section>
-
-:: HA_Forest
-<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
-You walk along the paths through the wood.
-For sure you might find some ingredients here. But is it worth to walk deeper into the forest? You dont know what is lurking there.
-</br>[[Return Home|HA_Visit]]
-</article><article id="LogPanel"></article></section>
-
-
-:: HA_Forest_Intro
-<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
-<%window.story.state.Known.places.Forest=1;%>
-You walk along the paths through the wood.
-For sure you might find some ingredients here. But is it worth to walk deeper into the forest? You dont know what is lurking there.
-</br>[[Next|HA_Visit]]
-</article><article id="LogPanel"></article></section>
+<script>
+function start(){
+    if(window.story.state._gm.debug!=0) {
+        window.gm.player.Inv.addItem(window.gm.ItemsLib.ApocaFlower(),4),window.gm.player.Inv.addItem(window.gm.ItemsLib.PurpleBerry(),4);
+    }
+    window.story.state.vars.spawnAt="HA_YourRoom";
+    window.story.show(window.story.state.vars.spawnAt);
+}
+</script>
 
 :: HA_Farm_Intro
 <section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
-<%window.story.state.Known.places.Farm=1;%>
-Near the crossroad is a farm. 
+<%window.gm.player.location=window.passage.name;%><%window.story.state.Known.places.Farm=1;%>
+Beside the road to Redwick is a farm. 
 </br>[[Next|HA_Visit]]
 </article><article id="LogPanel"></article></section>
 
 
 :: HA_Farm
 <section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
-<%window.story.state.Known.places.Farm=1;%>
+<%window.gm.player.location=window.passage.name;%><%window.story.state.Known.places.Farm=1;%>
 Near the crossroad is a farm. 
 
 apply for a job as Milkmaid, farmhand
@@ -123,16 +137,16 @@ help with breeding, increase milk & egg gain
 
 :: HA_Garden_Intro
 <section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
-<%window.story.state.Known.places.Garden=1;%>
-Beneath the house is a small, overgrown garden. It would take some effort to clear away the brush and weeds to make room for herbs and vegetables. 
+<%window.gm.player.location=window.passage.name;%><%window.story.state.Known.places.Garden=1;window.gm.quests.forceQuestMilestone("qGarden",100,1);%>
+Beneath the house is a small, overgrown garden. It would take some effort to clear away the brush and weeds to make room for growing herbs and vegetables. 
 </br>[[Next|HA_Garden]]
 </article><article id="LogPanel"></article></section>
 
 :: HA_Garden
 <section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
-<%window.story.state.Known.places.Garden=1;%>
+<%window.story.state.Known.places.Garden&=1;%>
 
-</br>Why should you bother wasting your time in the garden?
+<p class="tPC">'Why should you bother wasting your time in the garden?'</p>
 
 </br>Now that you begun to brew potions, a garden might be useful to grow herbs and crops. Some effort spent here might save you a lot of time hunting for ingredients in the wild.
 
@@ -149,13 +163,27 @@ Beneath the house is a small, overgrown garden. It would take some effort to cle
 
 :: HA_Barellless_Intro
 <section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
-<%window.story.state.Known.places.Barellless=1;%>
-Barellless is just a collection of a bunch of rotten old huts along a dirtroad.  
-There is a Inn and a path leads down into a forest.
-The road leads toward the city Redwick, but it would take a while to get there.
-</br>[[Next|HA_Visit]]
+<%window.gm.player.location=window.passage.name;%><%window.story.state.Known.places.Barellless=1;%>
+Stepping out of the front door of your new home you decide to walk down the path into the closeby village.</br>
+Barellless is just a collection of a bunch of rotten, old huts along a dirtroad.  </br>
+There is a Inn and one of the buildings seem to have a market stand before it. </br>
+Your walk ends at a crossing just outside the settlement. A sign points into the direction of Redwick, the next city ahead. It would take some time to get there.</br>
+</br>Another path leads up into a forest.
+</br>[[Go back|HA_Visit]]
 </article><article id="LogPanel"></article></section>
 
+:: HA_Trader
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;window.story.state.Known.places.Trader|=0x1%>
+<% if(window.gm.quests.getMilestoneState("qTraderThomas").id>=1000){%>
+    This is Thomas's store. 
+    </br></br>[[Talk to him]] [[Buy something]]  [[Sell something]]
+<%}else{window.gm.quests.forceQuestMilestone("qTraderThomas",100,1);%>
+    A general merchant has setup his shop on the ground floor of a larger house.</br>
+    However, the door is locked and there is a "closed" sign. Maybe you should ask around why it is closed.
+<%}%>
+</br></br>[[Go back|HA_Visit]]
+</article><article id="LogPanel"></article></section>
 
 :: HA_Lab
 <section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
@@ -165,13 +193,13 @@ Do some scavenging to get more ingredients. You can also buy them from traders.<
 Also, higher tier potions might need better equipment.</p>
 <a0 id='howtoplay' onclick='(function($event){document.querySelector("#"+id+"~p").toggleAttribute("hidden");})(this);'>Hint</a>
 <p hidden>You can use trial and error to find potential recipes. But even if you get it right, you might need multiple attempts to master them.</p></br>
+</br></br>[[back to your room|HA_YourRoom]]
 </br><%=((!!window.story.state.Known.study.BasicBrews)?window.gm.printGoto('HA_StudyBasicBrews',60,0,'Study "BasicBrews"'):'')%>
 <hr>
-</br><a0 onclick='window.gm.brewInit("known")'>mastered recipes</a><a0 onclick='window.gm.brewInit("potential")'>potential recipes</a><a0 onclick='window.gm.brewInit("unavailable")'>unavailable</a>
-</br><a0 onclick='window.gm.brewInit("new")'>new recipe</a>
+</br>create something from recies: <a0 onclick='window.gm.brewInit("known")'>mastered recipes</a><a0 onclick='window.gm.brewInit("potential")'>potential recipes</a><a0 onclick='window.gm.brewInit("unavailable")'>unavailable</a>
+</br>or experiment to create a <a0 onclick='window.gm.brewInit("new")'>new recipe</a>
 </br><div id='recipe'></div><div id='retorte'></br>
-</div><a0 onclick='window.gm.brewCraftPotion()'>brew</a></br><div id='output'></div>
-</br></br>[[back|HA_YourRoom]]
+</div>When you think the setup is correct you may <a0 onclick='window.gm.brewCraftPotion()'>initiate brewing</a></br><div id='output'></div>
 </article><article id="LogPanel"></article></section>
 
 :: HA_StudyBasicBrews
@@ -186,12 +214,12 @@ You start to read in that book you found. There doesn't seem to be a table of co
     window.gm.pushLog("rolled "+rnd);
     if(s.Known.study.BasicBrews<=10 && rnd>10) {
         s.Known.study.BasicBrews+=4;
-        msg='Doing your best to understand some of the scribbling you read the introduction.</br> You barely started with studying and are already tired off reading all those words.'
+        msg='Doing your best to understand some of the scribbling you read the introduction.</br> You barely started with studying and are already tired off reading all those words.</br>Your knowledge only grew a little bit.'
     } else if(s.Known.study.BasicBrews<99 && rnd>20) {
         if(!s.Known.recipes["HealthPotionSmall"]){ s.Known.recipes["HealthPotionSmall"]=1;
             msg='Somehow the garbled mess of words made sense in your brain and you now understand how to make <b>\"lesser healtpotion\"</b> !'
         } else {
-            msg='Reading another chapter gives you some more insight about previous lessons. However, it would be much easier if you could simply ask someone for explanations.'
+            msg='Reading another chapter gives you some more insight about the previous readings. However, it would be much easier if you could simply ask someone for explanations.'
         }
     } else if(s.Known.study.BasicBrews>=99) {
         msg='You flip back and forth through the book but find nothing you haven\'t already read.'
@@ -201,7 +229,7 @@ You start to read in that book you found. There doesn't seem to be a table of co
 
 :: HA_Lab_Intro
 <section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
-<%window.story.state.Known.study.BasicBrews=1;%>
+<%window.gm.player.location=window.passage.name;%><%window.story.state.Known.study.BasicBrews=1;%>
 As you place the marble into the bowl, you hear a click behind the bookshelf and the shelf itself moves slightly into the wall.
 Beeing curious, you push the shelf with a hand and it swings silently open like a door.
 <p class="tPC">"There is a secret room!"</p> 

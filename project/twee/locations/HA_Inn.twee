@@ -1,0 +1,108 @@
+:: HA_Inn
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+One of the largest building around is the "Blue Eel". This is an inn and there are also rooms to stay overnight.
+<%if((window.story.state.Known.places.Inn&0x3)==0x1){%>[[Ask for work|HA_InnAskWork]]<%}%>
+<%if((window.story.state.Known.places.Inn&0x2)>0){print((window.story.state._gm.time>=1200 && window.story.state._gm.time<=2100)?(window.gm.printGoto('HA_InnDoWork',240,0,'work a shift')):('come back for work between 12:00 and 21:00'))}%>
+
+<%if(!window.story.state.Known.places.Inn){window.gm.quests.forceQuestMilestone("qBarJob",100,1);%>[[Look around for someone in charge|HA_InnTalkIntro]]<%}else{%>[[Chat with Brenda|HA_InnChatBrenda]]<%}%>
+</br></br>[[Go back|HA_Visit]]
+</article><article id="LogPanel"></article></section>
+
+:: HA_InnTalkIntro
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+todo chat with Brenda
+<%window.story.state.Known.places.Inn|=0x1%>
+</br></br>[[Next|HA_Inn]]
+</article><article id="LogPanel"></article></section>
+
+
+:: HA_InnChatBrenda
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+Brenda is busy at the bar. Greating her with a wave of your hand you walk over to her.
+<p class="tNPC1">"Hey how is it going...."</p>
+<%if(window.story.state.Known.places.Trader==0x1){%>
+    [[Ask about the traders house|HA_InnChatBrendaFindTrader]]
+<%}%>
+</br>[[Just chat for a while|HA_Inn]]
+</br></br>
+</article><article id="LogPanel"></article></section>
+
+
+:: HA_InnChatBrendaFindTrader
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%if(window.gm.quests.getMilestoneState("qTraderThomas").id==100){%>
+    <div id='select10' >
+    <a0 onclick='window.gm.printTalkLink($("div#select10")[0],"div#choice10a")'>Ask about the traders absent</a>
+    </div><div id='choice10a' hidden> 
+        <p class="tPC">"There is that building with a market stall in front of it but there seems that no one is at home."</p>
+        <p class="tNPC1">"Oh you mean Richards house. I think he will be back soon. Well, actually he should have returned some days ago."</p>
+        </br> Brenda looks worried. For sure he is a friend of her.
+        <p class="tPC">"Maybe he is just loitering somewhere? Where was he going?"</p>
+        <p class="tNPC1">"I'm not sure, he usually trades in Redwick but also visits other small settlements along the road."</p>
+        <p class="tNPC1">"I'just hope he didn't have an accident or some bandits..."</p>
+        </br> She really looks nervous now.
+        <p class="tNPC1">"Maybe you can do me a favour and follow the road up the hill along the forest. There is a ruined lookout point near a cliff, its not that far. From there you can oversee the road nearly up to Redwick. Maybe you can spot something."</p>
+        <p class="tNPC1">"But please only go in bright daylight and stay on the road."</p>
+        <div id='select11' >
+        <a0 onclick='window.gm.printTalkLink($("div#select11")[0],"div#choice11a"),window.gm.quests.forceQuestMilestone("qTraderThomas",200,-1);'>"That sounds strenous. How about some compensation?"</a></br>
+        <a0 onclick='window.gm.printTalkLink($("div#select11")[0],"div#choice11b"),window.gm.quests.forceQuestMilestone("qTraderThomas",200,-1);'>"Yes I can do that and will report back as soon as possible."</a>
+            </div><div id='choice11a' hidden>
+                <p class="tNPC1">"I understand, maybe some coins can encourage you.</p> With some disappointment she put some coins on the bar table. 
+                <!-- add coin decrease relation-->
+                </br>[[Take your leave|HA_Inn]]
+            </div>
+            <div id='choice11b' hidden>
+                <p class="tNPC1">"Just be careful."</p></br>[[Take your leave|HA_Inn]]
+            </div>
+    </div>
+<%}else if(window.gm.quests.getMilestoneState("qTraderThomas").id==200){%> <p class="tNPC1">"Did you see something ? I mean from the lookout..."</p> She reminds you that she wanted you to find the lookpit point in the forest and see if you spot the trader on the road to Redwick.
+    </br>[[Take your leave|HA_Inn]]
+<%}else{%>
+You chat about this and that.
+</br>[[Take your leave|HA_Inn]]
+<%}%>
+</article><article id="LogPanel"></article></section>
+
+
+
+:: HA_InnAskWork
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+todo ask for work</br>
+<%window.story.state.Known.places.Inn|=0x2,window.gm.quests.forceQuestMilestone("qBarJob",200,100);%> </br><b>You may now work at the Inn</b>
+</br></br>[[Go back|HA_Inn]]
+</article><article id="LogPanel"></article></section>
+
+:: HA_InnDoWork [_nosave_]
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+todo: do some work, keep tips</br>
+<p id='show1' hidden>You served some beer</p>
+<p id='show2' hidden>You cleaned the restrooms</p>
+<p id='show3' hidden>Exchanged the beer keg</p>
+<p id='show4' hidden>Get some Brandy from merchant, haggle for price and keep change</p>
+
+<div id='output'></div>
+
+todo: workproposal: work at least 4 evenings and you get extra coin and some liquor
+
+- Wenn wir eine Kapelle anheuern kommen vielleicht auch mal mehr Gäste und trinken dann auch mehr. 
+Kann ich mir nicht leisten. Aber vielleicht kannst du mal die Zigeuner fragen.
+
+
+
+
+</br></br>[[Go back|HA_Inn]]
+</article><article id="LogPanel"></article></section>
+<script>function work() {
+    var _tip=5, id=1;
+    window.gm.printOutput('At the end of your shift you count the tips you received: '+_tip+'$');
+    window.gm.player.Inv.addItem(window.gm.ItemsLib.Money(),_tip);
+    if(window.gm.quests.getMilestoneState("qBarJob").id==200) window.gm.quests.getQuestState("qBarJob").flags+=1;
+    if(window.gm.quests.getQuestState("qBarJob").flags>2) id=2;
+    document.querySelector("#show"+id).toggleAttribute("hidden");
+}
+work();
+</script>

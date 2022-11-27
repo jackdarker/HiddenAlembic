@@ -1,0 +1,94 @@
+:: HA_Chateau_Intro
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%><%window.story.state.Known.places.Chateau=1;%>
+Further down the road, siehst du ein Anwesen das teilweise von einer Mauer umgeben ist. Ein großes Haus steht inmitten eines englischen Parks.
+Das Gebäude sah sicher mal prächtig aus aber nun sieht es etwas heruntergekommen aus. Auch der Park müsste mal wieder in Form gebracht werden.
+</br>
+Die Leute hier scheinen also nicht gerade im Reichtum zu schwelgen. Auf der anderen Seite, vielleicht fehlt ihnen ja auch nur eine Arbeitskraft.
+Du marschierst also den Fahrweg hinauf und läutest an der Pforte. Also Echo auf die Schelle ertönt ein tiefes Bellen was dich hoffen lässt das sie hier nicht einen bissigen Wachhund haben.
+Du überlegst schon lieber wieder zurückzugehen als eine Frau die Tür öffnet. Ihren Aufzug nach zu urteilen ist das nicht die Dame des Hauses sondern die Haushälterin.
+<p class="tNPC1">"Ja, sie wünschen bitte?"</p> fragt sie nachdem sie dich schnell gemustert hatte.
+<p class="tPC">"Ich wollte Fragen ob die gnädige Frau Bedarf für eine Hilfe im Hof oder Haushalt hat..."</p>
+Weiter kommst du nicht als sie plötzlich blafft <p class="tNPC1">"Aus! Zurück! Brutus NEIN"</p> 
+Die Worte spuckt sie allerdings nicht in deine Richtung sondern über ihre Schulter.
+Ein tiefes Knurren ertönt hinter ihr.
+<p class="tNPC1">"Entschuldigung. Der Hund des Herrn ist manchmal etwas sehr neugierig Fremden gegenüber."</p> Sie versucht sich an einem Lächeln doch statt freundlich wirkt es eher grimmig.
+<p class="tNPC1">"Verstehe ich das richtig das sie Arbeit suchen? Was haben sie den für Referenzen und Fähigkeiten."</p>
+<span class="tPC">'Vielleicht hätte ich vorher darüber nachdenken sollen wie ich mich gut verkaufe'</span> denkst du bei dir selbst.
+Du weist zwar wie ein ordentliches Haus aussehen soll, aber bist nicht gerade darin geübt diesen Zustand herzustellen.
+Du musst abwägen das du nicht zu viel versprichst aber auch nicht zugibst das du keine Ausbildung hast.
+<span class="tPC">"Referenzen habe ich leider keine aber ich kann "</span> 
+Kochen  
+Gärtnern  
+Lesen und Schreiben  
+Nähen & Schneidern
+Putzen  
+
+"Putzen, nun ja das sollte ja jeder können. Tatsächlich könnte ich jemanden brauchen der außerhalb des Hauses hilft."
+<span class="tNPC1">"Ich kann dich einstellen für 10$ die Woche. Dazu musst du Montag bis Freitag vormittags Arbeit verrichten die ich dir auftrage. 
+Wenn du dich gut machst und ich dir mehr Verantwortung übertragen kann gibt es auch mehr Verdienst."</span>
+
+Das hört sich nicht nach einem lohnenden Verdienst an aber es ist besser als nichts. Möglicherweise bekommst du so aber Zugang zur besseren Gesellschaft.
+Oder zumindest zu Dingen die zufällig in deiner Tasche landen und weiterverkauft werden können.
+
+</br>[[Ich denke über das Angebot nach|HA_Chateau_JobDelay]] [[Ich würde die Stelle gern nehmen|HA_Chateau_JobStart]]
+</article><article id="LogPanel"></article></section>
+
+:: HA_Chateau_Work
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+
+- Park aufräumen (seltene Pflanze ernten)
+
+- du darfst im Haus putzen und bekommst Maid-Uniform
+
+- Brutus will spielen; bist du nett zu ihm oder nicht?
+
+- du hast die Gelegenheit zu stehlen: Schnapps, Geld, Essen
+
+- du machst Notizen von Info die du findest (dazu benötigst du ein kleines Notizbuch): Rezeptbuchseite, Karte, Terminplaner
+
+- du wirst beim stehlen erwischt von ...? Als Strafe musst du (nackt) Model sitzen / Brutus dich lecken lassen
+
+- mische Brutus Arousal-Potion ins Futter; er wird aufdringlicher, auch der Haushälterin gegenüber
+
+- die Haushälterin erlaubt dir in der Bibliothek zu putzen; Zugang zum Keller
+
+- du erkundest heimlich den Keller und findest den Kultraum
+
+</br>[[HA_NextDay]]
+</article><article id="LogPanel"></article></section>
+
+
+:: HA_Chateau_Party
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+
+- es gibt manchmal Versammlungen/Partys
+
+- du sollst Getränke servieren 
+
+- du sprichst mit den Gästen und bekommst Infos; wenn du zu neugierig bist wirst du bestraft (Bd-Hood&Gag? Verbannung in die Küche?)
+
+- der Teenager (Sohn Tochter von ??) interessiert sich für dich; flirtest du mit ihm?
+
+</br>[[HA_NextDay]]
+</article><article id="LogPanel"></article></section>
+
+
+:: HA_Chateau_Abrechnung
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
+<%window.gm.player.location=window.passage.name;%>
+
+- du gestehst einem Priester/Geheimdienst das es einen Kultraum gibt; er will das du weiter belastendes Material sammelst
+
+- du sammelst Bewweise das Kulthandlungen durchgeführt werden; bzw. motivierst du die Leute zu verbotenen Handlungen
+
+- Razzia durch die Inquisition
+
+- das Anwesen wird versteigert; du kannst es günstig kaufen da die Leute es für verflucht halten
+
+- jetzt hast du ein Haus aber was machst du damit? Kultraum reaktivieren, Bordell, Hundezucht, Sklaventrainer
+
+</br>[[HA_NextDay]]
+</article><article id="LogPanel"></article></section>

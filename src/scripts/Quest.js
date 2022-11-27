@@ -5,6 +5,7 @@
 class QuestMilestone {
     static NOP(){return(0);}
     static DONE(){return(-1);}
+    static HIDDEN(){return(true);}
     constructor(id,name,descr,CondCheckCB,HiddenCB=null){
         this.id =id,this.name=name;
         this.HiddenCB = (HiddenCB===null)? (function(){return(false);}): HiddenCB;
