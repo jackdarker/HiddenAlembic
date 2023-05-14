@@ -2,6 +2,21 @@
 
 window.gm = window.gm || {}; //game related operations
 window.gm.util = window.gm.util || {};  //utility functions
+class IDGenerator {//extends Singleton{
+  constructor(){
+      if(IDGenerator._instance){ return IDGenerator._instance; }
+      IDGenerator._instance = this;
+      this._idCounter=1;
+      window.storage.registerConstructor(IDGenerator);
+  }
+  static instance() {
+      if(!IDGenerator._instance){return new IDGenerator(); }
+      return IDGenerator._instance;
+  }
+  createID() {this._idCounter++;return(this._idCounter);}
+  toJSON(){return window.storage.Generic_toJSON("IDGenerator", this); }
+  static fromJSON(value){return(window.storage.Generic_fromJSON(IDGenerator, value.data));}
+}
 
 // helper for publisher/subscriber-pattern; myObject.ps =PubSub(); myObject.ps.subscribe(...
 // !! warning, dont use for objects that need to be loaded from savegame
@@ -53,25 +68,24 @@ window.gm.util.arrayEquals=function(a, b) {
 window.gm.util.updateLinks=function(Container){
   let tags=window.story.passage(window.passage.name).tags;
 	if (!tags.includes("_noshortkey_")){
-		var Links, i;
+		var Links=[],Nodes, i;
 		if (typeof Container === "undefined"){
 			Container = document;
-			Links = document.querySelector('tw-passage').querySelectorAll('a,button'); //all links within page    todo how about buttons
+			Nodes = document.querySelector('tw-passage').querySelectorAll('a,button'); //all links within page    todo how about buttons
 		} else {
-			Links = Container.querySelectorAll('a,button');
+			Nodes = Container.querySelectorAll('a,button');
 		}
-		if (Links.length > 0){
-			for (i = 0; i < Links.length; i++){
-				if ((Links[i].getAttribute("data-nokey") == "true") || (Links[i].parentElement.getAttribute("data-nokey") == "true")){
-					Links.deleteAt(i);
-					i--;
-				}
+		if (Nodes.length > 0){
+			for (i = 0; i < Nodes.length; i++){
+				if ((Nodes[i].getAttribute("data-nokey") == "true") || (Nodes[i].parentElement.getAttribute("data-nokey") == "true")||
+            Nodes[i].parentElement.hidden || Nodes[i].parentElement.disabled ){
+				}else{ Links.push(Nodes[i]); }
 			}
 		}
     if (Links.length >= 1 ){//&& Links.length <= 10){
 			var n = 1;
 			for (i = 0; i < Links.length; i++){
-				if (Links[i].id==="" && !Links[i].disabled){//!Links[i].id.includes("Link")){
+				if (Links[i].id==="" && !Links[i].disabled && !Links[i].hidden){//!Links[i].id.includes("Link")){
 					while (document.querySelector("#Link" + n)){//$(Container).find("#Link" + n).length){ //check for existing links
 						++n;
 						if (n > 10){	break;	}
@@ -149,6 +163,11 @@ window.gm.util.addShortKeyHandler=function(){
     }
   });
 };
+window.gm.util.selRandom=function(list){//picks element from []
+  let _i=list.length;
+  if(_i>0) return(list[_.random(0,_i-1)]);
+  else throw new Error("empty list")
+}
 //create pretty name for passage; requires a tag (replace space with _ !) [name:"My_Room"]
 window.gm.util.printLocationName=function(passage){
   let tags = window.story.passage(passage).tags;
@@ -167,9 +186,26 @@ window.gm.util.bargraph=function(value,max,color,text=""){
   msg ='<div class="progressbar"><div style="background-color:'+color+'; width: '+rel.toString()+'%;"><div style="width: max-content;">'+text+window.gm.util.formatNumber(value,1)+'/'+max.toString()+'</div></div></div>';
   return(msg); //todo bargraph css-animation doesnt work because the whole page is reloaded instead of just width change
 };
+//returns html colorcode for keyword: "health"-> red
+window.gm.util.colorFor=function(id){
+  let c='black';
+  switch(id) {
+    case 'health':c='lightcoral'; break;
+    case 'energy':c='lightyellow'; break;
+    case 'will':c='lightblue'; break;
+    case 'poise':c='darkgrey'; break;
+    case 'arousal':c='lightpink'; break;
+    case 'satiation':c='rosybrown'; break;
+    case 'savageness':c='darkred'; break;
+    default:
+      break;
+  }
+  return(c);
+}
 window.gm.util.statsbar=function(what, color){
   var x=window.gm.player.Stats.get(what),y=window.gm.player.Stats.get(what+"Max");
   if(x.hidden>=4) return("");
+  if(!color) color=window.gm.util.colorFor(what);
   return(window.gm.util.bargraph(x.value,y.value,color,what+": "));
 };
 /* Uploads SVG files from local file system, based on file selected in input; https://github.com/fizzstudio/svg-load-save */
@@ -280,6 +316,7 @@ window.gm.initGame= function(forceReset,NGP=null){
         version : window.gm.getSaveVersion(),
         style: 'default', //css profile to use
         log : [],
+        IDGen: new IDGenerator(),
         passageStack : [], //used for passage [back] functionality
         defferedStack : [], //used for deffered events
         onholdStack : [], //used for deffered events
@@ -375,8 +412,8 @@ window.gm.addTime= function(min){
     window.story.state._gm.day += 1;
   }
   window.gm.timeEvent.publish("change",min);
-  window.gm.player.Effects.updateTime(); //todo not happy with that; see PubSub-comment
-  window.gm.player.Outfit.updateTime();
+  if(window.gm.player.Effects) window.gm.player.Effects.updateTime(); //todo not happy with that; see PubSub-comment
+  if(window.gm.player.Outfit) window.gm.player.Outfit.updateTime();
   // updating all existing chars might not be wise (some could be dead)
   // but what if I have to update other chars too?
   //
@@ -411,7 +448,7 @@ window.gm.getDateString= function(){
   var v=window.story.state._gm;
   return v.day.toString()+". day "+ window.gm.DoWs[(v.day%8)-1];
 };
-//forward time to until (1025 = 10:25), regenerate player
+//forward time to until (1025 = 10:25)
 //warning dont write 0700 because this would be take as octal number
 window.gm.forwardTime=function(until){
   let v=window.story.state._gm;
@@ -424,7 +461,7 @@ window.gm.forwardTime=function(until){
   //if now is 8:00 and until 10:00 we assume you want to sleep 2h and not 2+24h
   //if now is 10:00 and until is 9:00 we assume sleep for 23h
   if(until<v.time){
-    min = 24*60-(h-h2)*60+(m-m2);
+    min = 24*60-(h-h2)*60-(m-m2);
   }
   if(min===0){ //if sleep from 700 to 700, its a day
     min=24*60;
@@ -550,7 +587,11 @@ window.story.__proto__.show = function(idOrName, noHistory = false){
   let tagsnext,namenext,nextp,namenow;
   clearInterval(KBIntervalID);
   if(idOrName==='') tagsnext=[];
-  else tagsnext = window.story.passage(idOrName).tags;
+  else {
+    nextp = window.story.passage(idOrName);
+    if(nextp) tagsnext = window.story.passage(idOrName).tags;
+    else throw new Error("no such passage: "+idOrName);
+  }
   if(inGame && window.story.state._gm.defferedStack.length>0 && //deffered event if allowed and requested
     //tagsnext.indexOf('_back_')<0 &&
     tagsnext.indexOf('_nosave_')<0 && tagsnext.indexOf('_nodeffered_')<0 ){ 
@@ -604,8 +645,8 @@ window.story.__proto__.show = function(idOrName, noHistory = false){
 	// Search passages for links every x ms, just in case they get updated, and marks them for key clicks
 	//KBIntervalID = setInterval(window.gm.util.updateLinks,1000);  todo do we need this?
 };
-/* when returning from back-passage, restore view by hiding/unhiding programatical modified elements, see printTalkLink
-*/
+
+/* when returning from back-passage, restore view by hiding/unhiding programatical modified elements, see printTalkLink*/
 window.gm.restorePage=function(){
   if(window.story.state.tmp){
     let elmts =Object.keys(window.story.state.tmp.flags);
@@ -733,8 +774,10 @@ window.gm.printPassageLink= function(label,target){
   return("<a href=\"javascript:void(0)\" data-passage=\""+target+"\">"+label+"</a>");
 };
 //prints a link where target is a expression called onClick. Use \" instead of " or ' !
-window.gm.printLink= function(label,target){
-  return('<a href=\'javascript:void(0)\' onclick=\''+target+'\'>'+label+'</a>');
+window.gm.printLink= function(label,target,params){
+  let _params=params||{}
+  _params.class=(params&&params.class)?params.class:"";
+  return('<a href=\'javascript:void(0)\' class=\''+_params.class+'\' onclick=\''+target+'\'>'+label+'</a>');
 };
 
 //prints a link that when clicked picksup an item and places it in the inventory, if itemleft is <0, no link appears
@@ -823,40 +866,42 @@ window.gm.printItemTransfer = function(from,to,wardrobe){
   }
 }
 //prints an equipment with description; used in wardrobe
-window.gm.printEquipment= function( whom,item){
-  var elmt='';
-  var s= window.story.state;
-  var res,name,desc;
-  name=item.name, desc=item.desc;
+window.gm.printEquipment= function( whom,item,node="div#choice",params){
+  let _params= params||{};
+  _params.noUnequip=(params&&params.noUnequip)?params.noUnequip:false;
+  let elmt='', s= window.story.state, res;
   if(item.hasTag('body')) return; //skip bodyparts; 
   let noWear = item.hasTag(['piercing','tattoo']); 
-  let g,entry = document.createElement('p');
-  g = document.createElement('a'),g.href='javascript:void(0)';
-  g.textContent=item.name;g.id=item.id;
-  g.addEventListener("click",(function(evt){document.querySelector("div#"+evt.target.id).toggleAttribute("hidden");}));
-  entry.appendChild(g);
+  let itm,g,entry = document.createElement('p');
+  itm = document.createElement('a'),itm.href='javascript:void(0)';
+  itm.textContent=item.name;itm.id=item.id;
+  itm.addEventListener("click",(function(evt){document.querySelector("div#"+evt.target.id).toggleAttribute("hidden");}));
+  entry.appendChild(itm);
   g = document.createElement('a'),g.href='javascript:void(0)';
   if(noWear===true){
-    g.textContent='';//cannot un-/equip tattoos & piercing 
-  } else if(whom.Outfit.countItem(item.id)<=0){
+    g.disabled =true;g.textContent='';//cannot un-/equip tattoos & piercing 
+  } else if(whom.Outfit.countItem(item.id)<=0){//
     g.textContent='Equip';
+    if(_params.noUnequip) g.disabled=true;
+    itm.textContent+=" x"+item.count();
     g.addEventListener("click",(function(whom,item){  //todo should we display its own page instead oneliner?
       return(function(){var _x=whom.Outfit.addItem(item).msg;window.gm.refreshAllPanel();window.gm.printOutput(_x)});})(whom,item)); //redraw page to update buttons, then print output
-  } else {
+  } else if(item.parent===whom.Outfit) { //
     res = whom.Outfit.canUnequipItem(item.id,false);
     if(res.OK){
-      g.textContent='Unequip';
+      g.textContent='Unequip'; 
+      if(_params.noUnequip) g.disabled=true;
       g.addEventListener("click",(function(whom,item){
         return(function(){var _x=whom.Outfit.removeItem(item.id).msg;window.gm.refreshAllPanel();window.gm.printOutput(_x)});})(whom,item));
     } else {
       g.disabled =true; g.textContent=res.msg;
     }
   }
-  entry.appendChild(g)
+  if(g.textContent!=='' &&! g.disabled) entry.appendChild(g);
   g=document.createElement('div');
   g.id=item.id; g.hidden=true;g.textContent=item.desc;
   entry.appendChild(g)
-  $("div#choice")[0].appendChild(entry); 
+  document.querySelector(node).appendChild(entry);//  $("div#choice")[0].appendChild(entry); 
   /*if(window.story.passage(id))  elmt +=''.concat("[[Info|"+id+"]]");  //Todo passages for items?
       elmt +=''.concat("</br>");
       return(elmt);*/
@@ -887,47 +932,54 @@ window.gm.printRelationSummary= function(){
           var data = window.gm.player.Rel.get(ids[k]);
           result+='<tr><td>'+data.id+':</td><td>'+data.value+' of '+window.gm.player.Rel.get(ids[k]+"_Max").value+'</td></tr>';
       }
-  }   //todo print mom : 10 of 20
+  } 
   result+='</table>';
   return(result);
 };
 //prints achievements
 window.gm.printAchievements= function(){
-  var elmt='';
-  var result ='';
-  var ids = [];
+  let result ='', ids = [];
   result+='<table>';
-  var ids = Object.keys(window.gm.achievements);
+  let name,msg,x,achv;
+  ids = Object.keys(window.gm.achievements);
   ids.sort();
   for(var k=0;k<ids.length;k++){
-          result+='<tr><td>'+ids[k]+':</td><td>'+window.gm.achievements[ids[k]]+'</td></tr>';
+    x=window.gm.achievements[ids[k]];
+    achv=window.gm.getAchievementInfo(ids[k]);
+    name=achv.name;
+    msg=((!!x)?achv.descDone:achv.descToDo); 
+    if(!x && (achv.hidden&0x1)>0) {name = "???";}
+    if(!x && (achv.hidden&0x2)>0) {msg = "???";}
+    result+='<tr><td><input type=\"checkbox\" name=\"y\" value=\"x\" readonly disabled '+((!!x)?'checked=\"checked\"':'')+'></td><td>'+name+':</td><td>'+msg+'</td></tr>';
   }   //todo print mom : 10 of 20
   result+='</table>';
   return(result);
 };
 //prints a string listing stats and effects
-window.gm.printEffectSummary= function(who='player',showstats=true,showfetish=false,showresistane=false){
-  var elmt='';
-  var s= window.story.state;
-  var result ='';
-  var ids = [];
+window.gm.printEffectSummary= function(who='player',what){
+  let _what = what||{};
+  _what.showstats =(what&&what.showstats)?what.showstats:false,  //set at least one flag!
+  _what.showfetish =(what&&what.showfetish)?what.showfetish:false,
+  _what.showresistance =(what&&what.showresistance)?what.showresistance:false,
+  _what.showskill =(what&&what.showskill)?what.showskill:false;
+  let elmt='', s= window.story.state, result ='';
   result+='<table>';
-  var ids =window.story.state[who].Stats.getAllIds();
-  
+  let ids =window.story.state[who].Stats.getAllIds();
   ids.sort(); //Todo better sort
   for(var k=0;k<ids.length;k++){
       var data = window.story.state[who].Stats.get(ids[k])
-      let isFetish = (data.id.slice(0,2)==='ft'); //Fetish starts with ft
+      let isFetish = (data.id.slice(0,2)==='ft'), isSkill=(data.id.slice(0,3)==='sk_'); //Fetish starts with ft
       let isResistance = (data.id.slice(0,4)==='rst_')||(data.id.slice(0,4)==='arm_'); //
       if(data.hidden!==4){
-        if(isFetish && showfetish && !(data.id.slice(-4,-2)==='_M') ){
+        if(isFetish && _what.showfetish && !(data.id.slice(-4,-2)==='_M') ){
           //expects names of fetish like ftXXX and limits ftXXX_Min ftXXX_Max
           let min = window.story.state[who].Stats.get(ids[k]+"_Min");
           let max = window.story.state[who].Stats.get(ids[k]+"_Max");
           result+='<tr><td>'+((data.hidden & 0x1)?'???':data.id)+':</td><td>'+((data.hidden & 0x2)?'???':data.value)+'</td>';
           result+='<td>'+((data.hidden & 0x2)?'???':'('+(min.value+' to '+max.value))+')</td></tr>';
         }
-        if((!isFetish && !isResistance && showstats) || (!isFetish && isResistance && showresistane)){
+        if((!isFetish && !isResistance && !isSkill && _what.showstats) || (!isFetish && isResistance && !isSkill && _what.showresistance)
+        || (!isFetish && !isResistance && isSkill && _what.showskill)){
           result+='<tr><td>'+((data.hidden & 0x1)?'???':data.id)+':</td><td>'+((data.hidden & 0x2)?'???':data.value)+'</td></tr>';
         }//todo show modifier list for each stat  agility: BracerLeather +2
       }
@@ -970,4 +1022,108 @@ window.gm.toggleDialog= function(id){
       if(window.story.state._gm) window.story.state._gm.nokeys=false;
       //??lastFocus.focus();
   }
+};
+// expects window.gm.achievementsInfo[id]={set:1, hidden:4, name:"loose end", descToDo:"",descDone:""} //
+window.gm.getAchievementInfo=function(id){
+  return(window.gm.achievementsInfo[id]);
+}
+window.gm.setAchievement=function(id,data){
+  window.gm.achievements[id]=data;
+  window.gm.toasty.info("Achievement : "+id);
+}
+{ //classes for UI
+    class SelectionController extends EventTarget {
+        constructor(selectElement, parentNode = null) {
+            super(); 
+            if (!(selectElement instanceof HTMLSelectElement)) {
+                throw new Error(
+                    "Controller-Objekt benötigt ein select Element als ersten Parameter");
+            }
+            if (parentNode && !(parentNode instanceof SelectionController)) {
+                throw new Error(
+                    "Controller-Objekt benötigt einen SelectionController als zweiten Parameter"
+                );
+            }
+            this.selectElement = selectElement;
+            this.parentNode = parentNode;
+            this.selectElement.addEventListener("change", event => this._handleChangeEvent(
+                event))
+            if (parentNode) {
+                parentNode.addEventListener("change", event => this.mapData(event.selectedObject));
+            }
+        }
+        // Ordnet dem select Element eine Datenquelle zu. 
+        // dataSource ist ein Objekt, aus dem die getValueList die Daten für die
+        // select-Optionen ermitteln kann, oder null, um das select-Element zu disablen
+        mapData(dataSource) {
+            // Quelldaten-Objekt im Controller speichern.
+            this.dataSource = dataSource;
+            // Optionen nur anfassen, wenn eine getValueList Methode vorhanden ist.
+            //  Andernfalls davon ausgehen, dass die options durch das HTML
+            // bereitgestellt werden.
+            if (typeof this.getValueList == "function") {
+                // Existierende Optionen entfernen
+                removeOptions(this.selectElement);
+                // Wenn dataSource nicht null war, die neuen Optionen daraus beschaffen
+                // Andernfalls das select-Element deaktivieren
+                const options = dataSource && this.getValueList(dataSource);
+                if (!options || !options.length) {
+                    setToDisabled(this.selectElement)
+                } else {
+                    setToEnabled(this.selectElement, options);
+                }
+            }
+            // Zum Abschluss ein change-Event auf dem select-Element feuern, damit
+            // jeder weiß, dass hier etwas passiert ist
+            this.selectElement.dispatchEvent(new Event("change"));
+            // Helper: Entferne alle options aus einem select Element	
+            function removeOptions(selectElement) {
+                    while (selectElement.length > 0) selectElement.remove(0);
+                }
+                // Helper: select-Element auf disabled setzen und eine Dummy-Option 
+                // eintragen. Eine Variante wäre: das selectElement auf hidden setzten
+            function setToDisabled(selectElement) {
+                    addOption(selectElement, "", "------");
+                    selectElement.disabled = true;
+                }
+                // Helper: disabled-Zustand vom select-Element entfernen und die
+                // übergebenen Optionen eintragen. Vorweg eine Dummy-Option "Bitte wählen".
+            function setToEnabled(selectElement, options) {
+                    addOption(selectElement, "", "???");
+                    for (var optionData of options) {
+                        addOption(selectElement, optionData.value, optionData.text, optionData.disabled);
+                    }
+                    selectElement.disabled = false;
+                }
+                // Helper: Option-Element erzeugen, ausfüllen und im select-Element eintragen
+            function addOption(selectElement, value, text,disabled=false) {
+                let option = document.createElement("option");
+                option.value = value; option.text = text;
+                if(disabled) option.disabled=disabled;
+                selectElement.add(option);
+            }
+        }
+        // Abstrakte Methode! Wird sie nicht überschrieben, wird der TypeError geworfen
+        getValue(key) {
+            throw new TypeError(
+                "Die abstrakte Methode 'getValue' wurde nicht implementiert!");
+        }
+        // Stellt den im select Element ausgewählten Optionswert zur Verfügung
+        get selectedKey() {
+            return this.selectElement.value;
+        }
+        // Liefert das Datenobjekt zum ausgewählten Optionswert
+        get selectedObject() {
+                return this.dataSource ? this.getValue(this.dataSource, this.selectElement.value) : null;
+        }
+        // privat
+        // Die Methode reagiert auf das change-Event des select-Elements
+        // und stellt es als eigenes change-Event des Controllers zur Verfügung
+        _handleChangeEvent(event) {
+            let nodeChangeEvent = new Event("change");
+            nodeChangeEvent.selectedObject = this.selectedObject;
+            this.dispatchEvent(nodeChangeEvent);
+        }
+    }
+    window.gm.util.SelectionController = SelectionController;
 };

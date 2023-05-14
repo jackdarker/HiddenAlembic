@@ -245,6 +245,7 @@ window.storage = {
   rebuildAchievements: function(ahash,compressed){
     if(!compressed) ahash=LZString.compressToBase64(ahash);
     var achievements = JSON.parse(LZString.decompressFromBase64(ahash)).achievements; //no reviver?!
+    if(!achievements) return;
     //it might be necessary to adapt the achievements here if a newer game-version is started !
     var _keys = Object.keys(window.gm.achievements);
     for(var i=0;i<_keys.length;i++){

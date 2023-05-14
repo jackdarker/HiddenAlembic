@@ -1,6 +1,6 @@
 :: sidebar {"position":"375,500"}
 <h3><%=window.story.name%> V<%=window.gm.getSaveVersion().toString().replaceAll(",",".")%></h3>
-<%=window.gm.images.daynight()%><!--<img src='<%=window.gm.getSidebarPic()%>' width="256" height="256">-->
+<div height="200px"><%=window.gm.images.daynight()%><!--<img src='<%=window.gm.getSidebarPic()%>' width="256" height="256">--></div>
 <div><%=window.gm.util.printLocationName(window.gm.player.location)%></br><%=window.gm.getTimeString()%></br><%=window.gm.getDateString()%></br></div><hr>
 <div><%=window.gm.player.name%></br>
 <%=window.gm.util.statsbar("health","red")%><%=window.gm.util.statsbar("energy","yellow")%><%=window.gm.util.statsbar("will","green")%>
@@ -40,7 +40,7 @@ function update(){
   if(!oldTime) oldTime=1200;
   var now=window.gm.getTimeStruct(),newTime=now.hour*100+now.min;
   var el = SVG("#wheel")//document.querySelector("#wheel")
-  var y,y2,x=el.node.ownerSVGElement.width.baseVal.value/2;//el.ownerSVGElement.width.baseVal.value/2;
+  var y,y2,x=el.node.ownerSVGElement.viewBox.baseVal.x+el.node.ownerSVGElement.viewBox.baseVal.width/2;//n.ownerSVGElement.width.baseVal.value/2;
   el.rotate((oldTime-1200)*360/2400,x,x);//default rotation=12:00
   y2=(newTime-oldTime)*360/2400;
   if((newTime-oldTime)<0){el.rotate(-360,x,x),y2+=360};

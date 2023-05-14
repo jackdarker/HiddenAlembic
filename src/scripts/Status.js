@@ -58,6 +58,15 @@
         if(_x>=0) _oldMods.splice(_x,1);
         window.gm.pushLog(_stat.Calc().msg);
     }
+    getModifier(toId,modId){
+        let modData=null,_stat = this.get(toId);
+        let _oldMods = _stat.data.modifier;
+        let _x=-1;
+        for(let i=0;i<_oldMods.length;i++){
+            if(_oldMods[i].id===modId) modData=_oldMods[i];
+        }
+        return(modData);
+    }
     //override
     postItemChange(id,operation,msg){
         window.gm.pushLog('Stats: '+operation+' '+id+' '+msg);
@@ -152,6 +161,7 @@ class Stat {
     get id(){return(this.data.id);}
     get base(){return(this.data.base);}
     get value(){return(this.data.value);}
+    get rmax(){return((this.data.value/this.parent.get(this.id+'Max').value));}  //value/max
     get hidden(){return(this.data.hidden);}
     //this is called to update value of the stat and will trigger calculation of dependend stats; 
     //requires that the stats where added to the dictionary! 

@@ -99,7 +99,7 @@ class SkillStrongHit extends SkillAttack {
     constructor(){
         super();this.id=this.name='StrongAttack'
         this.msg = '';this.weapon='';
-        this.cost.energy =30;
+        this.cost.energy =30,this.cost.poise =10;
     }
     toJSON(){return window.storage.Generic_toJSON("SkillStrongHit", this); }
     static fromJSON(value){return(window.storage.Generic_fromJSON(SkillStrongHit, value.data));}
@@ -116,12 +116,22 @@ class SkillStrongHit extends SkillAttack {
                 //get data from weapon
                 attack.mod = this.parent.parent.Outfit.getItem(this.weapon).attackMod(target);
                 attack.mod.critChance=50,attack.mod.hitChance=70;
+                attack.mod.onHit[0].eff.push(effPoiseDamage.factory(15)); //TODO
+                attack.mod.onCrit[0].eff.push(effPoiseDamage.factory(25)); 
                 let result2 = window.gm.combat.calcAttack(this.caster,target,attack);
                 this.msg+=result2.msg;
                 result.effects = result.effects.concat(attack.effects); 
             }
         }
         return result;
+    }
+    isValidStance(){
+        let res=super.isValidStance();
+        if(!res.OK) return(res);
+        if(!(this.parent.parent.Stance instanceof StanceStanding)) {
+            res.OK=false,res.msg='wrong stance';
+        }
+        return(res);
     }
 }
 class SkillShoot extends SkillAttack {
@@ -275,18 +285,20 @@ class SkillKick extends SkillAttack {
         super();
         this.id=this.name='Kick'
         this.msg = '';
-        this.cost.energy =20;
+        this.cost.energy =25;
     }
     toJSON(){return window.storage.Generic_toJSON("SkillKick", this); }
     static fromJSON(value){return(window.storage.Generic_fromJSON(SkillKick, value.data));}
     get desc(){ return("Use your feet kungfu style. "+this.getCost().asText());}
     __estimateAttack(target){
         let attack =window.gm.combat.defaultAttackData();
-        let feet=this.caster.Outfit.getItemForSlot(window.gm.OutfitSlotLib.bFeet);
+        let feet=this.caster.Outfit.getItemForSlot(window.gm.OutfitSlotLib.bHands); //TODO bFeet
         attack.mod= new SkillMod();
         if(feet && feet.attackMod){ //get feet damage info
             attack.mod=feet.attackMod(target);
         }
+        attack.mod.onHit[0].eff.push(effPoiseDamage.factory(25)); //TODO
+        attack.mod.onCrit[0].eff.push(effPoiseDamage.factory(35)); 
         return(attack);
     }
 }
@@ -535,7 +547,43 @@ class SkillStun extends Skill {
         return(this.caster.name +" stunned " + ((result.targets.length>1)?result.targets.name:result.targets[0].name)+".");
     }
 }
-
+class SkillStandup extends Skill {
+    constructor(){  super("Standup");  
+    this.cost.energy =10;
+    }
+    toJSON(){return window.storage.Generic_toJSON("SkillStandup", this); }
+    static fromJSON(value){return(window.storage.Generic_fromJSON(SkillStandup, value.data));}
+    targetFilter(targets){
+        return(this.targetFilterSelf(targets));
+    }
+    get desc(){ return("Standup. "+this.getCost().asText());}
+    previewCast(targets){
+        var result = new SkillResult()
+        result.skill =this;
+        result.source = this.caster;
+        result.targets = targets;
+        if(this.isValidTarget(targets)){
+            result.OK = true;
+            for(var target of targets){
+                result.effects.push( {target:target,
+                    eff:[effPoiseDamage.factory(-20),effChangeStance.factory("StanceStanding")]})
+                }
+        }
+        return result
+    }
+    getCastDescription(result){
+        //update msg after sucessful cast
+        return(result.targets[0].name+"Try to stand up.");
+    }
+    isValidStance(){
+        let res=super.isValidStance();
+        if(!res.OK) return(res);
+        if(!(this.parent.parent.Stance instanceof StanceQuadrup)) {
+            res.OK=false,res.msg='wrong stance';
+        }
+        return(res);
+    }
+}
 /**
  * 
  *
@@ -605,7 +653,7 @@ class SkillPoisonCloud extends Skill {
         return result
     }
     getCastDescription(result){
-        return(this.caster.name +" poisons " + result.targets.name+".");
+        return(this.caster.name +" puffs out a poisonous cloud that is affecting all around.");
     }
 }
 class SkillHeal extends Skill {
@@ -867,6 +915,37 @@ class SkillGuard extends Skill { //todo guard improves defense and evade for som
         return result
     }
 }
+class SkillProtect extends Skill { //todo target will be protected by caster
+    static factory(style){
+        let obj =  new SkillProtect();
+        obj.style=style;
+        return(obj);
+    }
+    constructor(){ super("Protect"); this.style=0;}
+    toJSON(){return window.storage.Generic_toJSON("SkillProtect", this); }
+    static fromJSON(value){return(window.storage.Generic_fromJSON(SkillProtect, value.data));}
+    targetFilter(targets){
+        let _target=this.targetFilterNotSelf(this.targetFilterAlly(targets));
+        _target=this.targetFilterEffect(_target,[[{id:'effProtect'}]],true); 
+        return(_target);
+    }
+    set style(style){ //skilllevel
+        this._style = style;
+        //this.id=this.name="Guard Lv"+style;
+    }
+    get style(){return this._style;}
+    get desc(){ return("Lv"+this.style+": Protect someone with your own live.");}  
+    previewCast(targets){
+        var result = new SkillResult()
+        result.skill =this;result.source = this.caster; result.targets = targets;
+        result.OK = true;
+        for(var target of targets){
+            result.effects.push( {target:target,
+                eff:[effProtect.factory(this.style+1)]});
+        }
+        return result
+    }
+}
 //cast light to repell dark
 class SkillFairyLight extends Skill { 
     constructor(){ super("FairyLight"); this.style=0;this.cost.will =15;}
@@ -874,7 +953,7 @@ class SkillFairyLight extends Skill {
     static fromJSON(value){return(window.storage.Generic_fromJSON(SkillFairyLight, value.data));}
     targetFilter(targets){
         let x=this.targetMultiple(this.targetFilterFighting(this.targetFilterEnemy(targets)));
-        if(x) return([x[x.length-1]]); //there should be "all" add end of collection
+        if(x.length>1) return([x[x.length-1]]); //there should be "all" add end of collection
         return(x);
     }
     set style(style){ //skilllevel
@@ -969,8 +1048,9 @@ class SkillCallHelp extends Skill {
     static factory(item,cooldown=3){
         let sk = new SkillCallHelp();
         sk.item = item,sk.id+=item,sk.name+=' '+item;
+        sk.defCoolDown=cooldown;
         sk.cost.will =25; 
-        //todo delay and cooldown
+        //todo delay,cost and cooldown
         return(sk);
     }
     constructor(){
@@ -991,7 +1071,7 @@ class SkillCallHelp extends Skill {
                 result.effects.push( {target:target,eff:[eff]});
             }
         }
-        return result
+        return result;
     }
     getCastDescription(result){
         return(this.parent.parent.name+" calls some "+this.item+" as reinforcement.");
@@ -1047,6 +1127,7 @@ window.gm.SkillsLib = (function (Lib){
     window.storage.registerConstructor(SkillKick);
     window.storage.registerConstructor(SkillLeechHealth);
     window.storage.registerConstructor(SkillPoisonCloud);
+    window.storage.registerConstructor(SkillProtect)
     window.storage.registerConstructor(SkillShoot);
     window.storage.registerConstructor(SkillSlobber);
     window.storage.registerConstructor(SkillStrongHit);
@@ -1058,6 +1139,7 @@ window.gm.SkillsLib = (function (Lib){
     window.storage.registerConstructor(SkillTease);
     window.storage.registerConstructor(SkillUltraKill);
     window.storage.registerConstructor(SkillUseItem);
+    window.storage.registerConstructor(SkillStandup);
     //    Lib['SkillAttack'] = function (){ return new SkillAttack();};
     return Lib; 
 }(window.gm.SkillsLib || {}));
@@ -1082,9 +1164,15 @@ Charge: Anrempeln des Gegners bringt ihn aus dem Gleichgewicht oder wirft ihn um
 
 ShieldBoost: lädt ein Shield um 50% auf so lange es nicht komplett leer ist, cooldown=8
 
+VampireShield: wenn das Schild unter 30% fällt aber >1% zieht es 5% von gegnerischem Schild ab für 4Turns; 10 turn cooldown aktiviert automatisch
+
 ShieldRestore: wenn das Shield komplett leer ist kann es wiederhergestellt werden 33-75%; cd=99
 
 CoolDownReset: for any ally: if there are skills in cooldown, pick a random one and reset cooldown; cd=20
+
+disarm: cant use primary weapon for some time; cd=99
+
+critical eye: 50% chance einen Schwachpunkt zu erkennen der dann 3 turns effektiv angegriffen werden kann
 
 Leader: an ally using this is marked as a leader; as long as he is ingame, all allys except him receive bonus armor/regeneration/damage
         but if he is defeated, everyone gets mallus; can only be cast once per battle

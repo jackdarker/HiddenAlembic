@@ -45,11 +45,9 @@ window.gm.navEvent = function(to,from){
     let _addTime=0,_room=to.replace(dng+"_","");
     //tick = timestamp  
     //state: 0-active  1-inactive  
-    let _leaveChance=0,_allChances=0,_now=window.gm.getTime(), _rnd=_.random(0,100);
+    let _chance,_chances=[],_leaveChance=0,_allChances=0,_now=window.gm.getTime(), _rnd=_.random(0,100);
     evts = window.story.state[dng].tmp.evtLeave[_from+'_'+_to]; 
     if(evts){ //leave-check
-        evts=evts.filter(x=>(x.state===0));
-        evts.forEach(x=>(_allChances+=x.chance));
         dir=null,dirs=window.gm.getRoomDirections(_from);
         for(var i=dirs.length-1;i>=0;i--){
             if(dirs[i].dir===_to){
@@ -57,16 +55,27 @@ window.gm.navEvent = function(to,from){
             }
         }
         if(dir){ //choose an event; the more you explored that direction, the higher the chance to find the exit
+            evts=evts.filter(x=>(x.state===0)); //drop disabled
+            for(var i = evts.length-1;i>=0;i--){
+                _chance=window.gm.encounterChance(evts[i]);
+                if(_chance>0.0){
+                    _allChances+=_chance;
+                    _chances.unshift(_chance);
+                } else {
+                    evts.pop();
+                }
+            }
             //0x: 0%    1x: 10%   5x: 50%    10x: 70%  100x: 90%  of OVERALL-chance
-            _leaveChance=(dir.exp>=5)?50.0:((dir.exp>=1)?10.0:(0));
+            _leaveChance=((dir.exp>=10)?70.0:(dir.exp>=5)?50.0:((dir.exp>=1)?10.0:(0)));
             _leaveChance=_leaveChance/100.0*_allChances;_allChances+=_leaveChance;
             dir.exp+=1;//exp-count is updated
             _rnd=_.random(0,_allChances-0.01);
             for(var i = evts.length-1;i>=0;i--){ 
-                let _ch=evts[i].chance
+                let _ch=_chances[i];
                 if(_rnd<_allChances && _rnd>=(_allChances-_ch)){
+                    evts[i].tick=_now;
                     window.story.state.tmp.args=[evts[i],dng+'_'+_from,dng+'_'+_to];    //store [evt,from,to] for use in scene
-                    return(dng+'_'+evts[i].id); //->show(DngPC_wolf5);   
+                    return(dng+'_'+evts[i].id); //->show(DngLT_wolf5);   
                     //after the scene is finished it should continue window.story.state.DngSY.prevLocation 
                 }
                 _allChances-=_ch;
@@ -78,27 +87,35 @@ window.gm.navEvent = function(to,from){
     let doors=window.story.state[dng].tmp.doors[_from],doors2=window.story.state[dng].tmp.doors[_to];
     if(doors) {
         evt = doors[_to];
-    } 
-    if(doors2) {
+    } else if(doors2) {
         evt = doors2[_from];
     }
     if(evt){
-        if(evt.state===0) _targ=dng+"_Door_Closed";
+        if(evt.state===0) { 
+            _targ=dng+"_"+from+to;
+            if(window.story.passage(_targ)===null) _targ=dng+"_"+to+from; //for doors we should check both directions
+        }
         if(_targ!=='') return(_targ);
     }
-    //////
+    //////enter
     evts = window.story.state[dng].tmp.evtEnter[_room];
-    if(evts){ //mobs
+    if(evts){
         evt = evts["dog"];
         if(evt){
             if(evt.state===0) _targ=dng+"_Meet_Dog";
+            if(_targ!=='') return(_targ);
+        }
+        evt = evts["spiderbot"];
+        if(evt){//&& window.gm.getDeltaTime(_now,evt.tick)>400){
+            if(evt.state===0) evt.tick=_now,_targ=dng+"_Spider",window.story.state.tmp.args=[evt,dng+'_'+_from,dng+'_'+_to];
             if(_targ!=='') return(_targ);
         }
         evt = evts["gas"];
         if(evt && _rnd>70 && window.gm.getDeltaTime(_now,evt.tick)>400){//todo chance modifier
             if(evt.state===0) evt.tick=_now,_targ=dng+"_Trap_Gas";
             if(_targ!=='') return(_targ);
-        }evt = evts["tentacle"];
+        }
+        evt = evts["tentacle"];
         if(evt && _rnd>0 && window.gm.getDeltaTime(_now,evt.tick)>400){//todo chance modifier
             if(evt.state===0) evt.tick=_now,_targ=dng+"_Trap_Tentacle";
             if(_targ!=='') return(_targ);
@@ -156,6 +173,10 @@ window.gm.renderRoom= function(room){
     if(_evt && (_evt.state===0)){
         msg+="</br>Was there something sparkling "+window.gm.printPassageLink("over there?",dng+"_Lectern");
     }
+    /*_evt=_evts["explore"];
+    if(_evt && (_evt.state===0 || _evt.state===1)){
+      msg+="It might be worth to "+window.gm.printLink("explore",'window.story.show("'+room+'_Explore")');+" this area some more.</br>";
+    }*/
     return(msg);
 }
 window.gm.finishTask=function(){
@@ -290,6 +311,13 @@ window.gm.getAvailableTasks=function(){
     }
     window.gm.printOutput(msg,'#choice');
 };
+window.gm.know = function(what){
+    let _n=window.story.state.Know[what];
+    if(_n===null || _n===undefined) {
+        window.story.state.Know[what]=1;
+    }
+}
+
 //build the map and other data; if the dng is already initilized and has the correct version, the actual data is returned
 window.gm.build_DngPC=function(){
     const _m=[
@@ -415,12 +443,19 @@ window.gm.build_DngPC=function(){
             //,{id:'bitchsuit',tick:'',done:0,cnt:0,min:9}
         };
     }
+    //install function to calculate chance of evtLeave
+    window.gm.encounterChance=function(evt){
+        let res=100.0,s=window.story.state,dng=window.story.state.DngSY.dng;
+        res*=evt.chance/100.0;
+        if(evt.id==='Trap_Dehair'){ //Dehair if nude and hair
+            //if(window.gm.player.clothLevel()==='naked') {res*=2;}
+            if(window.gm.getDeltaTime(window.gm.getTime(),evt.tick)>200) res*=2;
+            else res=0;
+        }
+        return(res);
+    }
     return({map:map,data:data});
 };
 
-window.gm.know = function(what){
-    let _n=window.story.state.Know[what];
-    if(_n===null || _n===undefined) {
-        window.story.state.Know[what]=1;
-    }
-}
+
+

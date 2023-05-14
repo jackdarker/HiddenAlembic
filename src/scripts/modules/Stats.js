@@ -58,6 +58,8 @@ class stArmor extends Stat {
     toJSON(){return window.storage.Generic_toJSON("stArmor", this); };
     static fromJSON(value){ return window.storage.Generic_fromJSON(stArmor, value.data);};
 }
+//TODO stBlock  //chances to block physical damage; cant block heavy attacks; after block, chance are halved
+//TODO stParry  //chance to parry physical attacks
 class stHealth extends Stat {
     static setup(context, base,max){
         /*stHealthMax.setup(context,max);
@@ -86,7 +88,7 @@ class stHealthRegen extends Stat {
     toJSON(){return window.storage.Generic_toJSON("stHealthRegen", this); };
     static fromJSON(value){ return window.storage.Generic_fromJSON(stHealthRegen, value.data);};
 }
-class stEnergy extends Stat {
+class stEnergy extends Stat { //physical reserves
     static setup(context, base,max){
         let stats=Stat.setupStatWithLimitAndRegen('energy',{base:base,regen:10,max:max});
         stats.forEach(x=>{context.addItem(x);}),stats.forEach(x=>{x.Calc();})
@@ -95,7 +97,7 @@ class stEnergy extends Stat {
     toJSON(){return window.storage.Generic_toJSON("stEnergy", this); };
     static fromJSON(value){ return window.storage.Generic_fromJSON(stEnergy, value.data);};
 }
-class stWill extends Stat {
+class stWill extends Stat { //mental reserves
     static setup(context, base,max){
         let stats=Stat.setupStatWithLimitAndRegen('will',{base:base,regen:10,max:max});
         stats.forEach(x=>{context.addItem(x);}),stats.forEach(x=>{x.Calc();})
@@ -104,7 +106,16 @@ class stWill extends Stat {
     toJSON(){return window.storage.Generic_toJSON("stWill", this); };
     static fromJSON(value){ return window.storage.Generic_fromJSON(stWill, value.data);};
 }
-class stSatiation extends Stat { //high value==starving        todo
+class stPoise extends Stat { //stability in combat
+    static setup(context, base,max){
+        let stats=Stat.setupStatWithLimitAndRegen('poise',{base:base,regen:4,max:max});
+        stats.forEach(x=>{context.addItem(x);}),stats.forEach(x=>{x.Calc();})
+    }
+    constructor(){ super();   }
+    toJSON(){return window.storage.Generic_toJSON("stPoise", this); };
+    static fromJSON(value){ return window.storage.Generic_fromJSON(stPoise, value.data);};
+}
+class stSatiation extends Stat { //low value==starving    
     static setup(context, base,max){
         let stats=Stat.setupStatWithLimitAndRegen('satiation',{base:base,regen:-2,max:max});
         stats.forEach(x=>{context.addItem(x);}),stats.forEach(x=>{x.Calc();})
@@ -506,7 +517,12 @@ class effCombatRecovery extends Effect {
     onApply(){
         this.data.time = window.gm.getTime();
     }
+    onCombatStart(){
+        this.parent.parent.Stats.increment("poise",9999); //TODO reset on start??
+        return({OK:false,msg:''});
+    }
     onTurnStart(){ //this is no combat effect but ticked in combat; dont remmove after combatend !
+        this.parent.parent.Stats.increment("poise",this.parent.parent.Stats.get('poiseRegen').value);
         this.parent.parent.Stats.increment("energy",this.parent.parent.Stats.get('energyRegen').value);
         this.parent.parent.Stats.increment("will",this.parent.parent.Stats.get('willRegen').value);
         this.parent.parent.Stats.increment("arousal",this.parent.parent.Stats.get('arousalRegen').value);
@@ -1107,6 +1123,7 @@ class effHeal extends CombatEffect {
     onApply(){
         this.data.duration=this.data.startduration;
         this.parent.parent.Stats.increment('health',this.amount);
+        this.castMsg=window.gm.util.descFixer(this.parent.parent)('$[Name]$ $[was]$ healed by +'+this.amount+'.');
     }
     merge(neweffect){
         if(neweffect.name===this.data.name){    //extends
@@ -1119,6 +1136,7 @@ class effHeal extends CombatEffect {
         if(this.data.duration<=0) this.parent.removeItem(this.data.id);
         else {
             this.parent.parent.Stats.increment('health',this.amount);
+            this.castMsg=window.gm.util.descFixer(this.parent.parent)('$[Name]$ recovered +'+this.amount+' health.');
         }
         return({OK:true,msg:''});
     }
@@ -1158,6 +1176,61 @@ class effGuard extends CombatEffect {
         this.parent.parent.Stats.removeModifier('rst_blunt',{id:'rst_blunt:Guard'});
         this.parent.parent.Stats.removeModifier('rst_slash',{id:'rst_slash:Guard'});
         this.parent.parent.Stats.removeModifier('rst_pierce',{id:'rst_pierce:Guard'});
+    }
+}
+class effProtect extends CombatEffect {
+    static factory(duration){  //TODO what to protect for, how much?
+        let x = new effProtect();
+        x.data.duration = duration;
+        return x;
+    }
+    constructor(){
+        super();
+        this.data.id = this.data.name= effProtect.name, this.data.duration = 0, this.data.hidden=0;
+    }
+    toJSON(){return window.storage.Generic_toJSON("effProtect", this); };
+    static fromJSON(value){ return window.storage.Generic_fromJSON(effProtect, value.data);};
+    get desc(){return(effProtect.name);}
+    onApply(){  //effect is handled in combat-sm
+        this.data.duration = 2;
+    }
+    merge(neweffect){
+        if(neweffect.name===this.data.name){
+            return(true);
+        }
+    }
+    onTurnStart(){
+        this.data.duration-=1;
+        if(this.data.duration<=0) this.parent.removeItem(this.data.id);
+        return({OK:true,msg:''});
+    }
+    onRemove(){    }
+}
+class effChangeStance extends CombatEffect {
+    static factory(newStanceID){
+        let x = new effChangeStance();
+        x.data.newStanceID=newStanceID;
+        return x;
+    }
+    constructor(){
+        super();
+        this.data.id = this.data.name= effChangeStance.name, this.data.duration = 0, this.data.hidden=0;
+    }
+    toJSON(){return window.storage.Generic_toJSON("effChangeStance", this); };
+    static fromJSON(value){ return window.storage.Generic_fromJSON(effChangeStance, value.data);};
+    get desc(){return(this.data.newStanceID);}
+    onApply(){
+        this.parent.parent.changeStance(new window.gm.StanceLib[this.data.newStanceID]);
+    }
+    merge(neweffect){
+        if(neweffect.name===this.data.name) return(true);
+    }
+    onTurnStart(){
+        this.data.duration-=1;
+        if(this.data.duration<=0) this.parent.removeItem(this.data.id);
+        return({OK:true,msg:''});
+    }
+    onRemove(){
     }
 }
 /** todo
@@ -1226,7 +1299,7 @@ class effCombined extends CombatEffect {
     static fromJSON(value){ return window.storage.Generic_fromJSON(effCombined, value.data);};
 }
 class effDamage extends CombatEffect {
-    static factory(amount,type,turns=1,msg=''){
+    static factory(amount,type,turns=0,msg=''){
         let eff = new effDamage();
         eff.amount = amount,eff.data.duration=turns;
         eff.type=type;
@@ -1244,7 +1317,8 @@ class effDamage extends CombatEffect {
     onApply(){
         //this.data.duration = 0;
         this.parent.parent.Stats.increment('health',-1*this.amount);
-        if(this.data.duration<1) this.parent.removeItem(this.data.id);  
+        if(this.data.duration<1) this.parent.removeItem(this.data.id);
+        this.castMsg=window.gm.util.descFixer(this.parent.parent)(this.amount+' '+this.data.name+' '); //'$[Name]$ got hurt for '+  
     }
     merge(neweffect){
         if(neweffect.name===this.data.name){    //ignore
@@ -1254,6 +1328,73 @@ class effDamage extends CombatEffect {
     onTurnStart(){ this.data.duration-=1; 
         if(this.data.duration<=0) { this.parent.removeItem(this.data.id); }
         this.parent.parent.Stats.increment('health',-1*this.amount); return({OK:true,msg:''});}
+}
+/**
+ * type says which bonus is applied from lewds
+ * lewds is calculated tease bonus from gear
+ */
+ class effTeaseDamage extends CombatEffect {
+    static factory(amount,type,lewds,msg=''){
+        let eff = new effTeaseDamage();
+        eff.amount = amount;
+        eff.type = type;
+        eff.lewds = lewds;
+        eff.castMsg=msg;
+        return(eff);
+    }
+    constructor(amount){
+        super();
+        this.amount = amount;
+        this.data.id = this.data.name= effTeaseDamage.name, this.data.duration = 0, this.data.hidden=0;
+    }
+    toJSON(){return window.storage.Generic_toJSON("effTeaseDamage", this); };
+    static fromJSON(value){ return window.storage.Generic_fromJSON(effTeaseDamage, value.data);};
+    get desc(){return(effTeaseDamage.name);}
+    onApply(){
+        this.data.duration = 0;
+        this.parent.parent.Stats.increment('arousal',1*this.amount);
+        if(this.data.duration<1) this.parent.removeItem(this.data.id);  
+        this.castMsg=window.gm.util.descFixer(this.parent.parent)('$[Name]$ got aroused by '+this.amount+'.');  
+    }
+    merge(neweffect){
+        if(neweffect.name===this.data.name){    //ignore
+            //this.onApply();
+            return(false);
+        }
+    }
+    onTurnStart(){ this.data.duration-=1; if(this.data.duration<=0) this.parent.removeItem(this.data.id); return({OK:true,msg:''});   }
+}
+/**
+ * 
+ */
+ class effPoiseDamage extends CombatEffect {
+    static factory(amount,msg=''){
+        let eff = new effPoiseDamage();
+        eff.amount = amount;
+        eff.castMsg=msg;
+        return(eff);
+    }
+    constructor(amount){
+        super();
+        this.amount = amount;
+        this.data.id = this.data.name= effPoiseDamage.name, this.data.duration = 0, this.data.hidden=0;
+    }
+    toJSON(){return window.storage.Generic_toJSON("effPoiseDamage", this); };
+    static fromJSON(value){ return window.storage.Generic_fromJSON(effPoiseDamage, value.data);};
+    get desc(){return(effPoiseDamage.name);}
+    onApply(){
+        this.data.duration = 0;
+        this.parent.parent.Stats.increment('poise',-1*this.amount);
+        if(this.data.duration<1) this.parent.removeItem(this.data.id);  
+        this.castMsg=window.gm.util.descFixer(this.parent.parent)('$[Name]$ poise '+((this.amount>0)?'decreased':'increased')+' by '+this.amount+'.');  
+        this.parent.parent.updateStance();
+    }
+    merge(neweffect){
+        if(neweffect.name===this.data.name){    //ignore
+            return(false);
+        }
+    }
+    onTurnStart(){ this.data.duration-=1; if(this.data.duration<=0) this.parent.removeItem(this.data.id); return({OK:true,msg:''});   }
 }
 //someone with this eff will gain arousal when hit
 class effMasochist extends CombatEffect {
@@ -1397,40 +1538,7 @@ class effUngrappling extends CombatEffect {
     }
     onTurnStart(){ this.data.duration-=1; if(this.data.duration<=0) this.parent.removeItem(this.data.id); return({OK:true,msg:''});   }
 }
-/**
- * type says which bonus is applied from lewds
- * lewds is calculated tease bonus from gear
- */
-class effTeaseDamage extends CombatEffect {
-    static factory(amount,type,lewds,msg=''){
-        let eff = new effTeaseDamage();
-        eff.amount = amount;
-        eff.type = type;
-        eff.lewds = lewds;
-        eff.castMsg=msg;
-        return(eff);
-    }
-    constructor(amount){
-        super();
-        this.amount = amount;
-        this.data.id = this.data.name= effTeaseDamage.name, this.data.duration = 0, this.data.hidden=0;
-    }
-    toJSON(){return window.storage.Generic_toJSON("effTeaseDamage", this); };
-    static fromJSON(value){ return window.storage.Generic_fromJSON(effTeaseDamage, value.data);};
-    get desc(){return(effTeaseDamage.name);}
-    onApply(){
-        this.data.duration = 0;
-        this.parent.parent.Stats.increment('arousal',1*this.amount);
-        if(this.data.duration<1) this.parent.removeItem(this.data.id);  
-    }
-    merge(neweffect){
-        if(neweffect.name===this.data.name){    //ignore
-            //this.onApply();
-            return(false);
-        }
-    }
-    onTurnStart(){ this.data.duration-=1; if(this.data.duration<=0) this.parent.removeItem(this.data.id); return({OK:true,msg:''});   }
-}
+
 class effStunned extends CombatEffect {
     static factory(duration=2){
         let eff = new effStunned();
@@ -1548,7 +1656,7 @@ class effHesitant extends CombatEffect {  //when active, the Mob should back awa
  * @class effCallHelp
  * @extends {CombatEffect}
  */
-class effCallHelp extends CombatEffect {
+class effCallHelp extends CombatEffect { //summons someone
     constructor(){
         super();
         this.data.id = this.data.name= effCallHelp.name, this.data.duration = 2;
@@ -1632,14 +1740,23 @@ class effTransformSelf extends CombatEffect {
         else this.data.item=[items];
     }
 }
-class effKamikaze extends CombatEffect { //if <10%health kill yourslef and damage all enemys
+class effKamikaze extends CombatEffect { //kill yourslef and damage all enemys
+    static factory(style,duration=2){
+        let eff = new effKamikaze();
+        eff.data.duration=duration, eff.style=style;
+        return(eff);
+    }
     constructor(){
         super();
-        this.data.id = this.data.name= effKamikaze.name, this.data.duration = 0;
+        this.data.id = this.data.name= effKamikaze.name, this.data.duration = 0, this.style=0;
     }
     toJSON(){return window.storage.Generic_toJSON("effKamikaze", this); };
     static fromJSON(value){ return window.storage.Generic_fromJSON(effKamikaze, value.data);};
     get desc(){return(effKamikaze.name);}
+    set style(style){
+        this._style = style;
+    }
+    get style(){return this._style;}
     onApply(){    }
     merge(neweffect){
         if(neweffect.name===this.data.name){    //ignore
@@ -1647,17 +1764,21 @@ class effKamikaze extends CombatEffect { //if <10%health kill yourslef and damag
         }
     }
     onTurnStart(){
-        let result ={OK:true,msg:''};
-        let h = this.parent.parent.Stats.get('health').value, hmax= this.parent.parent.Stats.get('healthMax').value;
-        if(h/hmax<0.5){ //if health is low trigger effect and kill yourself
-            let targets= window.story.state.combat.playerParty; //todo +enemyParty?
+        let result ={OK:true,msg:''},s=window.story.state;
+        this.data.duration-=1;
+        if(this.data.duration<=0){
+            let targets= s.combat.playerParty.concat(s.combat.enemyParty)
             for(let n of targets){
-                n.addEffect(effDamage.factory(10,'slash'));
+                n.addEffect(effDamage.factory(10,'slash')); //TODO dmg = ? should use calcAttack
             }
             this.parent.removeItem(this.data.id);
-            this.parent.parent.Stats.increment("health",h*-1);
+            this.parent.parent.Stats.increment("health",-1*h-1);
             result.msg= this.parent.parent.name+' decides to explode in a fiery mess. ';
         }
+        /*let h = this.parent.parent.Stats.get('health').value, hmax= this.parent.parent.Stats.get('healthMax').value;
+        if(h/hmax<0.5){ //if health is low trigger effect and kill yourself
+            
+        }*/
         return(result);
     }
     configureSpawn(item,faction,amount=1){
@@ -1667,15 +1788,62 @@ class effKamikaze extends CombatEffect { //if <10%health kill yourslef and damag
 //todo transformSelf: replace the caster with a different class & regenerate energy  
 //restricted: stuck in cobwebs, goo
 //skills
-class skCooking extends Effect {
-    constructor(){
-        super();
-        this.data.id = this.data.name= skCooking.name;
+//////////////--   abilities   --///////////////////////
+// an ability (cooking, climbing) is a stat ? always present, represented by number, can be modified by effects
+// or an effect ? might not be present, has a cooldown
+class Ability extends Stat { //double check if ability is present !
+    static setup(context, base,kind){   
+        let _stat = new Ability();
+        let _n = _stat.data;
+        _n.id="sk_"+kind,_n.base=base, _n.value=base,_n.limits=[{max:1000,min:-1000}];
+        context.addItem(_stat);
+        _stat.Calc();
     }
-    toJSON(){return window.storage.Generic_toJSON("skCooking", this); };
-    static fromJSON(value){ return window.storage.Generic_fromJSON(skCooking, value.data);};
-
-    get desc(){return(skCooking.name);}
+    static info(id) {return(id);}
+    constructor(){   super();  }
+    toJSON(){return window.storage.Generic_toJSON("Ability", this); };
+    static fromJSON(value){ return window.storage.Generic_fromJSON(Ability, value.data);};
+    get desc() {
+        let msg="";
+        switch(id){
+            case "sk_Cooking":
+                msg="You know how to cook a tasty meal. Improving this skill increases your chance to get extra-meals and allows to cook more difficult meals."
+                break;
+            case "sk_Diving":
+                msg="You are more comfortable to dive in deep water. You might still require the proper tools like diver googles and scuba gear."
+                break;
+            case "sk_Swimming":
+                msg="You are confident in your ability to swim larger distance. Big waves and dangerous currents are still a threat. You require less energy with each rank."
+                break;
+            case "sk_Climbing":
+                msg="Beeing able to climb rocks and walls, as long as they are not to smooth. You might still require the proper tools like rope and pick."
+                break;
+            case "sk_Fishing":
+                msg="Finding got spots for fishing and making use of net and fishing rod to catch them."
+                break;
+            case "sk_Herbalist": //Funguist/Insectoist
+                msg="Its easier to you to identify all kind of plants. Increases chances to find more rare plants or to give extra resources."
+                break;
+            case "sk_Looter": //Scrapper
+                msg="Increases chance to find lootable containers or loot."
+                break;
+            case "sk_Scrapper":
+                msg="Salvaging more craftmaterials from breaking down things."
+                break;
+            case "sk_WoodWorker": //SteelWorker, StoneWorker
+                msg="Creating useful things from wood like tools and furniture is your speciality."
+                break;
+            case "sk_Stitching":
+                msg="Fixing cloths or creating new one is possible for you."
+                break;
+            default:
+                throw new Error(this.id +' is unknown');
+        }
+        return(msg);
+    }
+    get name() {
+        return(this.data.id);
+    }
 }
 /*skAlchemist
  * Lv1 - can create potions from 1 ingredient
@@ -1704,6 +1872,7 @@ window.gm.StatsLib = (function (StatsLib){
     window.storage.registerConstructor(stCorruption);
     window.storage.registerConstructor(stSavageness);
     window.storage.registerConstructor(stArmor);   
+    window.storage.registerConstructor(stPoise);  
     //...effects
     window.storage.registerConstructor(effCallHelp);
     window.storage.registerConstructor(effCombatRecovery);
@@ -1722,11 +1891,13 @@ window.gm.StatsLib = (function (StatsLib){
     window.storage.registerConstructor(effEnergized);    
     window.storage.registerConstructor(effNotTired);
     window.storage.registerConstructor(effPillEffect);
+    window.storage.registerConstructor(effPoiseDamage);
     window.storage.registerConstructor(effTeaseDamage);
     window.storage.registerConstructor(effTired);
     window.storage.registerConstructor(effStunned);
     window.storage.registerConstructor(effTransformSelf);
     window.storage.registerConstructor(effGuard);
+    window.storage.registerConstructor(effProtect);
     window.storage.registerConstructor(effHeal);
     window.storage.registerConstructor(effMasochist);
     window.storage.registerConstructor(effEnergyDrain);
@@ -1746,7 +1917,8 @@ window.gm.StatsLib = (function (StatsLib){
     window.storage.registerConstructor(effButtPlugged);
     window.storage.registerConstructor(effVaginalFertil);
     window.storage.registerConstructor(effVaginalPregnant);
-    //
-    window.storage.registerConstructor(skCooking);
+    //non-combat skills
+    window.storage.registerConstructor(Ability);
+    StatsLib.Ability=Ability;
     return(StatsLib); 
 }(window.gm.StatsLib || {}));

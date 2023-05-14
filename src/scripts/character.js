@@ -37,8 +37,8 @@ class Character {
         this.Rel._parent = window.gm.util.refToParent(this);
         this.Skills = new Inventory(this._data.skills);
         this.Skills._parent = window.gm.util.refToParent(this);
-        //create basic stats
-        stHealth.setup(this.Stats,10,10),stEnergy.setup(this.Stats,30,30),stWill.setup(this.Stats,0,0);
+        this.changeStance(new window.gm.StanceLib.StanceStanding()); //create basic statsStanceStand
+        stHealth.setup(this.Stats,10,10),stEnergy.setup(this.Stats,30,30),stWill.setup(this.Stats,0,0),stPoise.setup(this.Stats,50,50);
         stSatiation.setup(this.Stats,30,100);
         for(let n of window.gm.combat.TypesDamage){
             stResistance.setup(this.Stats,0,n.id);
@@ -50,7 +50,7 @@ class Character {
         for(let name of stFetish.listFetish()){
             stFetish.setup(this.Stats,0,10,name);
         }         
-        this.Skills.addItem(new SkillAttack());this.Skills.addItem(new SkillUseItem());this.Skills.addItem(new SkillStruggle());
+        this.Skills.addItem(new SkillAttack());this.Skills.addItem(new SkillUseItem());this.Skills.addItem(new SkillStruggle());this.Skills.addItem(new SkillStandup());
         this.Skills.addItem(new SkillFlee());    
         this.Skills.addItem(new SkillFairyLight());    
         this.Effects.addItem(new effHunger());this.Effects.addItem(new effSanity());this.Effects.addItem(new effLibido());
@@ -184,6 +184,22 @@ class Character {
             this.Effects.addItem(new effNotTired());
         } 
     }
+    changeStance(stance){ 
+        let res,_old= this.Stance; 
+        stance._parent = window.gm.util.refToParent(this);
+        res = stance.transitFrom(_old);
+        this.Stance=stance;
+        if(_old) { _old._parent=null;
+            window.gm.printSfx('',res.msg); //combat display but only if not spawning
+        }
+    }
+    updateStance(){ //TODO if poise is below stance-requirement
+        let _new=this.Stance.checkStance();
+        if(_new!=null){
+            this.changeStance(_new);
+        }
+        return;
+    }
     hasEffect(id){
         return(this.Effects.countItem(id)>0); //todo also check for magnitude
     }
@@ -215,7 +231,7 @@ class Character {
     //combat related
     _canAct(){ //todo even if stunned we should be able to struggle
         var result = {OK:true,msg:''};
-        if(this.Effects.findEffect("effStunned").length>0){    //findItemSlot annot use since there might be different effect ids
+        if(this.Effects.findEffect("effStunned").length>0){    //findItemSlot cannot use since there might be different effect ids
             result.OK=false;
             result.msg =this.name+ " is stunned and cannot react."
             return(result);

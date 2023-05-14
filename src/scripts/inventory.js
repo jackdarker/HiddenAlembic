@@ -11,11 +11,16 @@ class Item {
     _updateId(){ 
         //because equipment can have dynamic assigned curses, id needs to be generated dynamical too
         //and then we also have to update id in inventory list
-        var nId="_"+md5(JSON.stringify(this));  //add _ or queryselector() might not work if id starts with number ?!
+        var nId="_"+IDGenerator.instance().createID();//md5(JSON.stringify(this));  //add _ or queryselector() might not work if id starts with number ?!
         //md5 is less acurate but smaller then LZString.compress(JSON.stringify(this));
         var _oldId = this.id;
         this.id=nId;
         if(this.parent) this.parent._updateId(_oldId);
+    }
+    count(){
+        if(this.parent){
+            return(this.parent.countItem(this.id));
+        } else return(1); //Todo ok?
     }
     //called by SkillUseItem
     targetFilter(targets){

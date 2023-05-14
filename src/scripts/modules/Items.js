@@ -90,6 +90,7 @@ class QuestItems extends Item { //stuff you have to collect for quest
         else if(style===31) this.id=this.name='GemstoneGreen';
         else if(style===32) this.id=this.name='GemstoneBlue';
         else if(style===40) this.id=this.name='SlaverTag';
+        else if(style===50) this.id=this.name='Fuse';
         else throw new Error(this.id +' doesnt know '+style);
     }
     get style(){return this._style;}
@@ -109,6 +110,9 @@ class QuestItems extends Item { //stuff you have to collect for quest
                 break;
             case 40:
                 msg='Aquired by freeing a slave.';
+                break;
+            case 50:
+                msg='A replacemant fuse for electronics.';
                 break;
             default: throw new Error(this.id +' doesnt know '+style);
         }
@@ -597,6 +601,7 @@ window.gm.ItemTags = { //
     Cursed  : "cursed",
     Money   : 'money', //...for trading
     Ingredient : 'ingred',
+    Material : 'material',
     Drink   : 'drink',
     Food    : 'food',
     //Outfit
@@ -685,6 +690,7 @@ window.gm.ItemsLib = (function (ItemsLib){
     ItemsLib['GemstoneRed'] = function(){ let x=new QuestItems();x.style=30;return(x);};
     ItemsLib['GemstoneGreen'] = function(){ let x=new QuestItems();x.style=31;return(x);};
     ItemsLib['GemstoneBlue'] = function(){ let x=new QuestItems();x.style=32;return(x);};
+    ItemsLib['Fuse'] = function(){ let x=new QuestItems();x.style=50;return(x);};
     //soulgem
     ItemsLib['TinySoulGem'] = function(){ let x= new SoulGem();return(x); };
     //keys

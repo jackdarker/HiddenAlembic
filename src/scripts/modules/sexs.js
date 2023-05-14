@@ -473,6 +473,86 @@ window.gm.sex.lapineOnPlayer=function(data){ //todo
     }
     window.gm.sex.updateScene(entry); 
 };
+
+window.gm.sex.growBreast=function(data){ //todo
+    let foo = window.gm.sex.growBreast,createButton=window.gm.sex.createButton;;
+    let player = window.gm.player,postBattle=!!data.battleResult;
+    window.gm.sex.beginScene();
+    let entry = document.createElement('p');
+    let newdata = {};//need a copy to create different data-values
+    if(data.state<0){ //quit if scene is done
+        if(postBattle){
+            if(data.battleResult==='victory') window.gm.postVictory(); //todo flee, submit, defeat
+            else window.gm.postDefeat();
+        }else window.story.show(window.gm.player.location); //outside battle
+        return;
+    } else if(data.state===0){ //start-menu
+        //if(player.Stats.get('arousal').value>40){
+            entry.innerHTML ="\'My chest itches...\'.";
+            data.state='plDomOrgasm';
+            newdata = {},Object.assign(newdata,data);
+            newdata.position = 'Rub your perky tits';
+            createButton(newdata.position,foo.bind(null,newdata));
+
+            newdata = {},Object.assign(newdata,data);
+            newdata.state=-1;
+            createButton('Just ignore it',foo.bind(null,newdata));
+    } else if(data.state==='plDomOrgasm'){ 
+        entry.innerHTML ="</br></br>Well, you have to live with that...";
+        data.state=-1;
+        Object.assign(newdata,data);
+        createButton("Get on your way",foo.bind(null,newdata));
+    }
+    window.gm.sex.updateScene(entry); 
+};
+window.gm.sex.femBody=function(data){ //todo
+    let foo = window.gm.sex.femBody,createButton=window.gm.sex.createButton;;
+    let player = window.gm.player,postBattle=!!data.battleResult;
+    let body=player.Outfit.getItemForSlot(window.gm.OutfitSlotLib.bBase);
+    window.gm.sex.beginScene();
+    let entry = document.createElement('p');
+    let newdata = {};//need a copy to create different data-values
+    if(data.state<0){ //quit if scene is done
+        if(postBattle){
+            if(data.battleResult==='victory') window.gm.postVictory(); //todo flee, submit, defeat
+            else window.gm.postDefeat();
+        }else window.story.show(window.gm.player.location); //outside battle
+        return;
+    } else if(data.state===0){ //start-menu
+        //if(player.Stats.get('arousal').value>40){
+            entry.innerHTML ="Your body tingles. Its not your skin, it is deeper, like the flesh itself is shifting around.</br>";
+            entry.innerHTML+="Using your hand to roam around your body, you find your muscles tense. There is especially some compression around your waist.</br>"
+            data.state='reject';
+            newdata = {},Object.assign(newdata,data);
+            createButton('Concentrate to loose the tension',foo.bind(null,newdata));
+            newdata = {},Object.assign(newdata,data);
+            newdata.state="accept";
+            createButton('accept the change',foo.bind(null,newdata));
+    } else if(data.state==='reject'){ 
+        entry.innerHTML ="</br></br>Using some of your will to relaxe those muscles, you struggle against your own fleshs knitting.";
+        window.gm.player.Stats.increment("will",-10);window.gm.refreshSidePanel();
+        data.state='finish';
+        newdata = {},Object.assign(newdata,data);
+        createButton("Get on your way",foo.bind(null,newdata));
+    } else if(data.state==='accept'){ 
+        entry.innerHTML ="</br></br>You cant fight back against the change - or you dont want to. Just letting it happen you can feel your own flesh remodeling your torso.</br>";
+        entry.innerHTML ="</br>The change is only small but just that something like that happened damaged your will (<b>maximum will damaged</b>).</br>";
+        body.data.feminity=Math.min(body.data.feminity+0.1,0.8);
+        let x=window.gm.player.Stats.getModifier("willMax","mutDmg");
+        if(x===null) x={id:'mutDmg',bonus:0};
+        x.bonus-=5;
+        window.gm.player.Stats.addModifier('willMax',x);window.gm.refreshSidePanel();
+        data.state='finish';
+        newdata = {},Object.assign(newdata,data);
+        createButton("Get on your way",foo.bind(null,newdata));
+    } else if(data.state==='finish'){ 
+        entry.innerHTML ="</br></br>Well, you have to live with that...";
+        data.state=-1;
+        newdata = {},Object.assign(newdata,data);
+        createButton("Get on your way",foo.bind(null,newdata));
+    }
+    window.gm.sex.updateScene(entry); 
+};
 /**
  * :: HuntressSubmit
 "You are a worthy opponent. Lets see if you have some stamina left."

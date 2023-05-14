@@ -441,7 +441,7 @@ window.gm.MutationsLib['growPenis'] = function(char,magnitude=1){
                 msg+= "Your member is straining but your body doesnt seem to support a bigger one !</br>";
             } else {
                 item.data.growth=Math.min(1.0,item.data.growth+0.25);
-                msg+= "Your member swell proudly an gains in girth and length?</br>";
+                msg+= "Your member swell proudly and gains in girth and length?</br>";
             }
         } else { //shrink
             if(item.data.growth<0.05){
@@ -450,6 +450,29 @@ window.gm.MutationsLib['growPenis'] = function(char,magnitude=1){
                 item.data.growth=Math.max(0.05,item.data.growth-0.25);
                 msg+= "You can feel some pressure engulfing your manmeat. With horror you can feel it shrinking down even further !</br>";
             }
+        }
+        msg += "</br>"+item.descLong(window.gm.util.descFixer(char))+"</br>";
+    }
+    if(char===window.gm.player){
+        window.gm.pushDeferredEvent("GenericDeffered",[msg]);
+    }
+};
+window.gm.MutationsLib['growHeadHair'] = function(char,magnitude=1){ 
+    let msg = 'Everything is ok, nothing unusual.</br>', _TF="HeadHairHuman";
+    if(char.Outfit.countItem(_TF)>0){
+        msg= "As you smooth out your hair with your hand you notice </br>";
+        let item = char.Outfit.getItem(_TF), growth=item.data.growth;
+        if(magnitude>0){//grow
+            if(item.data.growth<0.3) {
+                item.data.growth+=0.05; //@2m body, max. 0.6m hair 5%=3cm
+                msg+='that it seems to have grown a bit longer. </br>'
+            } else if(item.data.growth<0.6) {
+                item.data.growth+=0.1; 
+                msg+='that it seems to have grown quite a bit longer. </br>'
+            } else {
+                msg+= "...well seems no change at all.</br>";
+            }
+        } else { //Todo
         }
         msg += "</br>"+item.descLong(window.gm.util.descFixer(char))+"</br>";
     }
@@ -484,4 +507,33 @@ window.gm.MutationsLib['changeSavage'] = function(char,value=1,min=0,max=10){
         window.gm.pushDeferredEvent("GenericDeffered",[msg]);
     }
 };
-//todo grow/shrinkHips
+//todo grow/shrinkHips Ass / bodyshape
+//remove body/-pubes hair
+/*{
+window.gm.Mutators = window.gm.Mutators || {};
+window.gm.Mutators['HairNeck'] = (function(){
+    let data={m:effMutator.mutatorDataProto(),req:null,revert:""};
+    data.m.Hair=0.3,data.m.F=0.2;
+    data.f=window.gm.MutationsLib['growHeadHair'];data.mag=1;
+    data.req=function(char){let _res={OK:true,msg:''};return(_res);};
+return(data);})();
+window.gm.Mutators['averageBreast'] = (function(){
+        let data={m:effMutator.mutatorDataProto(),req:null,revert:""};
+        data.m.Chest=0.5,data.m.F=0.5;
+        data.f=window.gm.MutationsLib['growBreast'];data.mag=1;
+        data.req=function(char){let _res={OK:true,msg:''};return(_res);};
+    return(data);})();
+window.gm.Mutators['bigBreast'] = (function(){
+        let data={m:effMutator.mutatorDataProto(),req:null,revert:"averageBreast"};
+        data.m.Chest=0.7,data.m.F=0.5;
+        data.f=window.gm.MutationsLib['growBreast'];data.mag=2;
+        data.req=function(char){let _res={OK:true,msg:''};return(_res);};
+    return(data);})();
+window.gm.Mutators['averageCock'] = (function(){
+        let data={m:effMutator.mutatorDataProto(),req:null,revert:""};
+        data.m.Genital=0.4,data.m.M=0.5;
+        data.f=window.gm.MutationsLib['growPenis'];data.mag=1;
+        data.req=function(char){let _res={OK:true,msg:''};return(_res);};
+    return(data);})();
+//smallCock
+}*/

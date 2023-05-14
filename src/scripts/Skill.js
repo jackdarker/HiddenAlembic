@@ -11,9 +11,7 @@ class SkillResult{
 }
 class SkillCost{
     constructor(){
-          this.will = 0,
-          this.energy = 0,
-          this.health = 0,
+          this.will = 0, this.energy = 0, this.health = 0,this.poise = 0,
           this.items =[]    //Todo
     }
     asText(){
@@ -21,6 +19,7 @@ class SkillCost{
         if(this.will>0) msg+=this.will.toString()+' will';
         if(this.energy>0) msg+=this.energy.toString()+' energy';
         if(this.health>0) msg+=this.health.toString()+' health';
+        if(this.poise>0) msg+=this.poise.toString()+' poise';
         if(msg==='') msg = 'without cost';
         else msg = 'requires ' +msg;
         return(msg);
@@ -36,12 +35,16 @@ class SkillCost{
         if(this.energy> Char.Stats.get('energy').value){
             res.OK=false; res.msg +='not enough energy';
         }
+        if(this.poise> Char.Stats.get('poise').value){
+            res.OK=false; res.msg +='not enough poise';
+        }
         return(res);
     }
     pay(Char){
         Char.Stats.increment('health',this.health*-1);
         Char.Stats.increment('will',this.will*-1);
         Char.Stats.increment('energy',this.energy*-1);
+        Char.Stats.increment('poise',this.poise*-1);
     }
 }
 class SkillMod {
@@ -71,9 +74,16 @@ get caster(){return this.parent.parent;}
 get desc(){ return(this.name);}
 getMaxTargetCount(){return 1;}
 
-isValidPhase(){
-        //todo: returns True if the skill can be used in tha actual game-phase (combatPhase,explorePhase)
-        return true;
+isValidPhase(){        //todo: returns True if the skill can be used in tha actual game-phase (combatPhase,explorePhase)
+    let res={OK:true,msg:''};
+    return(res);
+}
+/*
+* override this to check if cast is in proper stance
+* */
+isValidStance(){
+    let res={OK:true,msg:''};
+    return(res);
 }
 /**
  * returns false and text if the skill cannot be used because its temporary disabled (silenced mage, blinded)
@@ -81,7 +91,8 @@ isValidPhase(){
  * call super to check cost !
  */
 isEnabled(){
-    let res={OK:true,msg:''};
+    let res=this.isValidStance();
+    if(!res.OK) return(res);
     if(this.isSealed().OK) res={OK:false,msg:'skill sealed'}; 
     if(this.coolDown>0) res={OK:false,msg:this.coolDown+' turns cooldown'}; 
     if(!res.OK) return(res);
@@ -145,8 +156,7 @@ previewCast(target){
     result.msg = this.caster.name +" will use "+ this.name +" on " + targets.name;
     return(result);
 }
-cast(target){
-    //execute the skill on the targets
+cast(target){ //execute the skill on the targets
     var result = this.previewCast(target);
     var cost = this.getCost();
     if(result.OK){
@@ -159,23 +169,54 @@ cast(target){
         }
         cost.pay(this.parent.parent);
         this.coolDown=this.defCoolDown;
-        result.msg = this.getCastDescription(result)+result.msg; 
+        /*result.msg =*/window.gm.printSfx('', this.getCastDescription(result)+" "+result.msg); 
     }
     return(result)
 }
 
 //some predefined filter; chain them to narrow down the targets
+// target = [[enemy#1], [you,me]]
 targetFilterSelf(targets){
         var possibleTarget = [];
         for(var target of targets){
             var valid = true;
             for(var targ of target){
-                if(this.caster != targ) valid=false;
+                if(this.caster !== targ) valid=false;
             }
             if(valid) possibleTarget.push(target);           
         }
         return possibleTarget;
 }
+targetFilterNotSelf(targets){ //all exclude self
+    var possibleTarget = [];
+    for(var target of targets){
+        var valid = true;
+        for(var targ of target){
+            if(this.caster === targ) valid=false;
+        }
+        if(valid) possibleTarget.push(target);           
+    }
+    return possibleTarget;
+}
+targetFilterEffect(targets,effects,Not=false){ //those with any one effect; effects= [[{id:'effBleed'}],[{id:'effStunned'},{id:'effFrozen'}]]
+    var possibleTarget = [];
+    if(effects.length===0) return(possibleTarget);
+    for(var target of targets){
+        var valid = true;
+        for(var targ of target){
+            for(var effs of effects) { 
+                var cnt=effs.length;
+                for(var eff of effs) {//TODO if empty ? 
+                    if(targ.Effects.countItem(eff.id)>0) cnt--;
+                }
+                if((cnt>0 && !Not)||(cnt<=0 && Not)) valid=false;
+            }
+        }
+        if(valid) possibleTarget.push(target);           
+    }
+    return possibleTarget;
+}
+
 targetFilterAlly(targets){ //includes self
         var possibleTarget = [];
         for(var target of targets){

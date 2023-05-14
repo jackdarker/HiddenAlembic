@@ -30,7 +30,7 @@ class BodyPart extends Equipment {
 class BaseBiped extends BodyPart {
     constructor(){
         super('BaseBiped');
-        this.data = {maxGrowth:1.8,growth:1};
+        this.data = {femininity:0.2,maxGrowth:1.8,growth:1};
         this.addTags(['body']);this.slotUse = ['bBase'];
     }
     descLong(fconv){return(fconv('$[I]$ $[have]$ two legs and $[walk]§ upright at a bodysize of around '+this.sizeString(1)+'.'));}
@@ -43,7 +43,7 @@ class BaseHumanoid extends BaseBiped {
     constructor(){
         super();
         this.id = this.name = 'BaseHumanoid';
-        this.data = {maxGrowth:1.8,growth:1};
+        this.data = {femininity:0.2,maxGrowth:1.8,growth:1};
     }
     descLong(fconv){return(fconv('$[My]$ body is that of an human, around '+this.sizeString(1)+' in size.'));}
     toJSON(){return window.storage.Generic_toJSON("BaseHumanoid", this); };
@@ -52,19 +52,19 @@ class BaseHumanoid extends BaseBiped {
 class BaseQuadruped extends BodyPart {
     constructor(){
         super('BaseQuadruped');
-        this.data = {maxGrowth:1.5,growth:1};
+        this.data = {femininity:0.2,maxGrowth:1.5,growth:1};
         this.addTags(['body']);this.slotUse = ['bBase'];
     }
     get descShort(){return this.desc;};
     get desc(){ return '';}
     toJSON(){return window.storage.Generic_toJSON("BaseQuadruped", this); };
     static fromJSON(value){return(window.storage.Generic_fromJSON(BaseQuadruped, value.data));}
-    descLong(fconv){return(fconv('$[I]$ $[am]$ walking on 4 legs like a feral mammal.'));}
+    descLong(fconv){return(fconv('$[I]$ $[am]$ walking on 4 legs like a feral animal.'));}
 }
 class BaseWorm extends BodyPart {
     constructor(){
         super('BaseWorm');
-        this.data = {maxGrowth:0.3,growth:1};
+        this.data = {femininity:0.2,maxGrowth:0.3,growth:1};
         this.addTags(['body']);this.slotUse = ['bBase'];
     }
     get descShort(){return this.desc;};
@@ -76,7 +76,7 @@ class BaseWorm extends BodyPart {
 class BaseInsect extends BodyPart {
     constructor(){
         super('BaseInsect');
-        this.data = {maxGrowth:0.3,growth:1};
+        this.data = {femininity:0.2,maxGrowth:0.3,growth:1};
         this.addTags(['body']);this.slotUse = ['bBase'];
     }
     get descShort(){return this.desc;};
@@ -84,6 +84,44 @@ class BaseInsect extends BodyPart {
     toJSON(){return window.storage.Generic_toJSON("BaseInsect", this); };
     static fromJSON(value){return(window.storage.Generic_fromJSON(BaseInsect, value.data));}
     descLong(fconv){return(fconv('$[My]$ body is like that of an insect.'));}
+}
+class HeadHairHuman extends BodyPart {
+    static dataPrototype(){    
+        return({growth:0.05, maxGrowth: 0.3,style:'smooth'});
+        //length relative to bBase
+    }
+    static factory(id){
+        let obj =  new HeadHairHuman();
+        obj.setStyle(id,"dark brown");
+        return(obj);
+    }
+    constructor(){
+        super('HeadHairHuman');
+        this.addTags(['body']);
+        this.slotUse = ['bHeadHair'];
+        this.data = HeadHairHuman.dataPrototype();   
+    }
+    setStyle(id,color='dark grey'){
+        this.data.style = id; 
+        this.data.color = color;
+        switch(id){
+            case 'smooth':
+            case 'wavy':
+            case 'shaggy':
+            case 'curled':
+                break;
+            default:
+                throw new Error("unknown Hair-style "+id);
+        }
+    }
+    getStyle(){ return this.data.style; }
+    get descShort(){ return 'human hair';}
+    get desc(){ return(this.data.style +' hair');}
+    toJSON(){return window.storage.Generic_toJSON("HeadHairHuman", this); };
+    static fromJSON(value){return(window.storage.Generic_fromJSON(HeadHairHuman, value.data));}
+    descLong(fconv){
+        return(fconv('$[You]$ $[have]$ '+this.data.color+', '+this.data.style+' hair that is around '+this.sizeString(this.data.growth*this.data.maxGrowth) +' long.'));
+    }
 }
 class FaceHuman extends BodyPart {
     static dataPrototype(){    
@@ -532,8 +570,8 @@ class WeaponSlobber extends BodyPart {
     }
     attackMod(target){
         let mod = new SkillMod();
-        let _dmg =5;
-        if(this.data.style==='slime' ) _dmg+=5;
+        let _dmg =2;
+        if(this.data.style==='slime' ) _dmg+=2;
         mod.onHit = [{ target:target, eff: [effDamage.factory(_dmg,'acid',2, this.parent.parent.name+' slobbers '+target.name+' with '+this.data.style+'.' )]}];
         return(mod);
     }
@@ -841,6 +879,7 @@ class HandsPaw extends BodyPart { //paws of ferals
         let _dmg =5;
         if(this.data.style==='cat' || this.data.style==='lizard' ) _dmg+=5;
         mod.onHit = [{ target:target, eff: [effDamage.factory(_dmg,'slash')]}];
+        mod.onCrit = [{ target:target, eff: [effDamage.factory(_dmg,'slash')]}];
         return(mod);
     }
 }
@@ -929,6 +968,14 @@ class HandsHuman extends BodyPart { //hands with digits to use tools
         msg += ['dog','wolf','cat','bunny'].includes(this.data.style)?(this.data.style+'-claws adorn the fingertips'):'';
         msg += ['lizard'].includes(this.data.style)?('Large talons grow from their fingertips.'):'';
         return(fconv(msg));
+    }
+    attackMod(target){
+        let mod = new SkillMod();
+        let _dmg =5;
+        if(this.data.style==='cat' || this.data.style==='lizard' ) _dmg+=5;
+        mod.onHit = [{ target:target, eff: [effDamage.factory(_dmg,'blunt')]}];
+        mod.onCrit = [{ target:target, eff: [effDamage.factory(_dmg,'blunt')]}];
+        return(mod);
     }
 }
 class Wings extends BodyPart { //wings attached to back or as arms  <- todo
@@ -1228,6 +1275,7 @@ window.gm.ItemsLib = (function (ItemsLib){
     window.storage.registerConstructor(HandsHoof);
     window.storage.registerConstructor(HandsHuman);
     window.storage.registerConstructor(HandsPaw);
+    window.storage.registerConstructor(HeadHairHuman);
     window.storage.registerConstructor(FaceBird);
     window.storage.registerConstructor(FaceHorse);
     window.storage.registerConstructor(FaceHuman);

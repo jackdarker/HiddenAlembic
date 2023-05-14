@@ -28,7 +28,7 @@ class Mob extends Character {
             rnd = _.random(0,enemys.length-1);
             result.action = "Attack";
             result.target = [enemys[rnd]];
-            result.msg =this.name+" attacks "+ result.target[0].name+".</br>"+result.msg;
+            //result.msg =this.name+" attacks "+ result.target[0].name+".</br>"+result.msg;
         } else {
             if(this.Skills.countItem('Guard')>0){
                 result.action = "Guard";
