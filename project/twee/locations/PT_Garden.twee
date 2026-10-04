@@ -1,0 +1,39 @@
+:: GardenCleanup
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%><%window.gm.player.location=window.passage.name;%>
+Clean the garden from rubish. The more you remove, the deeper you can move into it.
+</article><article id="LogPanel"></article></section>
+
+
+:: LearnSpeaking
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%><%window.gm.player.location=window.passage.name;%>
+Listen to your master to better understand what he wants.
+</article><article id="LogPanel"></article></section>
+
+
+:: LearnComputer
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%><%window.gm.player.location=window.passage.name;%>
+Learn how to use a computer.
+Look what your master does and try to repeat when he is away. Dont get caught.
+</article><article id="LogPanel"></article></section>
+
+
+:: ScavengeFood
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%><%window.gm.player.location=window.passage.name;%>
+Look around for something to eat.
+Avoid-the-cat
+</article><article id="LogPanel"></article></section>
+
+
+
+
+
+:: PTA_Intro
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%><%window.gm.player.location=window.passage.name;%>
+Get a schedule for your training.
+</article><article id="LogPanel"></article></section>
+
+
+:: PTA_Weekly
+<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%><%window.gm.player.location=window.passage.name;%>
+Present yourself and your progress
+</article><article id="LogPanel"></article></section>

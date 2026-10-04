@@ -1,67 +1,62 @@
-:: HA_NextDay
+:: PT_NextDay
 <section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
 <%window.gm.player.location=window.passage.name;%>
 
 <%if(window.story.state.DngSY.remainingNights==0){%>
-    Die Banditen wollen ihr Geld. bezahle oder trage die Konsequenzen.
-    TODO [[Pay] [[You dont have the money]]
-    </br>[[HA_YourRoom]]
+    Heute wird entschieden ob du bleiben darfst oder gehen musst. 
+    TODO [[BAD END]]
+    </br>[[PT_MastersRoom]]
 <%}else{%>
-    A new day started and you need to decide how to move along.</br>At least you can decide for yourself and don't have to do what others say.
+    A new day started and you need to decide how to move along.</br>
     </br> 
-    </br>[[HA_YourRoom]]
+    </br>[[PT_MastersRoom]]
 <%}%>
 </article><article id="LogPanel"></article></section>
 
-:: HA_YourRoom
+:: PT_MastersRoom
 <section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
 <%window.gm.player.location=window.passage.name;%>
-<p>You are in your private room. There is a bed, a small desk with a comfy stool and a bulky wardrobe with a mirror.</p>
+<p>In Masters Zimmer.
+He is not|here.
+</p>
 <a0 id='howtoplay' onclick='(function($event){document.querySelector("#"+id+"~p").toggleAttribute("hidden");})(this);'>Hint</a>
 <p hidden>Every day you can choose multiple actions that will require time and energy.</p>
 </br></br><%if(!!window.story.state.Known.study.BasicBrews){%>[[use the laboratory|HA_Lab]]<%}%>
-</br></br>[[go somewhere|HA_Visit]]
+</br></br>[[go somewhere|PT_Visit]]
 <a0 id='helpscout' onclick='(function($event){document.querySelector("#"+id+"~p").toggleAttribute("hidden");})(this);'>Hint</a>
 <p hidden>Walk around to familarize yourself with the surrounding. Maybe you can find something of use. Revisit locations you already know and try to find some specific resource. You will get a small skill gain and better skill provide better result. But you need the proper equipment like arrows and traps.</p>
 </br></br>todo its late, get some rest
 <a0 id='helpsleep' onclick='(function($event){document.querySelector("#"+id+"~p").toggleAttribute("hidden");})(this);'>Hint</a>
 <p hidden>Pass time by resting or sleep up until a new day. Both recovers some portion of health& energy.</p>
-</br><a0 onclick='($("tw-passage").fadeOut(1000,function(){window.gm.addTime(60);window.story.show("HA_YourRoom");}));'>Nap 1hour</a>
+</br><a0 onclick='($("tw-passage").fadeOut(1000,function(){window.gm.addTime(60);window.story.show(window.gm.player.location);}));'>Nap 1hour</a>
 <%if(window.gm.getTimeStruct().hour<11) { %>
-<a0 onclick='($("tw-passage").fadeOut(1000,function(){window.gm.player.sleep(1800);window.story.show("HA_YourRoom");}));'>Sleep Until Evening</a> 
+<a0 onclick='($("tw-passage").fadeOut(1000,function(){window.gm.player.sleep(1800);window.story.show(window.gm.player.location);}));'>Sleep Until Evening</a> 
 <%} else {%>
-<a0 onclick='($("tw-passage").fadeOut(1000,function(){window.gm.player.sleep(700);window.story.show("HA_Sleep");}));'>Sleep Until Morning</a>
+<a0 onclick='($("tw-passage").fadeOut(1000,function(){window.gm.player.sleep(700);window.story.show("PT_Sleep");}));'>Sleep Until Morning</a>
 <%}%>
 
 todo quickaccess to work
 </article><article id="LogPanel"></article></section>
 
 
-:: HA_Visit
+:: PT_Visit
 <section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
 <%window.gm.player.location=window.passage.name;%>
-You are at home.</br></br>[[go to your private room|HA_YourRoom]]</br> 
+You are at home.</br></br>[[go to masters private room|PT_MastersRoom]]</br> 
 <a0 onclick='explore()'>explore the closer area</a></br>
 <div id='output'></div>
-</br><%if(!!window.story.state.Known.places.Garden){%>[[go to garden|HA_Garden]] <%}%>
+</br><%if(!!window.story.state.Known.places.Garden){%>[[go to garden|PT_Garden]] <%}%>
 </br></br>close by:
 </br>
 <%=(!!window.story.state.Known.places.Barellless?window.gm.printGoto('HA_Inn',5,0,'visit Inn'):'')%>
-<%=(!!window.story.state.Known.places.Barellless?window.gm.printGoto('HA_Trader',5,0,'visit Trader'):'')%> [[visit Thomas]] </br>
-</br></br>further away: (requires time and energy)
-</br><%=(!!window.story.state.Known.places.Farm?window.gm.printGoto('HA_Farm',30,0,'go to farm'):'')%>
-<%=(!!window.story.state.Known.places.Forest?window.gm.printGoto('HA_Forest',30,0,'go to forest'):'')%></br>
-</br><%=(!!window.story.state.Known.places.Redwick?window.gm.printGoto('HA_Road_Redwick',240,0,'travel to Redwick (on foot)'):'')%></br>
+
 </article><article id="LogPanel"></article></section>
 <script> function explore() {
     let rnd = _.random(0,100), s=window.story.state;
     window.gm.pushLog("rolled "+rnd);
     s.tmp.args = [];
-    if(!s.Known.places.Barellless){window.story.show('HA_Barellless_Intro');return;}
-    if(!s.Known.places.Garden){window.story.show('HA_Garden_Intro');return;}
-    if(!s.Known.places.Forest){window.story.show('HA_Forest_Intro');return;}
-    if(!s.Known.places.Farm){window.story.show('HA_Farm_Intro');return;}
-    if(!window.story.state.Known.study.BasicBrews){window.story.show('HA_Lab_Intro');return;}
+    //if(!s.Known.places.Barellless){window.story.show('HA_Barellless_Intro');return;}
+    if(!s.Known.places.Garden){window.story.show('PT_Garden_Intro');return;}
     window.gm.printOutput("You didnt find anything useful.");return;
     /////tOdo 
     if(rnd > 70 ) {
@@ -73,8 +68,7 @@ You are at home.</br></br>[[go to your private room|HA_YourRoom]]</br>
         let rnd2 = _.random(0,find.length-1);
         s.tmp.args = [find[rnd2],1]
         window.story.show('ForestSearchAround');
-    }
-    else {
+    }else {
         window.story.show('ForestSearchAround'); //nothing
     }
 }
@@ -82,67 +76,45 @@ You are at home.</br></br>[[go to your private room|HA_YourRoom]]</br>
 
 
 
-:: HA_Sleep
+:: PT_Sleep
 <section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
 <%window.gm.player.location=window.passage.name;%>
 You drift of to sleep dreaming of....</br>
-</br>[[HA_NextDay]]
+</br>[[PT_NextDay]]
 </article><article id="LogPanel"></article></section>
 <script> function newDay(){ //reset daily vars
-    window.story.state.DngY.resourceForest=5;
-    window.story.state.DngY.exploreForest=0;
+    //window.story.state.DngY.resourceForest=5;
+    //window.story.state.DngY.exploreForest=0;
 }
 newDay();
 </script>
 
-:: HA_Intro
+:: PT_Intro
 <section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
 <%window.gm.player.location=window.passage.name;%>
 Todo 
-The loanshark wants his money and if you dont have it at time he will send someone to confiscate your belongings.
-Du hast keine Ahnung ob die Ansprüche dieser zwielichtigen Personen berechtigt sind.
-</br>Es wäre sicher nicht verkehrt sich um Geld zu kümmern und gleichzeitig Licht in die Sache zu bringen.
+Du hast nun einen Trainer.
+</br>
 </br><a0 onclick='start()'>Next</a>
 </article><article id="LogPanel"></article></section>
 <script>
 function start(){
     if(window.story.state._gm.debug!=0) {
-        window.gm.player.Inv.addItem(window.gm.ItemsLib.ApocaFlower(),4),window.gm.player.Inv.addItem(window.gm.ItemsLib.PurpleBerry(),4);
+        //window.gm.player.Inv.addItem(window.gm.ItemsLib.ApocaFlower(),4),window.gm.player.Inv.addItem(window.gm.ItemsLib.PurpleBerry(),4);
     }
-    window.story.state.vars.spawnAt="HA_YourRoom";
+    window.story.state.vars.spawnAt="PT_MastersRoom";
     window.story.show(window.story.state.vars.spawnAt);
 }
 </script>
 
-:: HA_Farm_Intro
-<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
-<%window.gm.player.location=window.passage.name;%><%window.story.state.Known.places.Farm=1;%>
-Beside the road to Redwick is a farm. 
-</br>[[Next|HA_Visit]]
-</article><article id="LogPanel"></article></section>
-
-
-:: HA_Farm
-<section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
-<%window.gm.player.location=window.passage.name;%><%window.story.state.Known.places.Farm=1;%>
-Near the crossroad is a farm. 
-
-apply for a job as Milkmaid, farmhand
-steel eggs&crops
-help with breeding, increase milk & egg gain
-
-</br>[[Next|HA_Visit]]
-</article><article id="LogPanel"></article></section>
-
-
-:: HA_Garden_Intro
+:: PT_Garden_Intro
 <section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
 <%window.gm.player.location=window.passage.name;%><%window.story.state.Known.places.Garden=1;window.gm.quests.forceQuestMilestone("qGarden",100,1);%>
 Beneath the house is a small, overgrown garden. It would take some effort to clear away the brush and weeds to make room for growing herbs and vegetables. 
-</br>[[Next|HA_Garden]]
+</br>[[Next|PT_Garden]]
 </article><article id="LogPanel"></article></section>
 
-:: HA_Garden
+:: PT_Garden
 <section><aside id="sidebar"></aside><article><%=window.story.render("CenterDialogs")%>
 <%window.story.state.Known.places.Garden&=1;%>
 
@@ -158,7 +130,7 @@ Beneath the house is a small, overgrown garden. It would take some effort to cle
 
 </br>Plants on this plot are ready for harvesting. [harvest]
 
-</br>[[Return Home|HA_Visit]]
+</br>[[Return Home|PT_Visit]]
 </article><article id="LogPanel"></article></section>
 
 :: HA_Barellless_Intro

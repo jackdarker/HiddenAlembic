@@ -68,12 +68,12 @@ You might see a lot of links that are formated red-strikethrough. Those are curr
 <p class='author'>[[Fetishes ! (spoiler alert)|List_Fetish]]</p></br></br><hr>
 <p> </br></p>
 <p>TODO Intro: </p>
-<p><a0 onclick='startHA();'>Welcome to your new home...</a></p><hr>
+<p><a0 onclick='start();'>Welcome to your new home...</a></p><hr>
 </article>
-<script>function startHA() {
-    window.story.state.vars.spawnAt="HA_Intro"; //
+<script>function start() {
+    window.story.state.vars.spawnAt="PT_Intro"; //
     window.gm.enterVR();
     window.gm.player.levelUp(5);window.gm.player.autoLeveling();
-    window.gm.quests.addQuest("qGarden",1);window.gm.quests.addQuest("qBarJob",1);window.gm.quests.addQuest("qTraderThomas",1);
+    window.gm.quests.addQuest("qGarden",1);window.gm.quests.addQuest("qBarJob",1);
 }
 </script>
